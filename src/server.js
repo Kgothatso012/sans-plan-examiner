@@ -33,13 +33,13 @@ const nodemailer = require('nodemailer');
 // Email transporter config
 const emailTransporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: process.env.SMTP_PORT || 587,
+  port: parseInt(process.env.SMTP_PORT || '587'),
   secure: false,
-  auth: {
-    user: process.env.SMTP_USER || '',
+  auth: process.env.SMTP_USER ? {
+    user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS || ''
-  }
-});
+  } : undefined
+} as any);
 
 // Email notification function
 async function notifyApplicant(applicationId, type) {
