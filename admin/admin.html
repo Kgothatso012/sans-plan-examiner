@@ -492,7 +492,9 @@
     }
 
     async function submitLogin() {
+      console.log('Login clicked');
       const key = document.getElementById('adminKeyInput').value.trim();
+      console.log('Key:', key);
       if (!key) {
         showToast('Please enter API key', 'error');
         return;
@@ -502,6 +504,7 @@
       CONFIG.adminApiKey = key;
       localStorage.setItem('adminApiKey', key);
       document.getElementById('loginModal').classList.add('hidden');
+      console.log('Modal hidden, loading queue...');
       await loadQueue();
       loadNotifications();
       // Initialize companion after login
