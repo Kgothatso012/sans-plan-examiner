@@ -26,7 +26,6 @@ class SansAnalyzer {
         info: data.info
       };
     } catch (error) {
-      console.error('PDF extraction error:', error.message);
       return null;
     }
   }
@@ -39,7 +38,6 @@ class SansAnalyzer {
       const buffer = fs.readFileSync(filePath);
       return await this.extractTextFromPdf(buffer);
     } catch (error) {
-      console.error('File read error:', error.message);
       return null;
     }
   }
@@ -148,7 +146,6 @@ class SansAnalyzer {
 
       if (extracted) {
         textToAnalyze = extracted.text;
-        console.log(`Extracted ${extracted.numPages} pages from PDF`);
       }
     }
 

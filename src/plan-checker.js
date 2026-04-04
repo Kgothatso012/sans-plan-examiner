@@ -55,9 +55,8 @@ function getAllCategories() {
 
 // Extract data from text
 function extractDataFromText(text) {
-  // Reset data
-  data = { coverage: 0, impermeable: 0, storeys: 1, setbackFront: 3, setbackSide: 1, setbackRear: 3, parking: 2, streetLine: 3 };
-  
+  const data = { ...defaultData };
+
   const lower = text.toLowerCase();
   
   // Extract coverage %
@@ -96,23 +95,23 @@ function extractDataFromText(text) {
 
 // Analyze document
 function analyzeDocument(text, documentName = 'document.pdf', pageCount = 1) {
-  extractDataFromText(text);
-  
+  const data = extractDataFromText(text);
+
   const passedRules = [];
   const failedRules = [];
   const missingInfo = [];
-  
+
   nbrRules.forEach(rule => {
     try {
       const result = rule.check(data);
       if (result === true) {
-        passedRules.push({ id: rule.id, title: rule.title, value: rule.value() });
+        passedRules.push({ id: rule.id, title: rule.title, value: rule.getValue(data) });
       } else if (result === false) {
-        failedRules.push({ 
-          id: rule.id, 
-          title: rule.title, 
+        failedRules.push({
+          id: rule.id,
+          title: rule.title,
           required: rule.required,
-          value: rule.value(),
+          value: rule.getValue(data),
           description: rule.description
         });
       }
