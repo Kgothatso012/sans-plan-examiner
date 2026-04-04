@@ -1,134 +1,53 @@
-# SANS-PLAN-EXAMINOR
-## Tshwane Building Plan Examiner
+# SANS Plan Examiner - Quick Start
 
-Web-based building plan compliance checker for Tshwane Municipality. Analyzes PDF building plans against SANS 10400 building regulations.
+## For Bra Joe
 
-![Status](https://img.shields.io/badge/status-active-success)
-![License](https://img.shields.io/badge/license-MIT-blue)
+### 1. Get MiniMax API Key
+1. Go to https://platform.minimax.chat
+2. Sign up (free account)
+3. Create API key: Settings → API Keys
+4. Add to `.env`:
+   ```
+   MINIMAX_API_KEY=your-key-here
+   ```
 
-## Features
-
-- **PDF Upload** — Drag & drop building plans
-- **AI Analysis** — MiniMax API checks plans against SANS 10400 clauses
-- **Pin Comments** — Admin marks violations directly on PDF with red pins
-- **Applicant Portal** — Clients track applications, view pinned comments, submit revisions
-- **Email Notifications** — Automatic status updates to applicants
-- **Real Authentication** — JWT-based login for clients
-
-## Tech Stack
-
-- **Frontend**: Vanilla HTML/CSS/JS (no framework)
-- **Backend**: Node.js + Express
-- **Database**: Supabase (PostgreSQL)
-- **AI**: MiniMax API
-- **Email**: Nodemailer (SMTP)
-
-## Quick Start
-
+### 2. Run the App
 ```bash
-# Clone and install
-git clone https://github.com/Kgothatso012/SANS-PLAN-EXAMINOR.git
-cd SANS-PLAN-EXAMINOR
-npm install
-
-# Start server
+cd ~/sans-plan-examiner
 npm start
 ```
 
-Server runs at `http://localhost:3000`
+### 3. Access
+- **Admin:** http://localhost:3000/admin/admin.html
+  - Key: `joe-examiner-secret-2024`
+- **Apply:** http://localhost:3000/client/apply.html
+- **Track:** http://localhost:3000/client/track.html
 
-## Project Structure
+### 4. Test Flow
+1. Open applicant portal (apply.html)
+2. Fill form: ERF, address, owner details
+3. Upload PDF building plan
+4. Submit → goes to admin queue
+5. Admin login → review → analyze → decision
 
-```
-SANS-PLAN-EXAMINOR/
-├── admin/          # Admin panel HTML
-│   └── admin.html  # Review apps, add pin comments, run AI analysis
-├── client/         # Applicant-facing pages
-│   ├── apply.html  # Submit new application
-│   ├── portal.html # Track applications, view pins, submit revisions
-│   └── track.html  # Simple tracking page
-├── src/
-│   └── server.js   # Express API server
-├── package.json
-└── README.md
-```
+### Test Applications (existing)
+- TC406132, TC779937, TC775442, TC97883232
 
-## Environment Variables
+### Demo Videos
+- See: `/admin/admin.html` → Login → Click app → Analyze
 
-Create a `.env` file (or set via system):
+---
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `PORT` | Server port | `3000` |
-| `SUPABASE_URL` | Supabase project URL | (embedded) |
-| `SUPABASE_KEY` | Supabase anon key | (embedded) |
-| `MINIMAX_API_KEY` | MiniMax API key for AI analysis | (embedded) |
-| `SMTP_HOST` | SMTP server host | `smtp.gmail.com` |
-| `SMTP_PORT` | SMTP port | `587` |
-| `SMTP_USER` | SMTP username | - |
-| `SMTP_PASS` | SMTP password/app password | - |
-| `SMTP_FROM` | From email address | `noreply@tshwane-examiner.gov.za` |
-| `JWT_SECRET` | Secret for JWT tokens | (embedded) |
-| `PORTAL_URL` | Public URL for email links | `http://localhost:3000` |
+## Files
+- `src/server.js` - Main API
+- `src/plan-checker.js` - 16 SANS compliance rules
+- `client/*.html` - Applicant portal
+- `admin/admin.html` - Admin dashboard
 
-## Database Schema
+## Issues?
+- `500` on analyze → Need MiniMax key OR upload real PDF
+- Login fails → Use key: `joe-examiner-secret-2024`
 
-Tables in Supabase:
-- `applications` — Main application records
-- `application_documents` — Uploaded PDF files
-- `application_analysis` — AI analysis results
-- `application_comments` — Pin comments with x/y coordinates
-- `comment_replies` — Applicant replies to comments
-- `application_revisions` — Revision history
-- `applicants` — Client accounts
+---
 
-## Admin API Key
-
-Default: `joe-examiner-secret-2024`
-
-Pass via header: `x-api-key: joe-examiner-secret-2024`
-
-## API Endpoints
-
-### Applications
-- `POST /api/applications/submit` — Submit new application
-- `GET /api/applications?email=` — List applicant's applications
-- `GET /api/applications/:id` — Get single application (admin)
-- `GET /api/applications` — List all (admin)
-- `PUT /api/applications/:id/status` — Update status (admin)
-
-### Comments (with pins)
-- `POST /api/applications/:id/comments` — Add comment with x/y position
-- `GET /api/applications/:id/comments` — Get all comments
-- `POST /api/comments/:id/reply` — Reply to comment
-
-### Revisions
-- `POST /api/applications/:id/revisions` — Submit revision
-- `GET /api/applications/:id/revisions` — Get revisions
-
-### AI Analysis
-- `POST /api/applications/:id/analyze` — Run AI analysis (admin)
-
-### Authentication
-- `POST /api/auth/register` — Register new applicant
-- `POST /api/auth/login` — Login applicant
-- `GET /api/auth/me` — Get current user
-
-## SANS 10400 Clauses Covered
-
-- **Energy Efficiency**: XA1–XA10 (SANS 10400-XA:2010)
-- **Building Standards**: B1 (Occupancy), B3 (Means of Egress)
-- **Tshwane Checklists**: Site, Floor, Roof, Elevations, Sections, Structural
-
-## Email Notifications
-
-Emails sent automatically when:
-- Application status changes (SUBMITTED → IN_REVIEW → APPROVED/REJECTED)
-- New comment/pin added by examiner
-- Revision submitted by applicant
-
-Configure SMTP in environment variables for emails to work.
-
-## License
-
-MIT
+Built by kg-swarm 🤖
