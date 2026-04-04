@@ -90,6 +90,15 @@ async function notifyApplicant(applicationId, type) {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Extend Express Request type
+declare global {
+  namespace Express {
+    interface Request {
+      applicantId?: string;
+    }
+  }
+}
+
 // Supabase config (required)
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
@@ -212,7 +221,7 @@ const requireAuth = (req, res, next) => {
     return res.status(401).json({ error: 'Authentication required' });
   }
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET) as { applicantId?: string };
     req.applicantId = decoded.applicantId;
     next();
   } catch (error) {
