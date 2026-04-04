@@ -371,6 +371,35 @@ app.put('/api/applications/:id/status', requireAdminAuth, async (req, res) => {
   }
 });
 
+// Decision endpoint (Approve/Reject/Revision)
+app.post('/api/applications/:id/decision', requireAdminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { decision } = req.body;
+
+    const validDecisions = ['APPROVED', 'REJECTED', 'REVISION', 'PENDING'];
+    if (!validDecisions.includes(decision)) {
+      return res.status(400).json({ error: 'Invalid decision' });
+    }
+
+    const { data, error } = await supabase
+      .from('applications')
+      .update({ status: decision, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // Send email notification
+    await notifyApplicant(id, 'status_changed');
+
+    res.json({ success: true, application: data, message: `Application ${decision}` });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // ============ COMMENT ENDPOINTS ============
 
 // Add comment to application
@@ -461,13 +490,18 @@ app.post('/api/comments/:id/reply', async (req, res) => {
 });
 
 // Mark comment as fixed
-app.put('/api/comments/:id/fix', async (req, res) => {
+app.put('/api/comments/:id/fix', requireAdminAuth, async (req, res) => {
   try {
     const { id } = req.params;
+    const { resolved, resolution_note } = req.body;
 
     const { data, error } = await supabase
       .from('application_comments')
-      .update({ status: 'FIXED' })
+      .update({
+        resolved: resolved !== undefined ? resolved : true,
+        resolution_note: resolution_note || null,
+        resolved_at: resolved !== false ? new Date().toISOString() : null
+      })
       .eq('id', id)
       .select()
       .single();
