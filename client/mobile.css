@@ -1,0 +1,26 @@
+/* Mobile Responsive Fixes */
+@media (max-width: 768px) {
+  .container { padding: 1rem; }
+  .form-grid { grid-template-columns: 1fr; }
+  .stats-grid { flex-direction: column; }
+  header h1 { font-size: 1.5rem; }
+  .btn { padding: 0.75rem 1rem; font-size: 0.9rem; }
+}
+
+@media (max-width: 480px) {
+  .meta-grid { grid-template-columns: 1fr 1fr; }
+  .checklist-tags { flex-direction: column; }
+  .clause-card { padding: 1rem; }
+}
+
+/* Loading States */
+.loading { opacity: 0.6; pointer-events: none; }
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid #ccc;
+  border-top-color: #4a9eff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); }
