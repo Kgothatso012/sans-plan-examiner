@@ -481,6 +481,7 @@
       var modal = document.getElementById('loginModal');
       if (modal) { modal.style.display = 'none'; }
       localStorage.setItem('adminApiKey', key);
+      CONFIG.adminApiKey = key;  // Also set in config immediately
       window.location.reload();
     };
     console.log('submitLogin defined');
