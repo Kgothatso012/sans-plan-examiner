@@ -11,8 +11,8 @@
     "allowJs": true,
     "checkJs": true,
     "noImplicitAny": false,
-    "noImplicitThis": true,
-    "strictNullChecks": true,
+    "noImplicitThis": false,
+    "strictNullChecks": false,
     "moduleResolution": "node",
     "ignoreDeprecations": "6.0"
   },

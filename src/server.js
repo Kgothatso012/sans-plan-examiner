@@ -72,7 +72,6 @@ async function notifyApplicant(applicationId, type) {
 
   // Skip if no SMTP credentials
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.log(`[EMAIL] Would send to ${email}: ${subject}`);
     return;
   }
 
@@ -83,7 +82,6 @@ async function notifyApplicant(applicationId, type) {
       subject,
       text: body
     });
-    console.log(`[EMAIL] Sent ${type} notification to ${email}`);
   } catch (err) {
     console.error('[EMAIL] Failed to send:', err.message);
   }
