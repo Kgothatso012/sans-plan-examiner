@@ -73,7 +73,6 @@ class MiniMaxClient {
 
       return JSON.parse(cleaned.trim());
     } catch (e) {
-      console.error('Failed to parse JSON:', e.message);
       return null;
     }
   }
