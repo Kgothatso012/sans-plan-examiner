@@ -618,25 +618,56 @@
     // === SELECT APPLICATION ===
     async function selectApplication(id) {
       try {
+        console.log('Selecting app:', id);
         const res = await adminFetch('/api/applications/' + id);
+        if (!res.ok) {
+          console.error('Failed to load application:', res.status);
+          return;
+        }
         const app = await res.json();
+        if (!app) {
+          console.error('Application not found');
+          return;
+        }
         currentApp = app;
+        console.log('App loaded:', app.reference);
 
-        renderQueue([app]);
+        // Update UI
+        const noSelection = document.getElementById('noSelection');
+        const pdfPage = document.getElementById('pdfPage');
+        if (noSelection) noSelection.classList.add('hidden');
+        if (pdfPage) pdfPage.classList.remove('hidden');
 
-        document.getElementById('noSelection').classList.add('hidden');
-        document.getElementById('pdfPage').classList.remove('hidden');
+        // Update details
+        const refEl = document.getElementById('detailRef');
+        if (refEl) refEl.textContent = app.reference || '-';
 
-        document.getElementById('detailRef').textContent = app.reference;
-        document.getElementById('detailErf').textContent = 'ERF ' + (app.erf_number || '-');
-        document.getElementById('infoName').textContent = app.owner_name;
-        document.getElementById('infoEmail').textContent = app.owner_email;
-        document.getElementById('infoPhone').textContent = app.owner_phone || '-';
-        document.getElementById('infoErf').textContent = app.erf_number || '-';
-        document.getElementById('infoZoning').textContent = app.zoning || '-';
-        document.getElementById('infoAddress').textContent = app.street_address || '-';
-        document.getElementById('infoDate').textContent = new Date(app.created_at).toLocaleDateString();
-        document.getElementById('infoStatus').textContent = app.status;
+        const erfEl = document.getElementById('detailErf');
+        if (erfEl) erfEl.textContent = 'ERF ' + (app.erf_number || '-');
+
+        const nameEl = document.getElementById('infoName');
+        if (nameEl) nameEl.textContent = app.owner_name || '-';
+
+        const emailEl = document.getElementById('infoEmail');
+        if (emailEl) emailEl.textContent = app.owner_email || '-';
+
+        const phoneEl = document.getElementById('infoPhone');
+        if (phoneEl) phoneEl.textContent = app.owner_phone || '-';
+
+        const erfInfoEl = document.getElementById('infoErf');
+        if (erfInfoEl) erfInfoEl.textContent = app.erf_number || '-';
+
+        const zoningEl = document.getElementById('infoZoning');
+        if (zoningEl) zoningEl.textContent = app.zoning || '-';
+
+        const addrEl = document.getElementById('infoAddress');
+        if (addrEl) addrEl.textContent = app.street_address || '-';
+
+        const dateEl = document.getElementById('infoDate');
+        if (dateEl) dateEl.textContent = app.created_at ? new Date(app.created_at).toLocaleDateString() : '-';
+
+        const statusEl = document.getElementById('infoStatus');
+        if (statusEl) statusEl.textContent = app.status || '-';
 
         renderComments(app.comments || []);
         renderAIAnalysis(app.application_analysis || []);
