@@ -212,7 +212,7 @@ const requireAuth = (req, res, next) => {
     return res.status(401).json({ error: 'Authentication required' });
   }
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { applicantId?: string };
+    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
     req.applicantId = decoded.applicantId;
     next();
   } catch (error) {
