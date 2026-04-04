@@ -9,7 +9,18 @@ const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 
 // Rate limiting
+// Rate limiting
 const rateLimit = require('express-rate-limit');
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: { error: 'Too many requests, please try again later' }
+});
+const submitLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // limit submissions to 10 per hour
+  message: { error: 'Too many submissions, please try again later' }
+});
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
@@ -231,7 +242,8 @@ const sanitizeStr = (str, maxLen = 500) => {
 // Validate email
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-// ============ APPLICANT AUTH ENDPOINTS ============
+// ============ MIDDLEWARE ============
+app.use(generalLimiter);
 
 // Register new applicant
 app.post('/api/auth/register', async (req, res) => {
