@@ -1096,7 +1096,7 @@ const checker = require('./plan-checker.js');
   analyzeDocument = checker.analyzeDocument;
   getComplianceLevel = checker.getComplianceLevel;
 } catch (e) {
-  return;
+  // Plan checker not available
 }
 
 // List rules
