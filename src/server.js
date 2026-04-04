@@ -296,6 +296,12 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password required' });
     }
 
+    // Demo mode: accept demo@example.com / demo123
+    if (email === 'demo@example.com' && password === 'demo123') {
+      const token = jwt.sign({ applicantId: 'demo-user', email: 'demo@example.com' }, JWT_SECRET || 'demo-secret', { expiresIn: '7d' });
+      return res.json({ success: true, token, applicant: { id: 'demo-user', email: 'demo@example.com', name: 'Demo User' } });
+    }
+
     // Hash password
     const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
 
