@@ -345,8 +345,8 @@ app.get('/health', (req, res) => {
 
 // ============ APPLICATION ENDPOINTS ============
 
-// Submit new application
-app.post('/api/applications/submit', upload.array('documents', 10), async (req, res) => {
+// Submit new application (rate limited)
+app.post('/api/applications/submit', submitLimiter, upload.array('documents', 10), async (req, res) => {
   try {
     const { erfNumber, ownerName, ownerEmail, ownerPhone, description, zoning } = req.body;
 
