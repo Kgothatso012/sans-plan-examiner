@@ -438,6 +438,22 @@ app.post('/api/applications/submit', submitLimiter, upload.array('documents', 10
   }
 });
 
+// List all applications (admin only - must come before :reference route)
+app.get('/api/applications/all', requireAdminAuth, async (req, res) => {
+  try {
+    const { data: applications, error } = await supabase
+      .from('applications')
+      .select('*, application_documents(*), application_analysis(*)')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    res.json(applications);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get application by reference
 app.get('/api/applications/:reference', async (req, res) => {
   try {
