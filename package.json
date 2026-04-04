@@ -21,6 +21,11 @@
     "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^25.5.2",
+    "@types/nodemailer": "^8.0.0",
     "typescript": "^6.0.2"
   }
 }

@@ -84,8 +84,6 @@ async function notifyApplicant(applicationId, type) {
     });
   } catch (err) {
     return;
-  } catch (err) {
-    return;
   }
 }
 
@@ -596,7 +594,6 @@ app.post('/api/applications/:id/comments', requireAdminAuth, async (req, res) =>
 
     res.json({ success: true, comment });
   } catch (error) {
-    console.error('Add comment error:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -745,7 +742,6 @@ app.post('/api/applications/:id/revisions', upload.array('documents', 10), async
 
     res.json({ success: true, revision, revisionNumber: newRevision });
   } catch (error) {
-    console.error('Submit revision error:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -818,7 +814,6 @@ app.post('/api/applications/:id/analyze', requireAdminAuth, async (req, res) => 
       textContent = pdfData.text;
       numPages = pdfData.numpages;
     } catch (e) {
-      console.error('PDF extraction error:', e.message);
       textContent = 'PDF text extraction failed - using placeholder';
     }
 
@@ -888,7 +883,6 @@ app.post('/api/applications/:id/analyze', requireAdminAuth, async (req, res) => 
       mode: 'ai'
     });
   } catch (error) {
-    console.error('Analysis error:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -924,7 +918,6 @@ app.post('/api/applications/:id/feedback', requireAdminAuth, async (req, res) =>
       learnings: learnings
     });
   } catch (error) {
-    console.error('Feedback processing error:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -1103,7 +1096,7 @@ const checker = require('./plan-checker.js');
   analyzeDocument = checker.analyzeDocument;
   getComplianceLevel = checker.getComplianceLevel;
 } catch (e) {
-  console.log('Plan checker not available');
+  return;
 }
 
 // List rules
@@ -1210,7 +1203,6 @@ app.get('/api/analytics/dashboard', requireAdminAuth, async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Analytics error:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -1323,7 +1315,6 @@ app.post('/api/check', upload.single('file'), async (req, res) => {
       analyzedAt: report.analyzedAt,
     });
   } catch (error) {
-    console.error('Check error:', error);
     res.status(500).json({ error: error.message });
   }
 });
