@@ -305,6 +305,8 @@
           <button class="toolbar-btn" onclick="exportPDF()">📄 Export PDF</button>
         </div>
         <div class="toolbar-group" style="margin-left: auto;">
+          <input type="file" id="uploadDocInput" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload(event)">
+          <button class="toolbar-btn" onclick="document.getElementById('uploadDocInput').click()">📤 Upload Doc</button>
           <button class="toolbar-btn" onclick="prevPage()">◀</button>
           <span id="pageInfo">1 / 1</span>
           <button class="toolbar-btn" onclick="nextPage()">▶</button>
@@ -1187,6 +1189,48 @@
       }
     }
     function togglePan() { document.getElementById('btnPan').classList.toggle('active'); }
+
+    // === DOCUMENT UPLOAD ===
+    async function handleDocUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      if (!currentApp) {
+        showToast('Select an application first', 'error');
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        showToast('File too large (max 10MB)', 'error');
+        return;
+      }
+
+      showToast('Uploading document...', 'info');
+
+      const formData = new FormData();
+      formData.append('documents', file);
+
+      try {
+        const res = await adminFetch(`/api/applications/${currentApp.id}/documents`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (res.ok) {
+          showToast('Document uploaded!', 'success');
+          // Refresh application to get new documents
+          const appRes = await adminFetch('/api/applications/' + currentApp.id);
+          currentApp = await appRes.json();
+          loadAppPDF(currentApp.application_documents);
+        } else {
+          showToast('Upload failed', 'error');
+        }
+      } catch (e) {
+        console.error('Upload error:', e);
+        showToast('Upload failed: ' + e.message, 'error');
+      }
+
+      // Reset input
+      event.target.value = '';
+    }
 
     // === EXPORT FUNCTIONS ===
     function exportCSV() {
