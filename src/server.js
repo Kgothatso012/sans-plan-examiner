@@ -878,9 +878,15 @@ app.post('/api/applications/:id/analyze', requireAdminAuth, async (req, res) => 
     }
 
     // Run AI analysis using SansAnalyzer
-    const result = await sansAnalyzer.analyze(id, {
-      pdfBuffer: Buffer.from(await fileData.arrayBuffer())
-    });
+    let result;
+    try {
+      result = await sansAnalyzer.analyze(id, {
+        pdfBuffer: Buffer.from(await fileData.arrayBuffer())
+      });
+    } catch (analyzeErr) {
+      console.log('[analyze] SansAnalyzer error:', analyzeErr.message);
+      result = { success: false, error: analyzeErr.message };
+    }
 
     if (!result.success) {
       // Fallback to rule-based analysis
