@@ -452,7 +452,27 @@
   </div>
 
   <script>
-    // URGENT: Define submitLogin BEFORE anything else
+    console.log('Admin HTML loading...');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    console.log('PDF.js worker set');
+
+    // === CONFIG ===
+    const CONFIG = {
+      supabaseUrl: 'https://pmhvteytflmbvolteota.supabase.co',
+      supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtaHZ0ZXl0ZmxtYnZvbHRlb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyODIwNTUsImV4cCI6MjA5MDg1ODA1NX0.Hhby7vx9Mq4AUnR4TJiAVCMlPRBm5xQtQM6LF0yEi_w',
+      adminApiKey: null
+    };
+
+    let supabaseClient = window.supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseKey);
+    let currentApp = null;
+    let currentPage = 1;
+    let totalPages = 1;
+    let pdfDoc = null;
+    let scale = 1.5;
+    let commentMode = false;
+    let commentPosition = null;
+
+    // Login function - defined early
     window.submitLogin = function() {
       var keyInput = document.getElementById('adminKeyInput');
       var key = keyInput ? keyInput.value.trim() : 'test';
@@ -463,28 +483,7 @@
       localStorage.setItem('adminApiKey', key);
       window.location.reload();
     };
-    console.log('Top-level submitLogin defined');
-  </script>
-  <script>
-    console.log('Admin HTML loading...');
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    console.log('PDF.js worker set');
-
-    // === CONFIG ===
-    const CONFIG = {
-      supabaseUrl: 'https://pmhvteytflmbvolteota.supabase.co',
-      supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtaHZ0ZXl0ZmxtYnZvbHRlb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyODIwNTUsImV4cCI6MjA5MDg1ODA1NX0.Hhby7vx9Mq4AUnR4TJiAVCMlPRBm5xQtQM6LF0yEi_w',
-      adminApiKey: null // Must be set via login
-    };
-
-    let supabase = window.supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseKey);
-    let currentApp = null;
-    let currentPage = 1;
-    let totalPages = 1;
-    let pdfDoc = null;
-    let scale = 1.5;
-    let commentMode = false;
-    let commentPosition = null;
+    console.log('submitLogin defined');
 
     // === INITIALIZATION ===
     console.log('Script loaded, adding DOMContentLoaded listener');
