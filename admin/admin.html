@@ -430,8 +430,9 @@
   <div class="modal-overlay" id="loginModal" style="display:flex;">
     <div class="modal" style="max-width:400px;">
       <h3>Admin Login</h3>
+      <p id="loginStatus" style="font-size:12px;color:#666;margin-bottom:8px;">Click login button below</p>
       <input type="text" id="adminKeyInput" value="test" style="width:100%;padding:12px;border:1px solid #ddd;margin-bottom:12px;">
-      <button onclick="submitLogin()" style="background:#2E7D32;color:white;padding:12px;border:none;width:100%;cursor:pointer;">Login</button>
+      <button onclick="console.log('Button clicked!'); window.submitLogin()" style="background:#2E7D32;color:white;padding:12px;border:none;width:100%;cursor:pointer;">Login</button>
     </div>
   </div>
 
@@ -472,14 +473,18 @@
     let commentPosition = null;
 
     // === INITIALIZATION ===
+    console.log('Script loaded, adding DOMContentLoaded listener');
     window.addEventListener('DOMContentLoaded', init);
 
     async function init() {
+      console.log('init() running');
       const savedKey = localStorage.getItem('adminApiKey');
+      console.log('savedKey:', savedKey);
       if (savedKey) {
         CONFIG.adminApiKey = savedKey;
       } else {
         // Show login modal instead of prompt
+        console.log('Showing login modal');
         document.getElementById('loginModal').classList.remove('hidden');
         return;
       }
@@ -492,12 +497,13 @@
       }
     }
 
-    async function submitLogin() {
-      console.log('Login clicked');
+    // DEBUG: Make submitLogin globally accessible
+    window.submitLogin = async function() {
+      console.log('submitLogin() called directly');
       const key = document.getElementById('adminKeyInput').value.trim();
       console.log('Key:', key);
       if (!key) {
-        showToast('Please enter API key', 'error');
+        alert('Please enter API key');
         return;
       }
 
@@ -512,8 +518,8 @@
       if (window.SansCompanion) {
         window.SansCompanion.init('companionContainer', 'joe-examiner');
       }
-      showToast('Logged in successfully', 'success');
-    }
+      alert('Logged in successfully');
+    };
 
     // === TOAST NOTIFICATIONS ===
     function showToast(message, type = 'info') {
