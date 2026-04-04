@@ -316,6 +316,26 @@
     let currentFilter = 'all';
     let currentUser = null;
 
+    // === TOAST NOTIFICATIONS ===
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 24px;
+        border-radius: 6px;
+        color: white;
+        font-weight: 500;
+        z-index: 2000;
+        animation: slideIn 0.3s ease;
+        background: ${type === 'success' ? '#2e7d32' : type === 'error' ? '#ef3636' : '#666'};
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
     // === AUTH ===
     async function checkAuth() {
       const { data: { session } } = await supabase.auth.getSession();
@@ -350,7 +370,7 @@
       const password = document.getElementById('loginPassword').value;
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
-        alert(error.message);
+        showToast(error.message, 'error');
       } else {
         currentUser = data.user;
         showLoggedIn(data.user.email);
@@ -364,9 +384,9 @@
       const password = document.getElementById('signupPassword').value;
       const { data, error } = await supabase.auth.signUp({ email, password });
       if (error) {
-        alert(error.message);
+        showToast(error.message, 'error');
       } else {
-        alert('Account created! Check your email to verify, then sign in.');
+        showToast('Account created! Check your email to verify.', 'success');
         showLoginOverlay();
       }
     }
@@ -588,12 +608,12 @@
         });
         const data = await res.json();
         if (data.id) {
-          alert('Reply sent!');
+          showToast('Reply sent!', 'success');
           input.value = '';
           selectApp(currentApp.id);
         }
       } catch (e) {
-        alert('Failed to send reply');
+        showToast('Failed to send reply', 'error');
       }
     }
 
@@ -607,17 +627,17 @@
         });
         const data = await res.json();
         if (data.success) {
-          alert('Marked as fixed! The examiner will see this in their next review.');
+          showToast('Marked as fixed!', 'success');
           selectApp(currentApp.id);
         }
       } catch (e) {
-        alert('Failed to mark fixed');
+        showToast('Failed to mark fixed', 'error');
       }
     }
 
     async function submitReply() {
       if (!currentApp) return;
-      alert('Please click on a specific comment to reply.');
+      showToast('Please click on a specific comment to reply.', 'error');
     }
 
     // === TABS ===
@@ -633,7 +653,7 @@
     function downloadApproval() {
       if (!currentApp) return;
       if (currentApp.status !== 'APPROVED') {
-        alert('Approval letter is only available for approved applications.');
+        showToast('Approval letter only available for approved applications', 'error');
         return;
       }
 
@@ -732,43 +752,76 @@
 
     function showUpload() {
       if (!currentApp) {
-        alert('Select an application first');
+        showToast('Select an application first', 'error');
+        return;
+      }
+      // Open revision modal instead of prompt
+      const modal = document.createElement('div');
+      modal.id = 'revisionModal';
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal" style="max-width: 450px;">
+          <h3>Submit Revision</h3>
+          <p style="color: var(--steel); font-size: 0.9rem; margin-bottom: 16px;">Describe the changes made in this revision:</p>
+          <textarea id="revisionChangeLog" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; min-height: 120px; resize: vertical;" placeholder="Describe changes..."></textarea>
+          <div style="margin-top: 16px;">
+            <label class="file-upload" style="display: block;">
+              <input type="file" id="revisionFile" accept=".pdf">
+              <span class="file-upload-label">Click to upload revised plans (PDF)</span>
+            </label>
+          </div>
+          <div class="modal-buttons">
+            <button class="cancel" onclick="closeRevisionModal()">Cancel</button>
+            <button class="confirm" onclick="submitRevisionModal()">Submit Revision</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function closeRevisionModal() {
+      const modal = document.getElementById('revisionModal');
+      if (modal) modal.remove();
+    }
+
+    async function submitRevisionModal() {
+      const changeLog = document.getElementById('revisionChangeLog').value.trim();
+      const fileInput = document.getElementById('revisionFile');
+      const file = fileInput?.files[0];
+
+      if (!changeLog) {
+        showToast('Please enter change description', 'error');
         return;
       }
 
-      const changeLog = prompt('Changes made in this revision:');
-      if (!changeLog) return;
+      if (!file) {
+        showToast('Please upload revised plans', 'error');
+        return;
+      }
 
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'application/pdf';
-      input.onchange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+      closeRevisionModal();
 
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('application_id', currentApp.id);
-        formData.append('doc_type', 'building_plans');
-        formData.append('change_log', changeLog);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('application_id', currentApp.id);
+      formData.append('doc_type', 'building_plans');
+      formData.append('change_log', changeLog);
 
-        try {
-          const res = await fetch('/api/applications/revision', {
-            method: 'POST',
-            body: formData
-          });
-          const data = await res.json();
-          if (data.success) {
-            alert('Revision submitted!');
-            selectApp(currentApp.id);
-          } else {
-            alert('Error: ' + data.error);
-          }
-        } catch (err) {
-          alert('Upload failed');
+      try {
+        const res = await fetch('/api/applications/revision', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Revision submitted!', 'success');
+          selectApp(currentApp.id);
+        } else {
+          showToast('Error: ' + data.error, 'error');
         }
-      };
-      input.click();
+      } catch (err) {
+        showToast('Upload failed', 'error');
+      }
     }
 
     // === SEARCH ===
