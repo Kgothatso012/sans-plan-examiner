@@ -565,6 +565,9 @@ app.post('/api/applications/:id/decision', requireAdminAuth, async (req, res) =>
 
     if (error) throw error;
 
+    // Audit log
+    await logAudit('DECISION', 'application', id, { decision, reference: data.reference });
+
     // Send email notification
     await notifyApplicant(id, 'status_changed');
 
@@ -598,6 +601,9 @@ app.post('/api/applications/:id/comments', requireAdminAuth, async (req, res) =>
       .single();
 
     if (error) throw error;
+
+    // Audit log
+    await logAudit('ADD_COMMENT', 'application', id, { comment_id: comment.id, clause_id, violation_type });
 
     // Send email notification about new comment
     await notifyApplicant(id, 'comment_added');
