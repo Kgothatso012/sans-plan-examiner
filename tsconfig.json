@@ -1,20 +1,6 @@
 {
   "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "module": "commonjs",
-    "target": "esnext",
-    "sourceMap": true,
-    "declaration": true,
-    "strict": false,
     "skipLibCheck": true,
-    "allowJs": true,
-    "checkJs": true,
-    "noImplicitAny": false,
-    "noImplicitThis": false,
-    "strictNullChecks": false,
-    "moduleResolution": "node",
-    "ignoreDeprecations": "6.0"
-  },
-  "include": ["src/**/*"]
+    "noEmit": true
+  }
 }
