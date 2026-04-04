@@ -500,22 +500,6 @@ app.get('/api/applications/:reference', async (req, res) => {
   }
 });
 
-// List all applications (admin only - must come first)
-app.get('/api/applications/all', requireAdminAuth, async (req, res) => {
-  try {
-    const { data: applications, error } = await supabase
-      .from('applications')
-      .select('*, application_documents(*), application_analysis(*)')
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-
-    res.json(applications);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
 // List applications for applicant (by email query param)
 app.get('/api/applications', async (req, res) => {
   try {
