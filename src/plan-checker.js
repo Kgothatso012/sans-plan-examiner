@@ -6,21 +6,21 @@
 const nbrRules = [
   // Coverage Rules
   { id: 'CVRG-001', category: 'Coverage', title: 'Max Building Coverage', description: 'Building coverage must not exceed zone maximum', 
-    check: (data) => data.coverage <= 60, value: () => data.coverage, required: '≤60%' },
+    check: (data) => data.coverage <= 60, getValue: (data) => data.coverage, required: '≤60%' },
   { id: 'CVRG-002', category: 'Coverage', title: 'Impermeable Surfaces', description: 'Impermeable surfaces must be managed', 
-    check: (data) => data.impermeable <= 70, value: () => data.impermeable, required: '≤70%' },
+    check: (data) => data.impermeable <= 70, getValue: (data) => data.impermeable, required: '≤70%' },
   
   // Height Rules  
   { id: 'HEIT-001', category: 'Height', title: 'Max Building Height', description: 'Maximum 3 storeys in R1 zone',
-    check: (data) => data.storeys <= 3, value: () => data.storeys, required: '≤3 storeys' },
+    check: (data) => data.storeys <= 3, getValue: (data) => data.storeys, required: '≤3 storeys' },
     
   // Setback Rules
   { id: 'SETB-001', category: 'Setbacks', title: 'Front Setback', description: 'Minimum 3m front setback',
-    check: (data) => data.setbackFront >= 3, value: () => data.setbackFront, required: '≥3m' },
+    check: (data) => data.setbackFront >= 3, getValue: (data) => data.setbackFront, required: '≥3m' },
   { id: 'SETB-002', category: 'Setbacks', title: 'Side Setback', description: 'Minimum 1m side setback',  
-    check: (data) => data.setbackSide >= 1, value: () => data.setbackSide, required: '≥1m' },
+    check: (data) => data.setbackSide >= 1, getValue: (data) => data.setbackSide, required: '≥1m' },
   { id: 'SETB-003', category: 'Setbacks', title: 'Rear Setback', description: 'Minimum 3m rear setback',
-    check: (data) => data.setbackRear >= 3, value: () => data.setbackRear, required: '≥3m' },
+    check: (data) => data.setbackRear >= 3, getValue: (data) => data.setbackRear, required: '≥3m' },
 
   // Parking
   { id: 'PRKG-001', category: 'Parking', title: 'Parking Bays', description: 'Minimum 2 parking bays per dwelling',
