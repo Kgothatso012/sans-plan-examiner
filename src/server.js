@@ -30,6 +30,65 @@ if (!JWT_SECRET) {
 // Email (nodemailer)
 const nodemailer = require('nodemailer');
 
+// Email transporter config
+const emailTransporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: process.env.SMTP_PORT || 587,
+  secure: false,
+  auth: {
+    user: process.env.SMTP_USER || '',
+    pass: process.env.SMTP_PASS || ''
+  }
+});
+
+// Email notification function
+async function notifyApplicant(applicationId, type) {
+  // Get application details
+  const { data: app } = await supabase
+    .from('applications')
+    .select('*, applicant_profiles(email)')
+    .eq('id', applicationId)
+    .single();
+
+  if (!app || !app.owner_email) return;
+
+  const { owner_email: email, reference, status } = app;
+  const portalUrl = `http://localhost:3000/client/track.html?ref=${reference}`;
+
+  const subjects = {
+    status_changed: `Application ${reference} - Status Update`,
+    comment_added: `Application ${reference} - New Comment`,
+    revision_submitted: `Application ${reference} - Revision Received`
+  };
+
+  const bodies = {
+    status_changed: `Your application ${reference} status has been updated to: ${status}.\n\nView details: ${portalUrl}`,
+    comment_added: `A new comment has been added to your application ${reference}.\n\nLog in to view: ${portalUrl}`,
+    revision_submitted: `You have received a revision request for application ${reference}.\n\nLog in to view: ${portalUrl}`
+  };
+
+  const subject = subjects[type] || `Application ${reference} Update`;
+  const body = bodies[type] || `Update for application ${reference}`;
+
+  // Skip if no SMTP credentials
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    console.log(`[EMAIL] Would send to ${email}: ${subject}`);
+    return;
+  }
+
+  try {
+    await emailTransporter.sendMail({
+      from: process.env.SMTP_FROM || '"Joe\'s Examiner" <noreply@tshwane.gov.za>',
+      to: email,
+      subject,
+      text: body
+    });
+    console.log(`[EMAIL] Sent ${type} notification to ${email}`);
+  } catch (err) {
+    console.error('[EMAIL] Failed to send:', err.message);
+  }
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -141,6 +200,21 @@ const requireAdminAuth = (req, res, next) => {
     res.status(401).json({ error: 'Unauthorized' });
   }
 };
+
+// ============ AUDIT LOGGING ============
+async function logAudit(action, targetType, targetId, details = {}) {
+  try {
+    await supabase.from('audit_logs').insert({
+      action,
+      target_type: targetType,
+      target_id: targetId,
+      admin_email: 'admin@tshwane.gov.za',
+      details
+    });
+  } catch (e) {
+    console.error('[AUDIT] Failed to log:', e.message);
+  }
+}
 
 // ============ APPLICANT AUTH MIDDLEWARE ============
 const requireAuth = (req, res, next) => {
@@ -883,6 +957,24 @@ app.get('/api/applications/:id/analysis', async (req, res) => {
 });
 
 // ============ DOCUMENT SERVING ============
+
+// List documents for application
+app.get('/api/applications/:id/documents', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { data: docs, error } = await supabase
+      .from('application_documents')
+      .select('id, document_type, file_name, file_size, storage_path, created_at')
+      .eq('application_id', id);
+
+    if (error) throw error;
+
+    res.json(docs || []);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Get document download URL
 app.get('/api/documents/:appId/:docId', async (req, res) => {

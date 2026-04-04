@@ -514,33 +514,29 @@
       form.classList.add('hidden');
 
       try {
-        const documents = [];
-        for (const [type, fileData] of Object.entries(uploadedFiles)) {
-          const filePath = `applications/${Date.now()}_${fileData.name}`;
-          try {
-            await supabase.storage.from('plans').upload(filePath, fileData.data);
-          } catch (err) { console.warn('Upload warn:', err); }
-          documents.push({ type, path: filePath, name: fileData.name, size: fileData.size });
-        }
+        // Create FormData for multipart upload
+        const formData = new FormData();
+        formData.append('erf_number', document.getElementById('erf_number').value);
+        formData.append('street_address', document.getElementById('street_address').value);
+        formData.append('zoning', document.getElementById('zoning').value);
+        formData.append('owner_name', document.getElementById('owner_name').value);
+        formData.append('owner_email', document.getElementById('owner_email').value);
+        formData.append('owner_phone', document.getElementById('owner_phone').value);
+        formData.append('owner_id', document.getElementById('owner_id').value);
+        formData.append('professional_name', document.getElementById('professional_name').value);
+        formData.append('professional_company', document.getElementById('professional_company').value);
+        formData.append('professional_contact', document.getElementById('professional_contact').value);
+        formData.append('description', document.getElementById('description').value);
 
-        const formData = {
-          erf_number: document.getElementById('erf_number').value,
-          street_address: document.getElementById('street_address').value,
-          zoning: document.getElementById('zoning').value,
-          owner_name: document.getElementById('owner_name').value,
-          owner_email: document.getElementById('owner_email').value,
-          owner_phone: document.getElementById('owner_phone').value,
-          owner_id: document.getElementById('owner_id').value,
-          professional_name: document.getElementById('professional_name').value,
-          professional_company: document.getElementById('professional_company').value,
-          professional_contact: document.getElementById('professional_contact').value,
-          description: document.getElementById('description').value,
-          documents
-        };
+        // Append files with proper field names
+        if (uploadedFiles.zoning) formData.append('documents', uploadedFiles.zoning.data, uploadedFiles.zoning.name);
+        if (uploadedFiles.sg) formData.append('documents', uploadedFiles.sg.data, uploadedFiles.sg.name);
+        if (uploadedFiles.title_deed) formData.append('documents', uploadedFiles.title_deed.data, uploadedFiles.title_deed.name);
+        if (uploadedFiles.building_plans) formData.append('documents', uploadedFiles.building_plans.data, uploadedFiles.building_plans.name);
 
         const response = await fetch('/api/applications/submit', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
+          method: 'POST',
+          body: formData
         });
         const result = await response.json();
 

@@ -94,6 +94,17 @@ CREATE TABLE IF NOT EXISTS applicants (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Audit Log (track admin actions)
+CREATE TABLE IF NOT EXISTS audit_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  action TEXT NOT NULL,
+  target_type TEXT NOT NULL,
+  target_id TEXT,
+  admin_email TEXT,
+  details JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- =====================
 -- STORAGE BUCKET
 -- =====================

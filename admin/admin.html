@@ -236,6 +236,31 @@
         <input type="text" class="search-input" id="searchInput" placeholder="Search by ref, ERF, applicant...">
       </div>
 
+      <!-- DASHBOARD STATS -->
+      <div class="stats-section" style="padding: 12px; border-bottom: 1px solid #eee; background: #f8f9fa;">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+          <div style="background: white; padding: 10px; border-radius: 6px; text-align: center;">
+            <div style="font-size: 1.5rem; font-weight: 700; color: var(--tshwane-blue);" id="statTotal">0</div>
+            <div style="font-size: 0.65rem; color: var(--steel); text-transform: uppercase;">Total</div>
+          </div>
+          <div style="background: white; padding: 10px; border-radius: 6px; text-align: center;">
+            <div style="font-size: 1.5rem; font-weight: 700; color: #1565c0;" id="statPending">0</div>
+            <div style="font-size: 0.65rem; color: var(--steel); text-transform: uppercase;">Pending</div>
+          </div>
+          <div style="background: white; padding: 10px; border-radius: 6px; text-align: center;">
+            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);" id="statApproved">0</div>
+            <div style="font-size: 0.65rem; color: var(--steel); text-transform: uppercase;">Approved</div>
+          </div>
+          <div style="background: white; padding: 10px; border-radius: 6px; text-align: center;">
+            <div style="font-size: 1.5rem; font-weight: 700; color: var(--danger);" id="statRejected">0</div>
+            <div style="font-size: 0.65rem; color: var(--steel); text-transform: uppercase;">Rejected</div>
+          </div>
+        </div>
+        <div style="margin-top: 8px; text-align: center;">
+          <span style="font-size: 0.75rem; color: var(--steel);">Approval Rate: <strong id="statRate">0%</strong></span>
+        </div>
+      </div>
+
       <div class="queue-section">
         <div class="queue-header">
           <h3>Queue</h3>
@@ -274,6 +299,10 @@
         </div>
         <div class="toolbar-group" id="aiButtonGroup">
           <button class="toolbar-btn ai-analyze-btn" id="btnAIAnalyze" onclick="runAIAnalysis()">🤖 Run AI Analysis</button>
+        </div>
+        <div class="toolbar-group">
+          <button class="toolbar-btn" onclick="exportCSV()">📊 Export CSV</button>
+          <button class="toolbar-btn" onclick="exportPDF()">📄 Export PDF</button>
         </div>
         <div class="toolbar-group" style="margin-left: auto;">
           <button class="toolbar-btn" onclick="prevPage()">◀</button>
@@ -453,6 +482,7 @@
       }
       await loadQueue();
       loadNotifications();
+      startAutoRefresh(); // Start auto-refresh
       // Initialize companion
       if (window.SansCompanion) {
         window.SansCompanion.init('companionContainer', 'joe-examiner');
@@ -512,6 +542,8 @@
     }
 
     // === QUEUE ===
+    let autoRefreshInterval = null;
+
     async function loadQueue() {
       try {
         const res = await adminFetch('/api/applications');
@@ -519,6 +551,21 @@
         renderQueue(apps);
       } catch (e) {
         console.error('Load queue error:', e);
+      }
+    }
+
+    function startAutoRefresh() {
+      if (autoRefreshInterval) return;
+      autoRefreshInterval = setInterval(() => {
+        loadQueue();
+        console.log('[Auto-refresh] Queue updated');
+      }, 30000); // Refresh every 30 seconds
+    }
+
+    function stopAutoRefresh() {
+      if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
       }
     }
 
@@ -530,37 +577,6 @@
       document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
       renderQueue(allQueueApps);
-    }
-
-    function renderQueue(apps) {
-      allQueueApps = apps;
-      const container = document.getElementById('queueList');
-
-      // Filter by status
-      const filtered = currentQueueFilter === 'all' ? apps : apps.filter(a => a.status === currentQueueFilter);
-      document.getElementById('queueCount').textContent = filtered.length + (currentQueueFilter !== 'all' ? '/' + apps.length : '');
-
-      if (filtered.length === 0) {
-        container.innerHTML = `<p style="padding: 16px; color: var(--steel); text-align: center;">${currentQueueFilter === 'all' ? 'No applications' : 'No ' + currentQueueFilter.toLowerCase() + ' applications'}</p>`;
-        return;
-      }
-
-      filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
-      container.innerHTML = filtered.map(app => {
-        const badgeClass = app.status === 'SUBMITTED' ? 'NEW' :
-                          app.status === 'IN_REVIEW' ? 'IN_REVIEW' :
-                          app.status === 'REVISION' ? 'REVISION' :
-                          app.status === 'APPROVED' ? 'APPROVED' :
-                          app.status === 'REJECTED' ? 'REJECTED' : 'NEW';
-        return `
-          <div class="queue-item ${currentApp?.id === app.id ? 'active' : ''}" onclick="selectApplication('${app.id}')">
-            <div class="queue-ref">${app.reference}</div>
-            <div class="queue-meta">${app.owner_name} • ERF ${app.erf_number || '-'}</div>
-            <span class="queue-badge badge-${badgeClass}">${app.status}</span>
-          </div>
-        `;
-      }).join('');
     }
 
     // === SELECT APPLICATION ===
@@ -795,12 +811,21 @@
         return;
       }
 
+      // Calculate position as percentage of canvas size
       const layer = document.getElementById('annotationLayer');
+      let xPercent = null;
+      let yPercent = null;
+
       if (layer && commentPosition) {
+        const rect = layer.getBoundingClientRect();
+        xPercent = commentPosition.x / rect.width;
+        yPercent = commentPosition.y / rect.height;
+
         // Remove temp pin marker
         const tempPin = document.querySelector('.temp-pin-marker');
         if (tempPin) tempPin.remove();
 
+        // Show visual pin
         const pin = document.createElement('div');
         pin.className = `comment-pin ${category}`;
         pin.style.left = commentPosition.x + 'px';
@@ -810,8 +835,38 @@
         layer.appendChild(pin);
       }
 
+      // Save to API with position
+      saveCommentToAPI(text, category, 1, xPercent, yPercent);
+
       closeModal();
       document.getElementById('modalCommentText').value = '';
+    }
+
+    async function saveCommentToAPI(text, category, pageNum, xPercent, yPercent) {
+      try {
+        const res = await adminFetch('/api/applications/' + currentApp.id + '/comments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            comment_text: text,
+            violation_type: category,
+            page_number: pageNum,
+            x_position: xPercent,
+            y_position: yPercent
+          })
+        });
+        const result = await res.json();
+        if (result.success) {
+          showToast('Comment saved with position', 'success');
+          // Refresh comments
+          const commentsRes = await fetch('/api/applications/' + currentApp.id + '/comments');
+          const comments = await commentsRes.json();
+          renderComments(comments);
+        }
+      } catch (e) {
+        console.error('Failed to save comment:', e);
+        showToast('Failed to save comment', 'error');
+      }
     }
 
     function showCommentDetail(text, category) {
@@ -949,21 +1004,38 @@
     }
 
     // === REVISIONS ===
-    function renderRevisions(app) {
+    async function renderRevisions(app) {
       const container = document.getElementById('revisionList');
 
-      const revisions = [
-        { number: 1, date: app.created_at, status: 'current', changes: 'Initial submission' }
-      ];
+      // Fetch revisions from API
+      let revisions = [];
+      try {
+        const res = await fetch('/api/applications/' + app.id + '/revisions');
+        revisions = await res.json();
+      } catch (e) {
+        console.error('Failed to load revisions:', e);
+        revisions = [];
+      }
+
+      // If no revisions, show initial submission
+      if (revisions.length === 0) {
+        revisions = [{ revision_number: 1, created_at: app.created_at, status: 'current', notes: 'Initial submission' }];
+      }
 
       container.innerHTML = revisions.map(r => `
-        <div class="revision-item ${r.status === 'current' ? 'current' : ''}">
-          <span class="revision-number">Rev ${r.number}</span>
-          <span class="revision-date">${new Date(r.date).toLocaleDateString()}</span>
-          <span class="revision-status">${r.status}</span>
-          <span class="revision-changes">${r.changes}</span>
+        <div class="revision-item ${r.status === 'current' || r.status === 'active' ? 'current' : ''}" onclick="loadRevision('${app.id}', ${r.revision_number})">
+          <span class="revision-number">Rev ${r.revision_number}</span>
+          <span class="revision-date">${new Date(r.created_at).toLocaleDateString()}</span>
+          <span class="revision-status" style="color: ${r.status === 'approved' ? 'var(--success)' : r.status === 'rejected' ? 'var(--danger)' : 'var(--warning)'}">${r.status || 'pending'}</span>
+          <span class="revision-changes">${r.notes || 'Revision submitted'}</span>
         </div>
       `).join('');
+    }
+
+    async function loadRevision(appId, revNum) {
+      showToast('Loading revision...', 'info');
+      // For now just switch to the revision tab - could load specific docs
+      console.log('Load revision:', appId, revNum);
     }
 
     // === TABS ===
@@ -1116,10 +1188,141 @@
     }
     function togglePan() { document.getElementById('btnPan').classList.toggle('active'); }
 
+    // === EXPORT FUNCTIONS ===
+    function exportCSV() {
+      if (!allQueueApps || allQueueApps.length === 0) {
+        showToast('No applications to export', 'error');
+        return;
+      }
+
+      const headers = ['Reference', 'ERF', 'Owner Name', 'Owner Email', 'Status', 'Zoning', 'Professional', 'Created'];
+      const rows = allQueueApps.map(app => [
+        app.reference || '',
+        app.erf_number || '',
+        app.owner_name || '',
+        app.owner_email || '',
+        app.status || '',
+        app.zoning || '',
+        app.professional_name || '',
+        app.created_at ? new Date(app.created_at).toLocaleDateString() : ''
+      ]);
+
+      const csv = [headers, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `applications-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('CSV exported', 'success');
+    }
+
+    function exportPDF() {
+      if (!currentApp) {
+        showToast('Select an application first', 'error');
+        return;
+      }
+
+      // Generate simple text report
+      let report = `SANS PLAN EXAMINER - APPLICATION REPORT\n`;
+      report += `=========================================\n\n`;
+      report += `Reference: ${currentApp.reference}\n`;
+      report += `Status: ${currentApp.status}\n`;
+      report += `ERF Number: ${currentApp.erf_number}\n`;
+      report += `Address: ${currentApp.street_address}\n`;
+      report += `Zoning: ${currentApp.zoning}\n\n`;
+      report += `Owner: ${currentApp.owner_name}\n`;
+      report += `Email: ${currentApp.owner_email}\n`;
+      report += `Phone: ${currentApp.owner_phone}\n\n`;
+      report += `Professional: ${currentApp.professional_name}\n`;
+      report += `Company: ${currentApp.professional_company}\n\n`;
+      report += `Description: ${currentApp.description}\n\n`;
+      report += `Submitted: ${new Date(currentApp.created_at).toLocaleString()}\n`;
+
+      // Add analysis if available
+      if (currentApp.analysis && currentApp.analysis.length > 0) {
+        report += `\n=== COMPLIANCE ANALYSIS ===\n`;
+        currentApp.analysis.forEach(item => {
+          report += `${item.clause_id}: ${item.status} - ${item.clause_title || ''}\n`;
+        });
+      }
+
+      const blob = new Blob([report], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${currentApp.reference}-report.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Report exported', 'success');
+    }
+
     // === SEARCH ===
+    let searchQuery = '';
     document.getElementById('searchInput').addEventListener('input', function(e) {
-      const query = e.target.value.toLowerCase();
+      searchQuery = e.target.value.toLowerCase();
+      renderQueue(allQueueApps);
     });
+
+    function renderQueue(apps) {
+      allQueueApps = apps;
+
+      // Update dashboard stats
+      const total = apps.length;
+      const pending = apps.filter(a => a.status === 'SUBMITTED' || a.status === 'IN_REVIEW').length;
+      const approved = apps.filter(a => a.status === 'APPROVED').length;
+      const rejected = apps.filter(a => a.status === 'REJECTED').length;
+      const rate = total > 0 ? Math.round((approved / (approved + rejected || 1)) * 100) : 0;
+
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statPending').textContent = pending;
+      document.getElementById('statApproved').textContent = approved;
+      document.getElementById('statRejected').textContent = rejected;
+      document.getElementById('statRate').textContent = rate + '%';
+
+      const container = document.getElementById('queueList');
+
+      // Filter by status
+      let filtered = currentQueueFilter === 'all' ? apps : apps.filter(a => a.status === currentQueueFilter);
+
+      // Filter by search query
+      if (searchQuery) {
+        filtered = filtered.filter(a =>
+          (a.reference && a.reference.toLowerCase().includes(searchQuery)) ||
+          (a.erf_number && a.erf_number.toLowerCase().includes(searchQuery)) ||
+          (a.owner_name && a.owner_name.toLowerCase().includes(searchQuery)) ||
+          (a.owner_email && a.owner_email.toLowerCase().includes(searchQuery)) ||
+          (a.street_address && a.street_address.toLowerCase().includes(searchQuery)) ||
+          (a.professional_name && a.professional_name.toLowerCase().includes(searchQuery)) ||
+          (a.zoning && a.zoning.toLowerCase().includes(searchQuery))
+        );
+      }
+
+      document.getElementById('queueCount').textContent = filtered.length + (currentQueueFilter !== 'all' || searchQuery ? '/' + apps.length : '');
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p style="padding: 16px; color: var(--steel); text-align: center;">${currentQueueFilter === 'all' ? 'No applications' : 'No ' + currentQueueFilter.toLowerCase() + ' applications'}</p>`;
+        return;
+      }
+
+      filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      container.innerHTML = filtered.map(app => {
+        const badgeClass = app.status === 'SUBMITTED' ? 'NEW' :
+                          app.status === 'IN_REVIEW' ? 'IN_REVIEW' :
+                          app.status === 'REVISION' ? 'REVISION' :
+                          app.status === 'APPROVED' ? 'APPROVED' :
+                          app.status === 'REJECTED' ? 'REJECTED' : 'NEW';
+        return `
+          <div class="queue-item ${currentApp?.id === app.id ? 'active' : ''}" onclick="selectApplication('${app.id}')">
+            <div class="queue-ref">${app.reference}</div>
+            <div class="queue-meta">${app.owner_name} • ERF ${app.erf_number || '-'}</div>
+            <span class="queue-badge badge-${badgeClass}">${app.status}</span>
+          </div>
+        `;
+      }).join('');
+    }
   </script>
 
   <!-- Companion Containers -->
