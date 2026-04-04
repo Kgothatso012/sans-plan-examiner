@@ -236,10 +236,10 @@ class SansAnalyzer {
         });
 
       if (error) {
-        console.error('Failed to store feedback:', error.message);
+        return;
       }
     } catch (err) {
-      console.error('Feedback storage error:', err.message);
+      return;
     }
   }
 }
