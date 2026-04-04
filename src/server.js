@@ -454,18 +454,36 @@ app.get('/api/applications/all', requireAdminAuth, async (req, res) => {
   }
 });
 
-// Get application by reference
+// Get application by reference OR id
 app.get('/api/applications/:reference', async (req, res) => {
   try {
     const { reference } = req.params;
 
-    const { data: application, error } = await supabase
-      .from('applications')
-      .select('*')
-      .eq('reference', reference)
-      .single();
+    // Check if it's a UUID (id) or reference
+    const isUUID = reference.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
 
-    if (error || !application) {
+    let application;
+    if (isUUID) {
+      const { data, error } = await supabase
+        .from('applications')
+        .select('*')
+        .eq('id', reference)
+        .single();
+      application = data;
+      if (error) throw error;
+    } else {
+      const { data, error } = await supabase
+        .from('applications')
+        .select('*')
+        .eq('reference', reference)
+        .single();
+      application = data;
+      if (error || !application) {
+        return res.status(404).json({ error: 'Application not found' });
+      }
+    }
+
+    if (!application) {
       return res.status(404).json({ error: 'Application not found' });
     }
 
