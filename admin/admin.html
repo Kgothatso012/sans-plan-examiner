@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Droid+Sans:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="companion.js"></script>
   <style>
     :root {
       --tshwane-blue: #2E7D32;
@@ -452,6 +453,10 @@
       }
       await loadQueue();
       loadNotifications();
+      // Initialize companion
+      if (window.SansCompanion) {
+        window.SansCompanion.init('companionContainer', 'joe-examiner');
+      }
     }
 
     async function submitLogin() {
@@ -465,6 +470,10 @@
       document.getElementById('loginModal').classList.add('hidden');
       await loadQueue();
       loadNotifications();
+      // Initialize companion after login
+      if (window.SansCompanion) {
+        window.SansCompanion.init('companionContainer', 'joe-examiner');
+      }
       showToast('Logged in successfully', 'success');
     }
 
@@ -1019,6 +1028,12 @@
 
         if (result.success) {
           showToast(`Analysis complete: ${result.violationsFound || 0} issues found`, result.violationsFound > 0 ? 'warning' : 'success');
+
+          // React to analysis result
+          if (window.SansCompanion) {
+            window.SansCompanion.reactToAnalysis(result);
+          }
+
           // Refresh analysis display
           const analysisRes = await fetch('/api/applications/' + currentApp.id + '/analysis');
           const analysis = await analysisRes.json();
@@ -1106,5 +1121,9 @@
       const query = e.target.value.toLowerCase();
     });
   </script>
+
+  <!-- Companion Containers -->
+  <div id="companionContainer"></div>
+  <div id="statsContainer"></div>
 </body>
 </html>

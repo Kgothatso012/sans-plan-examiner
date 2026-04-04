@@ -8,6 +8,14 @@ const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 
+// Rate limiting
+const rateLimit = require('express-rate-limit');
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: { error: 'Too many requests, please try again later' }
+});
+
 // AI Analysis
 const SansAnalyzer = require('./ai/sans-analyzer');
 
@@ -16,7 +24,7 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
   console.error('ERROR: JWT_SECRET must be set in environment');
-  // Don't exit - allow read-only mode
+  process.exit(1);
 }
 
 // Email (nodemailer)
@@ -48,6 +56,31 @@ const isAdmin = (key) => key === ADMIN_API_KEY;
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use('/api', apiLimiter); // Apply rate limiting to API routes
+
+// Request logging middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  const requestId = crypto.randomBytes(4).toString('hex');
+
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    const logLevel = res.statusCode >= 400 ? 'ERROR' : 'INFO';
+
+    console.log(JSON.stringify({
+      timestamp: new Date().toISOString(),
+      requestId,
+      method: req.method,
+      path: req.path,
+      status: res.statusCode,
+      duration: duration + 'ms',
+      ip: req.ip,
+      userAgent: req.get('user-agent')?.slice(0, 100)
+    }));
+  });
+
+  next();
+});
 
 // Request logging
 app.use((req, res, next) => {
@@ -67,23 +100,24 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
-// File upload config
+// File upload config - STRICT PDF ONLY
 const upload = multer({
   dest: 'uploads/',
-  limits: { fileSize: 50 * 1024 * 1024 },
+  limits: { fileSize: 10 * 1024 * 1024 }, // Max 10MB
   fileFilter: (req, file, cb) => {
-    const allowedMimes = ['application/pdf', 'image/jpeg', 'image/png', 'image/tiff'];
+    // Only allow PDF files for building plans
+    const allowedMimes = ['application/pdf'];
     if (allowedMimes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error('Only PDF and image files are allowed'));
+      cb(new Error('Only PDF files are allowed for building plans'));
     }
   },
   storage: multer.diskStorage({
     destination: 'uploads/',
     filename: (req, file, cb) => {
-      // Sanitize filename
-      const safeName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
+      // Sanitize filename - remove any special chars
+      const safeName = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
       cb(null, Date.now() + '-' + safeName);
     }
   })
@@ -243,6 +277,27 @@ app.post('/api/applications/submit', upload.array('documents', 10), async (req, 
   try {
     const { erfNumber, ownerName, ownerEmail, ownerPhone, description, zoning } = req.body;
 
+    // Input validation
+    if (!erfNumber || !ownerName || !ownerEmail) {
+      return res.status(400).json({ error: 'ERF number, owner name, and email are required' });
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(ownerEmail)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    // Sanitize inputs
+    const sanitized = {
+      erf_number: erfNumber.trim().slice(0, 50),
+      owner_name: ownerName.trim().slice(0, 100),
+      owner_email: ownerEmail.toLowerCase().trim(),
+      owner_phone: ownerPhone?.trim().slice(0, 20) || null,
+      description: description?.trim().slice(0, 1000) || null,
+      zoning: zoning?.trim().slice(0, 50) || null
+    };
+
     // Generate reference number
     const refNumber = 'TC' + Date.now().toString().slice(-6);
 
@@ -251,13 +306,13 @@ app.post('/api/applications/submit', upload.array('documents', 10), async (req, 
       .from('applications')
       .insert({
         reference: refNumber,
-        erf_number: erfNumber,
-        owner_name: ownerName,
-        owner_email: ownerEmail,
-        owner_phone: ownerPhone,
-        description: description,
-        zoning: zoning,
-        status: 'PENDING'
+        erf_number: sanitized.erf_number,
+        owner_name: sanitized.owner_name,
+        owner_email: sanitized.owner_email,
+        owner_phone: sanitized.owner_phone,
+        description: sanitized.description,
+        zoning: sanitized.zoning,
+        status: 'SUBMITTED'
       })
       .select()
       .single();
@@ -957,7 +1012,8 @@ app.get('/api/applications/:id/letter', requireAdminAuth, async (req, res) => {
 // Import plan checker
 let nbrRules, getAllCategories, analyzeDocument, getComplianceLevel;
 try {
-  const checker = require('/home/kgothatso012/plan-checker-shared/src/index.js');
+  // Local plan checker module
+const checker = require('./plan-checker.js');
   nbrRules = checker.nbrRules;
   getAllCategories = checker.getAllCategories;
   analyzeDocument = checker.analyzeDocument;
