@@ -106,7 +106,7 @@ Return JSON only (no markdown):
     const text = response.data?.choices?.[0]?.message?.content || '';
     
     // Extract JSON from response
-    const jsonMatch = text.match(/\{[\s\S*\}/);
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       return JSON.parse(jsonMatch[0]);
     }

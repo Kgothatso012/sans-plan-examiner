@@ -24,11 +24,11 @@ const nbrRules = [
 
   // Parking
   { id: 'PRKG-001', category: 'Parking', title: 'Parking Bays', description: 'Minimum 2 parking bays per dwelling',
-    check: (data) => data.parking >= 2, value: () => data.parking, required: '≥2 bays' },
+    check: (data) => data.parking >= 2, getValue: (data) => data.parking, required: '≥2 bays' },
 
   // Building Lines
   { id: 'BL-001', category: 'Building Lines', title: 'Street Boundary', description: 'Building must be set back from street',
-    check: (data) => data.streetLine >= 3, value: () => data.streetLine, required: '≥3m' },
+    check: (data) => data.streetLine >= 3, getValue: (data) => data.streetLine, required: '≥3m' },
 ];
 
 // Global data for rule evaluation
