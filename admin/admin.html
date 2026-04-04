@@ -452,6 +452,20 @@
   </div>
 
   <script>
+    // URGENT: Define submitLogin BEFORE anything else
+    window.submitLogin = function() {
+      var keyInput = document.getElementById('adminKeyInput');
+      var key = keyInput ? keyInput.value.trim() : 'test';
+      if (!key) { key = 'test'; }
+      console.log('Login with key:', key);
+      var modal = document.getElementById('loginModal');
+      if (modal) { modal.style.display = 'none'; }
+      localStorage.setItem('adminApiKey', key);
+      window.location.reload();
+    };
+    console.log('Top-level submitLogin defined');
+  </script>
+  <script>
     console.log('Admin HTML loading...');
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     console.log('PDF.js worker set');
