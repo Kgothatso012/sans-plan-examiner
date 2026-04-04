@@ -585,9 +585,9 @@ app.post('/api/applications/:id/decision', requireAdminAuth, async (req, res) =>
     const { id } = req.params;
     const { decision } = req.body;
 
-    const validDecisions = ['SUBMITTED', 'IN_REVIEW', 'APPROVED', 'REJECTED', 'REVISION', 'COMPLETED'];
+    const validDecisions = ['PENDING', 'IN_REVIEW', 'APPROVED', 'REJECTED', 'REVISION', 'COMPLETED'];
     if (!validDecisions.includes(decision)) {
-      return res.status(400).json({ error: 'Invalid decision' });
+      return res.status(400).json({ error: 'Invalid decision. Valid: ' + validDecisions.join(', ') });
     }
 
     const { data, error } = await supabase
