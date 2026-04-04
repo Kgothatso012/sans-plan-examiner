@@ -31,8 +31,8 @@ const nbrRules = [
     check: (data) => data.streetLine >= 3, getValue: (data) => data.streetLine, required: '≥3m' },
 ];
 
-// Global data for rule evaluation
-let data = {
+// Default data template
+const defaultData = {
   coverage: 0,
   impermeable: 0,
   storeys: 1,
