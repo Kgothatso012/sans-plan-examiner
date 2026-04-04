@@ -574,7 +574,16 @@
     async function loadQueue() {
       try {
         const res = await adminFetch('/api/applications/all');
+        if (!res.ok) {
+          console.error('Failed to load queue:', res.status, res.statusText);
+          return;
+        }
         const apps = await res.json();
+        if (!Array.isArray(apps)) {
+          console.error('Unexpected response:', apps);
+          return;
+        }
+        allQueueApps = apps;
         renderQueue(apps);
       } catch (e) {
         console.error('Load queue error:', e);
