@@ -54,47 +54,60 @@ const emailTransporter = nodemailer.createTransport({
 
 // Email notification function
 async function notifyApplicant(applicationId, type) {
-  // Get application details
-  const { data: app } = await supabase
-    .from('applications')
-    .select('*, applicant_profiles(email)')
-    .eq('id', applicationId)
-    .single();
-
-  if (!app || !app.owner_email) return;
-
-  const { owner_email: email, reference, status } = app;
-  const portalUrl = `http://localhost:3000/client/track.html?ref=${reference}`;
-
-  const subjects = {
-    status_changed: `Application ${reference} - Status Update`,
-    comment_added: `Application ${reference} - New Comment`,
-    revision_submitted: `Application ${reference} - Revision Received`
-  };
-
-  const bodies = {
-    status_changed: `Your application ${reference} status has been updated to: ${status}.\n\nView details: ${portalUrl}`,
-    comment_added: `A new comment has been added to your application ${reference}.\n\nLog in to view: ${portalUrl}`,
-    revision_submitted: `You have received a revision request for application ${reference}.\n\nLog in to view: ${portalUrl}`
-  };
-
-  const subject = subjects[type] || `Application ${reference} Update`;
-  const body = bodies[type] || `Update for application ${reference}`;
-
-  // Skip if no SMTP credentials
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    return;
-  }
-
   try {
+    // Get application details
+    const { data: app, error: appError } = await supabase
+      .from('applications')
+      .select('*, applicant_profiles(email)')
+      .eq('id', applicationId)
+      .single();
+
+    if (appError || !app) {
+      console.log('[notifyApplicant] Application not found:', applicationId);
+      return;
+    }
+
+    // Handle both owner_email and nested applicant_profiles.email
+    const email = app.owner_email || app.applicant_profiles?.email;
+    if (!email) {
+      console.log('[notifyApplicant] No email found for app:', applicationId);
+      return;
+    }
+
+    const { reference, status } = app;
+    const portalUrl = `http://localhost:3000/client/track.html?ref=${reference}`;
+
+    const subjects = {
+      status_changed: `Application ${reference} - Status Update`,
+      comment_added: `Application ${reference} - New Comment`,
+      revision_submitted: `Application ${reference} - Revision Received`
+    };
+
+    const bodies = {
+      status_changed: `Your application ${reference} status has been updated to: ${status}.\n\nView details: ${portalUrl}`,
+      comment_added: `A new comment has been added to your application ${reference}.\n\nLog in to view: ${portalUrl}`,
+      revision_submitted: `You have received a revision request for application ${reference}.\n\nLog in to view: ${portalUrl}`
+    };
+
+    const subject = subjects[type] || `Application ${reference} Update`;
+    const body = bodies[type] || `Update for application ${reference}`;
+
+    // Skip if no SMTP credentials
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      console.log('[notifyApplicant] SMTP not configured, skipping email');
+      return;
+    }
+
     await emailTransporter.sendMail({
       from: process.env.SMTP_FROM || '"Joe\'s Examiner" <noreply@tshwane.gov.za>',
       to: email,
       subject,
       text: body
     });
+    console.log('[notifyApplicant] Email sent to:', email);
   } catch (err) {
-    return;
+    console.log('[notifyApplicant] Error (non-fatal):', err.message);
+    // Never throw - this is a notification function
   }
 }
 
