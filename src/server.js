@@ -791,13 +791,22 @@ app.get('/api/applications/:id/revisions', async (req, res) => {
 
     const { data: revisions, error } = await supabase
       .from('application_revisions')
-      .select('*, application_documents(*)')
+      .select('*')
       .eq('application_id', id)
       .order('revision_number', { ascending: true });
 
     if (error) throw error;
 
-    res.json(revisions || []);
+    // Get documents for each revision
+    const revisionsWithDocs = await Promise.all((revisions || []).map(async (rev) => {
+      const { data: docs } = await supabase
+        .from('application_documents')
+        .select('*')
+        .eq('application_id', id);
+      return { ...rev, documents: docs || [] };
+    }));
+
+    res.json(revisionsWithDocs);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
