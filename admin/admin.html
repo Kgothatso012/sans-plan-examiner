@@ -475,14 +475,28 @@
     // Login function - defined early
     window.submitLogin = function() {
       var keyInput = document.getElementById('adminKeyInput');
-      var key = keyInput ? keyInput.value.trim() : 'test';
-      if (!key) { key = 'test'; }
+      var key = keyInput ? keyInput.value.trim() : '';
+      if (!key) {
+        alert('Please enter API key');
+        return;
+      }
       console.log('Login with key:', key);
+
+      // Save to localStorage and config
+      localStorage.setItem('adminApiKey', key);
+      CONFIG.adminApiKey = key;
+
+      // Hide modal without reload
       var modal = document.getElementById('loginModal');
       if (modal) { modal.style.display = 'none'; }
-      localStorage.setItem('adminApiKey', key);
-      CONFIG.adminApiKey = key;  // Also set in config immediately
-      window.location.reload();
+
+      // Load queue directly
+      loadQueue();
+      loadNotifications();
+      if (window.SansCompanion) {
+        window.SansCompanion.init('companionContainer', 'joe-examiner');
+      }
+      console.log('Login complete');
     };
     console.log('submitLogin defined');
 
