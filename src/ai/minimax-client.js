@@ -48,7 +48,6 @@ class MiniMaxClient {
       }
       return null;
     } catch (error) {
-      console.error('MiniMax API error:', error.message);
       return null;
     }
   }
