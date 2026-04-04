@@ -497,6 +497,20 @@
         showToast('Please enter API key', 'error');
         return;
       }
+
+      // Validate key against server
+      try {
+        const res = await fetch('/api/applications/all', {
+          headers: { 'x-api-key': key }
+        });
+        if (!res.ok) {
+          throw new Error('Invalid key');
+        }
+      } catch (e) {
+        showToast('Invalid API key', 'error');
+        return;
+      }
+
       CONFIG.adminApiKey = key;
       localStorage.setItem('adminApiKey', key);
       document.getElementById('loginModal').classList.add('hidden');
