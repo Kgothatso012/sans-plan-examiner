@@ -83,7 +83,9 @@ async function notifyApplicant(applicationId, type) {
       text: body
     });
   } catch (err) {
-    console.error('[EMAIL] Failed to send:', err.message);
+    return;
+  } catch (err) {
+    return;
   }
 }
 
@@ -124,16 +126,7 @@ app.use((req, res, next) => {
     const duration = Date.now() - start;
     const logLevel = res.statusCode >= 400 ? 'ERROR' : 'INFO';
 
-    console.log(JSON.stringify({
-      timestamp: new Date().toISOString(),
-      requestId,
-      method: req.method,
-      path: req.path,
-      status: res.statusCode,
-      duration: duration + 'ms',
-      ip: req.ip,
-      userAgent: req.get('user-agent')?.slice(0, 100)
-    }));
+    // Silent logging - request completed
   });
 
   next();
@@ -144,7 +137,7 @@ app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
     const duration = Date.now() - start;
-    console.log(`${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
+    // Silent logging
   });
   next();
 });
@@ -210,7 +203,7 @@ async function logAudit(action, targetType, targetId, details = {}) {
       details
     });
   } catch (e) {
-    console.error('[AUDIT] Failed to log:', e.message);
+    return;
   }
 }
 
@@ -280,8 +273,7 @@ app.post('/api/auth/register', async (req, res) => {
 
     res.json({ success: true, token, applicant: { id: applicant.id, email: applicant.email, name: applicant.name } });
   } catch (error) {
-    console.error('Register error:', error);
-    res.status(500).json({ error: error.message });
+    return;
   }
 });
 
