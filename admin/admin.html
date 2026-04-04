@@ -628,7 +628,8 @@
       }
 
       try {
-        const res = await fetch(`/api/documents/${planDoc.storage_path}`);
+        // Use appId/docId format
+        const res = await fetch(`/api/documents/${currentApp.id}/${planDoc.id}`);
         const data = await res.json();
 
         if (!data.url) {

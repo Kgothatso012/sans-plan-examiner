@@ -981,6 +981,54 @@ app.get('/api/applications/:id/documents', async (req, res) => {
   }
 });
 
+// Upload document to application (admin)
+app.post('/api/applications/:id/documents', requireAdminAuth, upload.single('documents'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({ error: 'No file provided' });
+    }
+
+    const fileName = `${id}/${Date.now()}-${file.originalname}`;
+    const fileBuffer = fs.readFileSync(file.path);
+
+    const { error: uploadError } = await supabase.storage
+      .from('applications')
+      .upload(fileName, fileBuffer);
+
+    if (uploadError) {
+      console.error('Storage upload error:', uploadError);
+    }
+
+    // Save document reference
+    const { data: doc, error } = await supabase
+      .from('application_documents')
+      .insert({
+        application_id: id,
+        doc_type: 'building_plans',
+        storage_path: fileName,
+        file_name: file.originalname,
+        file_size: file.size
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // Cleanup temp file
+    fs.unlinkSync(file.path);
+
+    // Audit log
+    await logAudit('UPLOAD_DOCUMENT', 'application', id, { fileName: file.originalname });
+
+    res.json({ success: true, document: doc });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get document download URL
 app.get('/api/documents/:appId/:docId', async (req, res) => {
   try {
