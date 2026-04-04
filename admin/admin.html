@@ -595,6 +595,21 @@
       document.getElementById('annotationLayer').style.cursor = 'crosshair';
     }
 
+    function addComment() {
+      // Trigger the modal for adding comment
+      const text = document.getElementById('newCommentText').value;
+      const category = document.getElementById('newCommentCategory').value;
+      if (!text.trim()) {
+        alert('Please enter a comment');
+        return;
+      }
+      // Open modal with position
+      commentPosition = { x: 100, y: 100, page: 1 };
+      document.getElementById('modalCommentText').value = text;
+      document.getElementById('modalCommentCategory').value = category;
+      openCommentModal();
+    }
+
     function toggleCommentMode() {
       commentMode = !commentMode;
       document.getElementById('btnComment').classList.toggle('active');
@@ -747,11 +762,32 @@
     }
 
     // === PDF CONTROLS ===
-    function zoomIn() { scale = Math.min(scale + 0.25, 3); }
-    function zoomOut() { scale = Math.max(scale - 0.25, 0.5); }
-    function fitToWidth() { scale = 1.5; }
-    function prevPage() { if (currentPage > 1) currentPage--; }
-    function nextPage() { if (currentPage < totalPages) currentPage++; }
+    function zoomIn() {
+      scale = Math.min(scale + 0.25, 3);
+      if (pdfDoc) renderPdfPage(currentPage);
+    }
+    function zoomOut() {
+      scale = Math.max(scale - 0.25, 0.5);
+      if (pdfDoc) renderPdfPage(currentPage);
+    }
+    function fitToWidth() {
+      scale = 1.5;
+      if (pdfDoc) renderPdfPage(currentPage);
+    }
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        document.getElementById('pageInfo').textContent = currentPage + ' / ' + totalPages;
+        if (pdfDoc) renderPdfPage(currentPage);
+      }
+    }
+    function nextPage() {
+      if (currentPage < totalPages) {
+        currentPage++;
+        document.getElementById('pageInfo').textContent = currentPage + ' / ' + totalPages;
+        if (pdfDoc) renderPdfPage(currentPage);
+      }
+    }
     function togglePan() { document.getElementById('btnPan').classList.toggle('active'); }
 
     // === SEARCH ===
