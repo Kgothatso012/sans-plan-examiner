@@ -39,7 +39,7 @@ const emailTransporter = nodemailer.createTransport({
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS || ''
   } : undefined
-} as any);
+});
 
 // Email notification function
 async function notifyApplicant(applicationId, type) {
