@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SANS Plan Examiner | Building Control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Droid+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --tshwane-blue: #2E7D32;
+      --tshwane-dark: #1B5E20;
+      --ink: #1a1a1a;
+      --steel: #666666;
+      --paper: #f5f5f5;
+      --white: #ffffff;
+      --font-body: 'Droid Sans', 'Segoe UI', sans-serif;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-body); background: var(--paper); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
+    header { background: linear-gradient(135deg, var(--tshwane-blue) 0%, var(--tshwane-dark) 100%); padding: var(--space-xl); text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .logo-icon { font-size: 4rem; margin-bottom: var(--space-lg); }
+    header h1 { color: white; font-size: 2.5rem; font-weight: 700; margin-bottom: var(--space-sm); }
+    header p { color: rgba(255,255,255,0.85); font-size: 1.2rem; }
+    .container { max-width: 800px; margin: 0 auto; padding: var(--space-xl); flex: 1; }
+    .section-title { text-align: center; color: var(--tshwane-dark); font-size: 1.5rem; margin-bottom: var(--space-lg); font-weight: 600; }
+    .card { background: var(--white); border: 2px solid #ddd; border-radius: 12px; padding: var(--space-xl); text-align: center; margin-bottom: var(--space-lg); transition: all 0.3s; }
+    .card:hover { border-color: var(--tshwane-blue); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    .card-icon { font-size: 3rem; margin-bottom: var(--space-md); }
+    .card h2 { color: var(--tshwane-dark); font-size: 1.4rem; margin-bottom: var(--space-sm); }
+    .card p { color: var(--steel); font-size: 1rem; line-height: 1.6; margin-bottom: var(--space-lg); }
+    .btn { display: inline-block; padding: 14px 32px; background: var(--tshwane-blue); color: white; border-radius: 6px; font-weight: 600; font-size: 1.1rem; text-decoration: none; transition: background 0.2s; }
+    .btn:hover { background: var(--tshwane-dark); }
+    .divider { text-align: center; margin: var(--space-xl) 0; color: var(--steel); font-weight: 600; }
+    footer { text-align: center; padding: var(--space-lg); background: var(--tshwane-dark); color: white; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-icon">🏛️</div>
+    <h1>SANS Plan Examiner</h1>
+    <p>Building Plan Examination System</p>
+  </header>
+
+  <div class="container">
+    <!-- CLIENT SECTION -->
+    <h2 class="section-title">For Applicants</h2>
+
+    <div class="card">
+      <div class="card-icon">📝</div>
+      <h2>Apply for Building Plan Approval</h2>
+      <p>Submit your building plan application with all required documents. You'll receive a reference number to track your application status.</p>
+      <a href="client/apply.html" class="btn">Start Application</a>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🔍</div>
+      <h2>Track Your Application</h2>
+      <p>Check the status of your submitted application using your reference number.</p>
+      <a href="client/track.html" class="btn">Track Now</a>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">📋</div>
+      <h2>My Applications</h2>
+      <p>View your submitted applications, see comments from the examiner, and download approval letters.</p>
+      <a href="client/portal.html" class="btn">View My Applications</a>
+    </div>
+  </div>
+
+  <footer>
+    <p>SANS Plan Examiner Municipality | Building Control</p>
+    <p>012 358 9999 | building.control@tshwane.gov.za</p>
+  </footer>
+</body>
+</html>

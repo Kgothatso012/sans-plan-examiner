@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Applications | SANS Plan Examiner</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Droid+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --tshwane-blue: #2E7D32;
+      --tshwane-dark: #1B5E20;
+      --sans-red: #ef3636;
+      --sans-yellow: #f57c00;
+      --ink: #1a1a1a;
+      --steel: #666666;
+      --paper: #f5f5f5;
+      --white: #ffffff;
+      --success: #2e7d32;
+      --warning: #f57c00;
+      --danger: #ef3636;
+      --font-body: 'Droid Sans', 'Segoe UI', sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32xl;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-body); background: var(--paper); color: var(--ink); min-height: 100vh; }
+
+    /* === LAYOUT === */
+    .app-container { display: flex; min-height: 100vh; }
+    .sidebar { width: 320px; background: var(--white); border-right: 1px solid #ddd; display: flex; flex-direction: column; }
+    .main-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* === HEADER === */
+    .sidebar-header { padding: var(--space-lg); background: linear-gradient(135deg, var(--tshwane-blue) 0%, var(--tshwane-dark) 100%); color: white; }
+    .sidebar-header h1 { font-size: 1.2rem; font-weight: 700; margin-bottom: 4px; }
+    .sidebar-header p { font-size: 0.8rem; opacity: 0.8; }
+    .back-link { color: white; opacity: 0.8; font-size: 0.85rem; text-decoration: none; display: block; margin-bottom: 8px; }
+    .back-link:hover { opacity: 1; }
+
+    /* === SEARCH === */
+    .search-box { padding: var(--space-md); border-bottom: 1px solid #eee; }
+    .search-input { width: 100%; padding: var(--space-sm) var(--space-md); border: 1px solid #ddd; border-radius: 4px; font-size: 0.9rem; }
+
+    /* === FILTERS === */
+    .filters { padding: var(--space-sm) var(--space-md); border-bottom: 1px solid #eee; display: flex; gap: var(--space-xs); flex-wrap: wrap; }
+    .filter-btn { padding: 4px 12px; font-size: 0.75rem; background: #f5f5f5; border: 1px solid #ddd; border-radius: 20px; cursor: pointer; }
+    .filter-btn:hover { background: #eee; }
+    .filter-btn.active { background: var(--tshwane-blue); color: white; border-color: var(--tshwane-blue); }
+
+    /* === APPLICATIONS LIST === */
+    .apps-list { flex: 1; overflow-y: auto; padding: var(--space-sm); }
+    .app-item { padding: var(--space-md); border: 1px solid #eee; border-radius: 6px; margin-bottom: var(--space-sm); cursor: pointer; transition: all 0.2s; }
+    .app-item:hover { border-color: var(--tshwane-blue); background: #f8fcf8; }
+    .app-item.active { border-color: var(--tshwane-blue); background: #e8f5e9; }
+    .app-ref { font-family: var(--font-mono); font-weight: 600; color: var(--tshwane-blue); font-size: 0.95rem; }
+    .app-meta { font-size: 0.8rem; color: var(--steel); margin: 4px 0; }
+    .app-status { display: inline-block; padding: 2px 8px; font-size: 0.7rem; font-weight: 600; border-radius: 10px; margin-top: 4px; }
+    .status-DRAFT { background: #eee; color: #666; }
+    .status-SUBMITTED { background: #e3f2fd; color: #1565c0; }
+    .status-IN_REVIEW { background: #fff3cd; color: #856404; }
+    .status-REVISION { background: #fce4ec; color: #c2185b; }
+    .status-APPROVED { background: #e8f5e9; color: #2e7d32; }
+    .status-REJECTED { background: #ffebee; color: #c62828; }
+    .app-updated { font-size: 0.75rem; color: var(--steel); margin-top: 4px; }
+
+    /* === NEW APPLICATION BUTTON === */
+    .new-app-btn { margin: var(--space-md); padding: var(--space-md); background: var(--tshwane-blue); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; text-align: center; }
+    .new-app-btn:hover { background: var(--tshwane-dark); }
+
+    /* === MAIN PANEL === */
+    .main-header { padding: var(--space-lg); background: var(--white); border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
+    .main-header h2 { font-size: 1.3rem; color: var(--tshwane-dark); }
+    .header-actions { display: flex; gap: var(--space-sm); }
+    .header-actions button, .header-actions a { padding: var(--space-sm) var(--space-md); border-radius: 4px; font-size: 0.9rem; cursor: pointer; text-decoration: none; }
+    .btn-primary { background: var(--tshwane-blue); color: white; border: none; }
+    .btn-secondary { background: #eee; color: var(--ink); border: 1px solid #ddd; }
+
+    /* === TABS === */
+    .panel-tabs { display: flex; background: var(--white); border-bottom: 1px solid #ddd; }
+    .panel-tab { padding: var(--space-md) var(--space-lg); border: none; background: transparent; cursor: pointer; font-size: 0.9rem; font-weight: 500; color: var(--steel); border-bottom: 2px solid transparent; }
+    .panel-tab:hover { color: var(--tshwane-blue); }
+    .panel-tab.active { color: var(--tshwane-blue); border-bottom-color: var(--tshwane-blue); }
+
+    /* === CONTENT === */
+    .panel-content { flex: 1; overflow-y: auto; padding: var(--space-lg); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* === DETAILS SECTION === */
+    .detail-section { margin-bottom: var(--space-lg); }
+    .detail-section h4 { font-size: 0.85rem; color: var(--steel); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-sm); }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+    .detail-item label { font-size: 0.8rem; color: var(--steel); display: block; }
+    .detail-item div { font-weight: 500; }
+
+    /* === COMMENTS === */
+    .comments-section { margin-top: var(--space-lg); }
+    .comment-card { border: 1px solid #eee; border-radius: 6px; margin-bottom: var(--space-md); overflow: hidden; }
+    .comment-main { padding: var(--space-md); background: var(--white); }
+    .comment-header { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-sm); }
+    .comment-pin-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; }
+    .comment-pin-icon.violation { background: var(--sans-red); }
+    .comment-pin-icon.warning { background: var(--sans-yellow); }
+    .comment-pin-icon.suggestion { background: var(--tshwane-blue); }
+    .comment-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+    .comment-badge.violation { background: #ffebee; color: #c62828; }
+    .comment-badge.warning { background: #fff3e0; color: #e65100; }
+    .comment-badge.suggestion { background: #e3f2fd; color: #1565c0; }
+    .comment-text { font-size: 0.95rem; line-height: 1.5; margin-bottom: var(--space-sm); }
+    .comment-location { font-size: 0.8rem; color: var(--steel); font-family: var(--font-mono); }
+    .comment-replies { background: #fafafa; padding: var(--space-md); border-top: 1px solid #eee; }
+    .reply-item { padding: var(--space-sm); background: var(--white); border-radius: 4px; margin-bottom: var(--space-xs); font-size: 0.85rem; }
+    .reply-form { margin-top: var(--space-md); }
+    .reply-form textarea { width: 100%; padding: var(--space-sm); border: 1px solid #ddd; border-radius: 4px; min-height: 60px; font-family: var(--font-body); resize: vertical; }
+    .reply-form button { margin-top: var(--space-sm); padding: var(--space-sm) var(--space-lg); background: var(--tshwane-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
+
+    /* === REVISION === */
+    .revision-card { border: 1px solid #eee; border-radius: 6px; padding: var(--space-md); margin-bottom: var(--space-sm); }
+    .revision-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm); }
+    .revision-number { font-weight: 600; color: var(--tshwane-blue); }
+    .revision-date { font-size: 0.8rem; color: var(--steel); }
+    .revision-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+    .revision-changes { font-size: 0.85rem; color: var(--steel); }
+    .revision-status { font-size: 0.75rem; margin-top: 4px; }
+
+    /* === UPLOAD === */
+    .upload-area { border: 2px dashed var(--tshwane-blue); border-radius: 8px; padding: var(--space-xl); text-align: center; cursor: pointer; transition: all 0.2s; }
+    .upload-area:hover { background: #f8fcf8; }
+    .upload-icon { font-size: 3rem; margin-bottom: var(--space-md); }
+    .upload-area h3 { color: var(--tshwane-dark); margin-bottom: var(--space-sm); }
+    .upload-area p { color: var(--steel); font-size: 0.9rem; }
+    .file-input { display: none; }
+    .change-log { margin-top: var(--space-md); }
+    .change-log textarea { width: 100%; padding: var(--space-sm); border: 1px solid #ddd; border-radius: 4px; min-height: 80px; }
+
+    /* === EMPTY STATE === */
+    .empty-state { text-align: center; padding: var(--space-xl); color: var(--steel); }
+    .empty-icon { font-size: 3rem; margin-bottom: var(--space-md); opacity: 0.5; }
+
+    /* === PDF VIEWER === */
+    .pdf-viewer { background: #525659; padding: var(--space-lg); display: flex; justify-content: center; overflow: auto; min-height: 400px; }
+    .pdf-page { background: white; box-shadow: 0 4px 16px rgba(0,0,0,0.3); position: relative; }
+    .pdf-canvas { display: block; }
+    .pdf-comment-pin { position: absolute; width: 24px; height: 24px; background: var(--sans-red); border: 2px solid white; border-radius: 50%; cursor: pointer; transform: translate(-50%, -50%); box-shadow: 0 2px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; }
+    .pdf-comment-pin.violation { background: var(--sans-red); }
+    .pdf-comment-pin.warning { background: var(--sans-yellow); }
+    .pdf-comment-pin.suggestion { background: var(--tshwane-blue); }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <!-- LOGIN OVERLAY -->
+  <div id="loginOverlay" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;">
+    <div style="background:white;border-radius:12px;padding:32px;max-width:400px;width:90%;text-align:center;">
+      <h2 style="color:var(--tshwane-dark);margin-bottom:16px;">Sign In</h2>
+      <p style="color:var(--steel);margin-bottom:24px;">Sign in to view your applications</p>
+      <input type="email" id="loginEmail" placeholder="Email" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;margin-bottom:12px;">
+      <input type="password" id="loginPassword" placeholder="Password" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;margin-bottom:16px;">
+      <button onclick="doLogin()" style="width:100%;padding:12px;background:var(--tshwane-blue);color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer;margin-bottom:12px;">Sign In</button>
+      <p style="font-size:0.85rem;color:var(--steel);">Don't have an account? <a href="#" onclick="showSignup()" style="color:var(--tshwane-blue);">Sign up</a></p>
+    </div>
+  </div>
+
+  <!-- SIGNUP OVERLAY -->
+  <div id="signupOverlay" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;">
+    <div style="background:white;border-radius:12px;padding:32px;max-width:400px;width:90%;text-align:center;">
+      <h2 style="color:var(--tshwane-dark);margin-bottom:16px;">Create Account</h2>
+      <input type="text" id="signupName" placeholder="Full Name" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;margin-bottom:12px;">
+      <input type="email" id="signupEmail" placeholder="Email" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;margin-bottom:12px;">
+      <input type="password" id="signupPassword" placeholder="Password" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;margin-bottom:16px;">
+      <button onclick="doSignup()" style="width:100%;padding:12px;background:var(--tshwane-blue);color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer;">Create Account</button>
+      <p style="font-size:0.85rem;color:var(--steel);margin-top:12px;"><a href="#" onclick="showLogin()" style="color:var(--tshwane-blue);">Already have account? Sign in</a></p>
+    </div>
+  </div>
+
+  <div class="app-container">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <a href="../../index.html" class="back-link">← Back to Home</a>
+        <h1 id="headerTitle">My Applications</h1>
+        <p id="headerUser">SANS Plan Examiner</p>
+        <button id="logoutBtn" class="hidden" onclick="doLogout()" style="margin-top:8px;padding:4px 12px;background:rgba(255,255,255,0.2);border:none;border-radius:4px;color:white;font-size:0.75rem;cursor:pointer;">Sign Out</button>
+      </div>
+
+      <div class="search-box">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search by ref, ERF, address...">
+      </div>
+
+      <div class="filters">
+        <button class="filter-btn active" onclick="filterApps('all')">All</button>
+        <button class="filter-btn" onclick="filterApps('SUBMITTED')">Submitted</button>
+        <button class="filter-btn" onclick="filterApps('IN_REVIEW')">In Review</button>
+        <button class="filter-btn" onclick="filterApps('REVISION')">Revision</button>
+        <button class="filter-btn" onclick="filterApps('APPROVED')">Approved</button>
+      </div>
+
+      <div class="apps-list" id="appsList">
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <p>No applications found</p>
+        </div>
+      </div>
+
+      <button class="new-app-btn" onclick="showUpload()">+ New Application</button>
+    </div>
+
+    <!-- MAIN PANEL -->
+    <div class="main-panel">
+      <!-- Welcome / No Selection -->
+      <div id="welcomeView" class="main-header">
+        <div>
+          <h2>Welcome to My Applications</h2>
+          <p style="color: var(--steel);">Select an application from the list to view details, comments, and download approval letters.</p>
+        </div>
+      </div>
+
+      <!-- Detail View -->
+      <div id="detailView" class="hidden">
+        <div class="main-header">
+          <div>
+            <h2 id="detailRef">-</h2>
+            <span class="app-status" id="detailStatus">-</span>
+          </div>
+          <div class="header-actions">
+            <button class="btn-secondary" onclick="contactExaminer()">💬 Contact</button>
+            <button class="btn-primary" id="btnDownload" onclick="downloadApproval()">📥 Download</button>
+          </div>
+        </div>
+
+        <div class="panel-tabs">
+          <button class="panel-tab active" onclick="switchPanelTab('details')">Details</button>
+          <button class="panel-tab" onclick="switchPanelTab('comments')">Comments</button>
+          <button class="panel-tab" onclick="switchPanelTab('revisions')">Revisions</button>
+          <button class="panel-tab" onclick="switchPanelTab('view')">View Plan</button>
+        </div>
+
+        <div class="panel-content">
+          <!-- DETAILS TAB -->
+          <div id="panel-details" class="tab-content active">
+            <div class="detail-section">
+              <h4>Property</h4>
+              <div class="detail-grid">
+                <div class="detail-item"><label>ERF Number</label><div id="detailErf">-</div></div>
+                <div class="detail-item"><label>Zoning</label><div id="detailZoning">-</div></div>
+                <div class="detail-item"><label>Address</label><div id="detailAddress">-</div></div>
+                <div class="detail-item"><label>Description</label><div id="detailDesc">-</div></div>
+              </div>
+            </div>
+            <div class="detail-section">
+              <h4>Submission</h4>
+              <div class="detail-grid">
+                <div class="detail-item"><label>Submitted</label><div id="detailDate">-</div></div>
+                <div class="detail-item"><label>Last Updated</label><div id="detailUpdated">-</div></div>
+              </div>
+            </div>
+            <div class="detail-section">
+              <h4>Documents</h4>
+              <div id="detailDocs"></div>
+            </div>
+          </div>
+
+          <!-- COMMENTS TAB -->
+          <div id="panel-comments" class="tab-content">
+            <div class="comments-section" id="commentsList">
+              <p style="color: var(--steel);">No comments from examiner yet.</p>
+            </div>
+            <div class="reply-form">
+              <textarea id="replyText" placeholder="Reply to examiner's comments..."></textarea>
+              <button onclick="submitReply()">Send Reply</button>
+            </div>
+          </div>
+
+          <!-- REVISIONS TAB -->
+          <div id="panel-revisions" class="tab-content">
+            <button class="btn-primary" onclick="showUpload()" style="margin-bottom: 16px;">+ Submit Revision</button>
+            <div id="revisionsList">
+              <div class="empty-state">
+                <div class="empty-icon">📁</div>
+                <p>No revisions yet</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW PLAN TAB -->
+          <div id="panel-view" class="tab-content">
+            <div class="pdf-viewer" id="pdfViewer">
+              <div style="color: white; text-align: center; padding: 40px;">
+                <p>Plan viewer would show here.</p>
+                <p style="font-size: 0.9rem; opacity: 0.7;">Click on comment pins to see details.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // === CONFIG ===
+    const SUPABASE_URL = 'https://pmhvteytflmbvolteota.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtaHZ0ZXl0ZmxtYnZvbHRlb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyODIwNTUsImV4cCI6MjA5MDg1ODA1NX0.Hhby7vx9Mq4AUnR4TJiAVCMlPRBm5xQtQM6LF0yEi_w';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let currentApp = null;
+    let allApps = [];
+    let currentFilter = 'all';
+    let currentUser = null;
+
+    // === AUTH ===
+    async function checkAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        currentUser = session.user;
+        showLoggedIn(session.user.email);
+        loadApplications();
+      } else {
+        showLoginOverlay();
+      }
+    }
+
+    function showLoginOverlay() {
+      document.getElementById('loginOverlay').classList.remove('hidden');
+    }
+
+    function showSignupOverlay() {
+      document.getElementById('signupOverlay').classList.remove('hidden');
+      document.getElementById('loginOverlay').classList.add('hidden');
+    }
+
+    function showLoggedIn(email) {
+      document.getElementById('loginOverlay').classList.add('hidden');
+      document.getElementById('signupOverlay').classList.add('hidden');
+      document.getElementById('headerUser').textContent = email;
+      document.getElementById('logoutBtn').classList.remove('hidden');
+      document.getElementById('headerTitle').textContent = 'My Applications';
+    }
+
+    async function doLogin() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        alert(error.message);
+      } else {
+        currentUser = data.user;
+        showLoggedIn(data.user.email);
+        loadApplications();
+      }
+    }
+
+    async function doSignup() {
+      const name = document.getElementById('signupName').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      if (error) {
+        alert(error.message);
+      } else {
+        alert('Account created! Check your email to verify, then sign in.');
+        showLoginOverlay();
+      }
+    }
+
+    async function doLogout() {
+      await supabase.auth.signOut();
+      currentUser = null;
+      document.getElementById('loginOverlay').classList.remove('hidden');
+      document.getElementById('logoutBtn').classList.add('hidden');
+      document.getElementById('headerUser').textContent = 'SANS Plan Examiner';
+      document.getElementById('headerTitle').textContent = 'My Applications';
+      allApps = [];
+      renderApps([]);
+    }
+
+    function showSignup() {
+      document.getElementById('loginOverlay').classList.add('hidden');
+      document.getElementById('signupOverlay').classList.remove('hidden');
+    }
+
+    function showLogin() {
+      document.getElementById('signupOverlay').classList.add('hidden');
+      document.getElementById('loginOverlay').classList.remove('hidden');
+    }
+
+    // === INIT ===
+    window.addEventListener('DOMContentLoaded', checkAuth);
+
+    async function loadApplications() {
+      try {
+        const { data: apps, error } = await supabase
+          .from('applications')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        allApps = apps || [];
+        renderApps(allApps);
+      } catch (e) {
+        console.error('Load error:', e);
+        renderApps([]);
+      }
+    }
+
+    function renderApps(apps) {
+      const container = document.getElementById('appsList');
+
+      if (!apps || apps.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><p>No applications</p></div>';
+        return;
+      }
+
+      container.innerHTML = apps.map(app => `
+        <div class="app-item ${currentApp?.id === app.id ? 'active' : ''}" onclick="selectApp('${app.id}')">
+          <div class="app-ref">${app.reference}</div>
+          <div class="app-meta">ERF ${app.erf_number || '-'} • ${app.owner_name}</div>
+          <span class="app-status status-${app.status}">${formatStatus(app.status)}</span>
+          <div class="app-updated">Updated ${new Date(app.updated_at || app.created_at).toLocaleDateString()}</div>
+        </div>
+      `).join('');
+    }
+
+    function formatStatus(status) {
+      const map = {
+        'PENDING': 'Submitted',
+        'SUBMITTED': 'Submitted',
+        'ANALYZING': 'In Review',
+        'IN_REVIEW': 'In Review',
+        'COMPLETED': 'In Review',
+        'REVISION': 'Revision',
+        'REVISION_REQUESTED': 'Revision',
+        'APPROVED': 'Approved',
+        'REJECTED': 'Rejected'
+      };
+      return map[status] || status;
+    }
+
+    // === FILTER ===
+    function filterApps(status) {
+      currentFilter = status;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+
+      if (status === 'all') {
+        renderApps(allApps);
+      } else {
+        const filtered = allApps.filter(a => a.status === status);
+        renderApps(filtered);
+      }
+    }
+
+    // === SELECT APPLICATION ===
+    async function selectApp(id) {
+      try {
+        let app = allApps.find(a => a.id === id);
+        if (!app) {
+          const res = await fetch(`/api/applications/${id}`);
+          app = await res.json();
+        }
+
+        let comments = [];
+        try {
+          const cRes = await fetch(`/api/applications/${id}/comments`);
+          comments = await cRes.json();
+        } catch (e) { comments = []; }
+
+        let revisions = [];
+        try {
+          const rRes = await fetch(`/api/applications/${id}/revisions`);
+          revisions = await rRes.json();
+        } catch (e) { revisions = []; }
+
+        currentApp = app;
+
+        renderApps(currentFilter === 'all' ? allApps : allApps.filter(a => a.status === currentFilter));
+
+        document.getElementById('welcomeView').classList.add('hidden');
+        document.getElementById('detailView').classList.remove('hidden');
+
+        document.getElementById('detailRef').textContent = app.reference;
+        document.getElementById('detailStatus').textContent = formatStatus(app.status);
+        document.getElementById('detailStatus').className = 'app-status status-' + (app.status === 'PENDING' ? 'SUBMITTED' : app.status);
+        document.getElementById('detailErf').textContent = app.erf_number || '-';
+        document.getElementById('detailZoning').textContent = app.zoning || '-';
+        document.getElementById('detailAddress').textContent = app.street_address || '-';
+        document.getElementById('detailDesc').textContent = app.description || '-';
+        document.getElementById('detailDate').textContent = new Date(app.created_at).toLocaleDateString();
+        document.getElementById('detailUpdated').textContent = new Date(app.updated_at || app.created_at).toLocaleString();
+
+        const docs = app.application_documents || [];
+        document.getElementById('detailDocs').innerHTML = docs.map(d => `
+          <div class="detail-item"><label>${d.doc_type}</label><div>${d.file_name}</div></div>
+        `).join('') || '<p>No documents</p>';
+
+        renderComments(comments);
+        renderRevisions(revisions);
+
+        document.getElementById('btnDownload').style.display = app.status === 'APPROVED' ? 'block' : 'none';
+
+      } catch (e) {
+        console.error('Select error:', e);
+      }
+    }
+
+    function renderComments(comments) {
+      const container = document.getElementById('commentsList');
+
+      if (!comments || comments.length === 0) {
+        container.innerHTML = '<p style="color: var(--steel);">No comments from examiner yet.</p>';
+        return;
+      }
+
+      container.innerHTML = comments.map((c, i) => {
+        const typeIcon = { 'violation': '🔴', 'warning': '⚠️', 'suggestion': '💡', 'approved': '✅' }[c.comment_type] || '📍';
+        const typeLabel = c.comment_type.toUpperCase();
+
+        return `
+        <div class="comment-card" data-comment-id="${c.id}" onclick="showCommentDetail('${c.id}', ${c.x_position}, ${c.y_position})">
+          <div class="comment-main">
+            <div class="comment-header">
+              <div class="comment-pin-icon ${c.comment_type}">${typeIcon}</div>
+              <span class="comment-badge ${c.comment_type}">${typeLabel}</span>
+              <span style="margin-left: auto; font-size: 0.75rem; color: var(--steel);">Page ${c.page_number || 1}</span>
+            </div>
+            <div class="comment-text">${c.comment_text}</div>
+            ${c.clause_id ? `<div class="comment-location">Clause: ${c.clause_id}</div>` : ''}
+            <div style="margin-top: 8px; font-size: 0.75rem; color: var(--steel);">
+              ${c.comment_replies?.length || 0} replies
+            </div>
+          </div>
+          ${c.comment_replies && c.comment_replies.length > 0 ? `
+            <div class="comment-replies">
+              ${c.comment_replies.map(r => `<div class="reply-item"><strong>${r.author_type}:</strong> ${r.reply_text}</div>`).join('')}
+            </div>
+          ` : ''}
+          <div class="reply-box" style="margin-top: 12px;">
+            <input type="text" class="search-input" id="reply-${c.id}" placeholder="Reply or mark fixed..." style="width: 70%;">
+            <button onclick="replyToComment('${c.id}')" style="padding: 8px 12px;">Send</button>
+            <button onclick="markFixed('${c.id}')" style="padding: 8px 12px; margin-left: 4px; background: var(--success); color: white;">✓ Fixed</button>
+          </div>
+        </div>
+      `}).join('');
+    }
+
+    function renderRevisions(revisions) {
+      const container = document.getElementById('revisionsList');
+
+      if (!revisions || revisions.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📁</div><p>No revisions yet</p></div>';
+        return;
+      }
+
+      container.innerHTML = revisions.map(r => `
+        <div class="revision-card">
+          <div class="revision-header">
+            <span class="revision-number">Revision ${r.revision_number}</span>
+            <span class="revision-date">${new Date(r.submitted_at).toLocaleDateString()}</span>
+          </div>
+          <div class="revision-changes">${r.change_log || 'No change log provided'}</div>
+          <div class="revision-status status-${r.status}">${r.status}</div>
+        </div>
+      `).join('');
+    }
+
+    // === COMMENT ACTIONS ===
+    function showCommentDetail(id, x, y) {
+      // Show comment pin on PDF viewer - in full implementation
+    }
+
+    async function replyToComment(commentId) {
+      const input = document.getElementById('reply-' + commentId);
+      const text = input.value.trim();
+      if (!text) return;
+
+      try {
+        const res = await fetch(`/api/comments/${commentId}/reply`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ author_type: 'applicant', reply_text: text })
+        });
+        const data = await res.json();
+        if (data.id) {
+          alert('Reply sent!');
+          input.value = '';
+          selectApp(currentApp.id);
+        }
+      } catch (e) {
+        alert('Failed to send reply');
+      }
+    }
+
+    async function markFixed(commentId) {
+      const input = document.getElementById('reply-' + commentId);
+      try {
+        const res = await fetch(`/api/comments/${commentId}/fix`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ comment_text: 'Marked as fixed' })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Marked as fixed! The examiner will see this in their next review.');
+          selectApp(currentApp.id);
+        }
+      } catch (e) {
+        alert('Failed to mark fixed');
+      }
+    }
+
+    async function submitReply() {
+      if (!currentApp) return;
+      alert('Please click on a specific comment to reply.');
+    }
+
+    // === TABS ===
+    function switchPanelTab(tab) {
+      document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+
+      event.target.classList.add('active');
+      document.getElementById('panel-' + tab).classList.add('active');
+    }
+
+    // === ACTIONS ===
+    function downloadApproval() {
+      if (!currentApp) return;
+      if (currentApp.status !== 'APPROVED') {
+        alert('Approval letter is only available for approved applications.');
+        return;
+      }
+
+      const letterHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Approval Letter - ${currentApp.reference}</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+    .header { text-align: center; border-bottom: 3px solid #2E7D32; padding-bottom: 20px; margin-bottom: 30px; }
+    .logo { font-size: 24px; }
+    .title { font-size: 28px; font-weight: bold; color: #1B5E20; margin: 10px 0; }
+    .ref { font-size: 14px; color: #666; }
+    .content { margin: 30px 0; line-height: 1.8; }
+    .details { background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0; }
+    .details p { margin: 8px 0; }
+    .label { font-weight: bold; color: #333; }
+    .stamp {
+      border: 4px solid #2E7D32;
+      color: #2E7D32;
+      font-size: 48px;
+      font-weight: bold;
+      transform: rotate(-15deg);
+      text-align: center;
+      padding: 20px;
+      margin: 40px auto;
+      width: 200px;
+    }
+    .footer { text-align: center; margin-top: 40px; font-size: 12px; color: #999; border-top: 1px solid #ddd; padding-top: 20px; }
+    @media print { body { margin: 0; } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">🏛️ SANS Plan Examiner Municipality</div>
+    <div class="title">BUILDING PLAN APPROVAL</div>
+    <div class="ref">Reference: ${currentApp.reference}</div>
+  </div>
+
+  <div class="content">
+    <p>Date: ${new Date().toLocaleDateString()}</p>
+    <p>To: ${currentApp.owner_name}</p>
+    <p>Email: ${currentApp.owner_email}</p>
+    <br>
+    <p><strong>Re: Building Plan Approval - ${currentApp.street_address}</strong></p>
+    <p>ERF Number: ${currentApp.erf_number}</p>
+    <p>Zoning: ${currentApp.zoning}</p>
+    <br>
+    <p>Your building plan application has been <strong>APPROVED</strong> by the SANS Plan Examiner Building Control Department.</p>
+    <p>This approval is subject to compliance with SANS 10400 requirements and all applicable municipal regulations.</p>
+  </div>
+
+  <div class="details">
+    <p><span class="label">Application Reference:</span> ${currentApp.reference}</p>
+    <p><span class="label">Property Address:</span> ${currentApp.street_address}</p>
+    <p><span class="label">ERF Number:</span> ${currentApp.erf_number}</p>
+    <p><span class="label">Zoning:</span> ${currentApp.zoning}</p>
+    <p><span class="label">Owner:</span> ${currentApp.owner_name}</p>
+    <p><span class="label">Submission Date:</span> ${new Date(currentApp.created_at).toLocaleDateString()}</p>
+  </div>
+
+  <div class="stamp">✓ APPROVED</div>
+
+  <div class="content">
+    <p><strong>Conditions of Approval:</strong></p>
+    <ul>
+      <li>Building must comply with all SANS 10400 requirements</li>
+      <li>All dimensions must be verified on site</li>
+      <li>Professional engineer must certify structural elements</li>
+      <li>Final inspection required before occupancy</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    <p>SANS Plan Examiner Municipality | Building Control</p>
+    <p>012 358 9999 | building.control@tshwane.gov.za</p>
+    <p>This document is digitally generated. Verify at: https://tshwane.gov.za/verify</p>
+  </div>
+</body>
+</html>`;
+
+      const blob = new Blob([letterHtml], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `approval-${currentApp.reference}.html`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function contactExaminer() {
+      if (!currentApp) return;
+      window.location.href = `mailto:building.control@tshwane.gov.za?subject=Inquiry: ${currentApp.reference}`;
+    }
+
+    function showUpload() {
+      if (!currentApp) {
+        alert('Select an application first');
+        return;
+      }
+
+      const changeLog = prompt('Changes made in this revision:');
+      if (!changeLog) return;
+
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'application/pdf';
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('application_id', currentApp.id);
+        formData.append('doc_type', 'building_plans');
+        formData.append('change_log', changeLog);
+
+        try {
+          const res = await fetch('/api/applications/revision', {
+            method: 'POST',
+            body: formData
+          });
+          const data = await res.json();
+          if (data.success) {
+            alert('Revision submitted!');
+            selectApp(currentApp.id);
+          } else {
+            alert('Error: ' + data.error);
+          }
+        } catch (err) {
+          alert('Upload failed');
+        }
+      };
+      input.click();
+    }
+
+    // === SEARCH ===
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+      const query = e.target.value.toLowerCase();
+      if (!query) {
+        renderApps(allApps);
+        return;
+      }
+      const filtered = allApps.filter(a =>
+        a.reference?.toLowerCase().includes(query) ||
+        a.erf_number?.toLowerCase().includes(query) ||
+        a.street_address?.toLowerCase().includes(query) ||
+        a.owner_name?.toLowerCase().includes(query)
+      );
+      renderApps(filtered);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+{
+  "clauses": [
+    {
+      "id": "SANS10400-XA1",
+      "title": "Building Envelope Thermal Performance",
+      "description": "The building envelope shall achieve a thermal performance that falls within the range of the energy efficiency class for the building",
+      "requirement": "The building envelope shall have an average thermal transmittance (U-value) and a solar heat-gain coefficient (SHGC) and target ffi to achieve energy efficiency class C or better as shown in Table 1.",
+      "check_points": ["U-value within limits", "Target ffi calculated", "SHGC appropriate for climate zone"],
+      "tshwane_checklist": []
+    },
+    {
+      "id": "SANS10400-XA2",
+      "title": "Vertical Fenestration",
+      "description": "Windows, doors, and glass doors shall meet thermal performance requirements",
+      "requirement": "Vertical fenestration shall have a thermal transmittance (U-w) and solar heat gain coefficient (SHGC) not exceeding the values given in Table 2.",
+      "check_points": ["U-value ≤ max allowed", "SHGC ≤ max allowed", "Frame type specified"],
+      "tshwane_checklist": ["Window schedule with sizes and types", " door schedule with sizes", "Window and door details"]
+    },
+    {
+      "id": "SANS10400-XA3",
+      "title": "Roof Assemblies",
+      "description": "Roof assemblies shall have adequate thermal resistance",
+      "requirement": "Roof assemblies shall have a thermal transmittance (U-value) not exceeding the values given in Table 3 for the relevant climate zone.",
+      "check_points": ["Roof U-value ≤ max", "Insulation type noted", "Climate zone applicable"],
+      "tshwane_checklist": ["Roof plan with fall", "Roof covering specification", "Roof insulation detail"]
+    },
+    {
+      "id": "SANS10400-XA4",
+      "title": "Walls - Above Ground",
+      "description": "Above-ground walls shall meet thermal requirements",
+      "requirement": "Walls above ground shall have a thermal transmittance (U-value) not exceeding 0.6 W/(m²·K) or be designed as a massive wall with a minimum 50 mm cross sectional area of thermal mass.",
+      "check_points": ["Wall U-value ≤ 0.6 W/(m²·K)", "OR massive wall ≥50mm", "Thermal mass area shown"],
+      "tshwane_checklist": ["Wall types indicated", "Brick sizes noted", "Mortar joints specified", "Damp course detail"]
+    },
+    {
+      "id": "SANS10400-XA5",
+      "title": "Floor Over Unconditioned Space",
+      "description": "Floors over unconditioned spaces need thermal insulation",
+      "requirement": "A floor that separates a habitable room from an unconditioned space shall have a thermal transmittance not exceeding 0.5 W/(m²·K)",
+      "check_points": ["Floor U-value ≤ 0.5", "Insulation details shown", "Unconditioned space identified"],
+      "tshwane_checklist": ["Floor finish schedule", "Floor levels indicated", "Underfloor ventilation"]
+    },
+    {
+      "id": "SANS10400-XA6",
+      "title": "Lighting - Lumen Method",
+      "description": "Artificial lighting shall meet efficiency requirements via lumen method",
+      "requirement": "For residential buildings, the total installed load of the artificial lighting shall not exceed 7 W/m² of floor area for interior lighting and 3 W/m² for exterior lighting.",
+      "check_points": ["Interior ≤ 7 W/m²", "Exterior ≤ 3 W/m²", "Lighting schedule shown"],
+      "tshwane_checklist": ["Lighting layout", "Lighting schedule with wattage", "Switching layout"]
+    },
+    {
+      "id": "SANS10400-XA7",
+      "title": "Lighting - Watts per Square Metre",
+      "description": "Alternative lighting efficiency method",
+      "requirement": "As an alternative to XA6, the installed efficacy of the artificial lighting shall be not less than 60 lumens per watt for interior lighting and 70 lumens per watt for exterior lighting.",
+      "check_points": ["Fittings ≥ 60 lm/W interior", "Fittings ≥ 70 lm/W exterior", "Lumens per fitting noted"],
+      "tshwane_checklist": []
+    },
+    {
+      "id": "SANS10400-XA8",
+      "title": "Solar Water Heating",
+      "description": "Mandatory solar water heating for residential buildings",
+      "requirement": "In a residential building with a floor area of 100 m² or more, provision shall be made for a solar water heating system (SWS).",
+      "check_points": ["SWS system shown", "Collector area noted", "Storage capacity specified"],
+      "tshwane_checklist": ["Solar water heating layout", "Geyser specification", "Solar collector area"]
+    },
+    {
+      "id": "SANS10400-XA9",
+      "title": "Service Hot Water Piping",
+      "description": "Hot water piping shall be insulated",
+      "requirement": "Service hot water piping shall be insulated with not less than 25 mm thickness of insulation having a thermal conductivity not exceeding 0.04 W/(m·K)",
+      "check_points": ["Pipe insulation shown", "≥25mm thickness", "Thermal conductivity noted"],
+      "tshwane_checklist": ["Hot water pipe sizing", "Geyser position", "Hot water layout"]
+    },
+    {
+      "id": "SANS10400-XA10",
+      "title": "Roof Lights",
+      "description": "Roof lights (skylights) require thermal performance",
+      "requirement": "Roof lights shall not have a thermal transmittance greater than 2.0 W/(m²·K) and the solar heat gain coefficient shall not exceed 0.35",
+      "check_points": ["Roof light U-value ≤ 2.0", "SHGC ≤ 0.35", "Area within limits"],
+      "tshwane_checklist": ["Roof light positions", "Roof light sizes"]
+    },
+    {
+      "id": "SANS10400-B1",
+      "title": "Occupancy Classification",
+      "description": "Building must be classified according to its intended occupancy type",
+      "requirement": "The occupancy classification shall be clearly indicated on the plans and must comply with SANS 10400 Table 1",
+      "check_points": ["Classification shown", "Matches intended use", "Complies with max occupancy"],
+      "tshwane_checklist": ["Occupancy classification indicated", "Building height calculated", "Floor area calculation", "Number of floors"]
+    },
+    {
+      "id": "SANS10400-B3",
+      "title": "Means of Egress",
+      "description": "Adequate escape routes must be provided",
+      "requirement": "Every building shall have sufficient number of exits to allow safe evacuation",
+      "check_points": ["Minimum 2 exits", "Travel distance verified", "Door opens outward", "Clearly marked"],
+      "tshwane_checklist": ["Exit routes indicated", "Travel distance shown", "Door swing direction", "Exit door sizes"]
+    },
+    {
+      "id": "TSHWANE-SITE",
+      "title": "Site Plan Requirements",
+      "description": "City of Tshwane site plan checklist",
+      "requirement": "Site plan shall contain all required information as per Tshwane checklist",
+      "check_points": [],
+      "tshwane_checklist": ["Surveyor's signature", "Erf number", "Street name", "Contour intervals", "North point", "Scale bar", "Existing structures shown", "Pegs/outfalls indicated", "Site levels", "Building lines", "Coverage %", "Parking provided", "Driveway/access", "Provincial road setback", " stormwater", " sewer connection point"]
+    },
+    {
+      "id": "TSHWANE-FLOOR",
+      "title": "Floor Plan Requirements",
+      "description": "City of Tshwane floor plan checklist",
+      "requirement": "Floor plans shall contain all required information as per Tshwane checklist",
+      "check_points": [],
+      "tshwane_checklist": ["Room names", "Room sizes", "Windows with sizes", "Doors with sizes", "Door swings", "Wall types shown", "Structural layout", "Ceiling heights", "Floor levels", "Column centers", "Built-in-cupboards", "Sanitary fixtures", "Kitchen layout", "Staircase dimensions", "Balustrade heights"]
+    },
+    {
+      "id": "TSHWANE-ROOF",
+      "title": "Roof Plan Requirements",
+      "description": "City of Tshwane roof plan checklist",
+      "requirement": "Roof plans shall contain all required information as per Tshwane checklist",
+      "check_points": [],
+      "tshwane_checklist": ["Roof plan with fall", "Roof covering specification", "Eaves width", "Gutter details", "Stormwater downpipes"]
+    },
+    {
+      "id": "TSHWANE-ELEV",
+      "title": "Elevations Requirements",
+      "description": "City of Tshwane elevations checklist",
+      "requirement": "Elevations shall contain all required information as per Tshwane checklist",
+      "check_points": [],
+      "tshwane_checklist": ["All elevations drawn", "Ground line shown", "Floor levels indicated", "Finishes noted", "Window types", "Door types", "Ground floor RL", "First floor RL", "Roof line", "Storey height"]
+    },
+    {
+      "id": "TSHWANE-SECT",
+      "title": "Sections Requirements",
+      "description": "City of Tshwane sections checklist",
+      "requirement": "Sections shall contain all required information as per Tshwane checklist",
+      "check_points": [],
+      "tshwane_checklist": ["Section through building", "Levels indicated", "Wall construction", "Floor construction", "Roof construction", "Ceiling height", "Foundation detail", "Beam sizes"]
+    },
+    {
+      "id": "TSHWANE-STR",
+      "title": "Structural Requirements",
+      "description": "City of Tshwane structural checklist",
+      "requirement": "Structural drawings shall contain all required information as per Tshwane checklist",
+      "check_points": [],
+      "tshwane_checklist": ["Structural engineer's Stamp", "Soil investigation report", "Foundation layout", "Floor slab reinforcement", "Column layout", "Beam layout", "Beam sizes", "Slab thickness", "Roof truss layout", "Wind loading", "Floor loading"]
+    }
+  ]
+}

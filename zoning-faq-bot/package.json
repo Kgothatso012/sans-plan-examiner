@@ -1,0 +1,9 @@
+{
+  "name": "tshwane-zoning-faq-bot",
+  "version": "1.0.0",
+  "description": "FAQ Bot for Tshwane zoning questions",
+  "main": "index.js",
+  "dependencies": {
+    "node-telegram-bot-api": "^0.64.0"
+  }
+}

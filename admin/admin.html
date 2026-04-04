@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Joe's Examiner | Dashboard</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Droid+Sans:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --tshwane-blue: #2E7D32;
+      --tshwane-dark: #1B5E20;
+      --sans-red: #ef3636;
+      --sans-yellow: #f57c00;
+      --ink: #1a1a1a;
+      --steel: #666666;
+      --graphite: #333333;
+      --paper: #f5f5f5;
+      --white: #ffffff;
+      --success: #2e7d32;
+      --warning: #f57c00;
+      --danger: #ef3636;
+      --font-display: 'Oswald', sans-serif;
+      --font-body: 'Droid Sans', 'Segoe UI', sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-body); background: var(--paper); color: var(--ink); min-height: 100vh; overflow: hidden; }
+
+    /* === LAYOUT === */
+    .app-container { display: flex; height: 100vh; }
+    .sidebar { width: 280px; background: var(--white); border-right: 1px solid #ddd; display: flex; flex-direction: column; }
+    .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .viewer-area { flex: 1; display: flex; overflow: hidden; }
+    .details-panel { width: 380px; background: var(--white); border-left: 1px solid #ddd; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* === SIDEBAR === */
+    .sidebar-header { padding: var(--space-lg); background: linear-gradient(135deg, var(--tshwane-blue) 0%, var(--tshwane-dark) 100%); color: white; }
+    .sidebar-header h1 { font-family: var(--font-display); font-size: 1.3rem; text-transform: uppercase; }
+    .sidebar-header p { font-size: 0.75rem; opacity: 0.8; letter-spacing: 0.1em; }
+    .back-link { color: white; opacity: 0.7; font-size: 0.85rem; text-decoration: none; }
+    .back-link:hover { opacity: 1; }
+
+    /* === SEARCH === */
+    .search-section { padding: var(--space-md); border-bottom: 1px solid #eee; }
+    .search-input { width: 100%; padding: var(--space-sm) var(--space-md); border: 1px solid #ddd; border-radius: 4px; font-size: 0.9rem; }
+    .search-input:focus { outline: none; border-color: var(--tshwane-blue); }
+
+    /* === QUEUE LIST === */
+    .queue-section { flex: 1; overflow-y: auto; padding: var(--space-sm); }
+    .queue-header { display: flex; justify-content: space-between; align-items: center; padding: var(--space-sm) var(--space-md); }
+    .queue-header h3 { font-size: 0.85rem; color: var(--steel); text-transform: uppercase; letter-spacing: 0.05em; }
+    .queue-item { padding: var(--space-md); border: 1px solid #eee; border-radius: 6px; margin-bottom: var(--space-sm); cursor: pointer; transition: all 0.2s; }
+    .queue-item:hover { border-color: var(--tshwane-blue); background: #f8fcf8; }
+    .queue-item.active { border-color: var(--tshwane-blue); background: #e8f5e9; }
+    .queue-ref { font-family: var(--font-mono); font-weight: 600; color: var(--tshwane-blue); font-size: 0.9rem; }
+    .queue-meta { font-size: 0.8rem; color: var(--steel); margin-top: 4px; }
+    .queue-badge { display: inline-block; padding: 2px 8px; font-size: 0.7rem; font-weight: 600; border-radius: 10px; margin-top: var(--space-xs); }
+    .badge-NEW { background: #e3f2fd; color: #1565c0; }
+    .badge-IN_REVIEW { background: #fff3cd; color: #856404; }
+    .badge-REVISION { background: #fce4ec; color: #c2185b; }
+    .badge-APPROVED { background: #e8f5e9; color: #2e7d32; }
+    .badge-REJECTED { background: #ffebee; color: #c62828; }
+    .queue-comments { font-size: 0.75rem; color: var(--steel); margin-top: 4px; }
+    .queue-comments span { color: var(--sans-red); }
+
+    /* === NOTIFICATIONS === */
+    .notifications-section { padding: var(--space-md); border-top: 1px solid #eee; background: #fafafa; }
+    .notifications-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm); }
+    .notifications-header h3 { font-size: 0.8rem; color: var(--steel); text-transform: uppercase; }
+    .notification-badge { background: var(--sans-red); color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; }
+    .notification-item { font-size: 0.8rem; padding: var(--space-sm); background: var(--white); border-radius: 4px; margin-bottom: var(--space-xs); border-left: 3px solid var(--tshwane-blue); }
+
+    /* === TOOLBAR === */
+    .toolbar { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-sm) var(--space-md); background: var(--white); border-bottom: 1px solid #ddd; }
+    .toolbar-group { display: flex; gap: var(--space-xs); }
+    .toolbar-btn { padding: var(--space-sm) var(--space-md); background: transparent; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
+    .toolbar-btn:hover { background: #f5f5f5; }
+    .toolbar-btn.active { background: var(--tshwane-blue); color: white; border-color: var(--tshwane-blue); }
+    .toolbar-btn.primary { background: var(--tshwane-blue); color: white; border-color: var(--tshwane-blue); }
+
+    /* === PDF VIEWER === */
+    .pdf-container { flex: 1; overflow: auto; background: #525659; display: flex; justify-content: center; padding: var(--space-lg); }
+    .pdf-page { background: white; box-shadow: 0 4px 16px rgba(0,0,0,0.3); position: relative; }
+    .pdf-canvas { display: block; }
+    .annotation-layer { position: absolute; top: 0; left: 0; right: 0; bottom: 0; cursor: crosshair; }
+    .comment-pin { position: absolute; width: 24px; height: 24px; background: var(--sans-red); border: 2px solid white; border-radius: 50%; cursor: pointer; transform: translate(-50%, -50%); box-shadow: 0 2px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; }
+    .comment-pin.resolved { background: var(--success); }
+    .comment-pin.violation { background: var(--sans-red); }
+    .comment-pin.warning { background: var(--sans-yellow); }
+    .comment-pin.suggestion { background: var(--tshwane-blue); }
+
+    /* === DETAILS PANEL === */
+    .details-header { padding: var(--space-md); border-bottom: 1px solid #eee; }
+    .details-header h2 { font-family: var(--font-display); font-size: 1.1rem; color: var(--tshwane-dark); }
+    .details-header .ref { font-family: var(--font-mono); color: var(--tshwane-blue); }
+
+    .details-tabs { display: flex; border-bottom: 1px solid #eee; }
+    .details-tab { flex: 1; padding: var(--space-sm) var(--space-md); text-align: center; cursor: pointer; font-size: 0.85rem; border-bottom: 2px solid transparent; }
+    .details-tab:hover { background: #f5f5f5; }
+    .details-tab.active { border-color: var(--tshwane-blue); color: var(--tshwane-blue); font-weight: 600; }
+
+    .details-content { flex: 1; overflow-y: auto; padding: var(--space-md); }
+
+    /* === COMMENTS LIST === */
+    .comments-list { display: flex; flex-direction: column; gap: var(--space-md); }
+    .comment-thread { border: 1px solid #eee; border-radius: 6px; overflow: hidden; }
+    .comment-main { padding: var(--space-md); background: var(--white); }
+    .comment-header { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-sm); }
+    .comment-pin-icon { width: 24px; height: 24px; background: var(--sans-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; }
+    .comment-category { font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+    .cat-violation { background: #ffebee; color: #c62828; }
+    .cat-warning { background: #fff3e0; color: #e65100; }
+    .cat-suggestion { background: #e3f2fd; color: #1565c0; }
+    .cat-dimension { background: #f3e5f5; color: #7b1fa2; }
+    .cat-missing { background: #fff9c4; color: #f57f17; }
+    .comment-text { font-size: 0.9rem; line-height: 1.5; margin-bottom: var(--space-sm); }
+    .comment-clause { font-family: var(--font-mono); font-size: 0.75rem; color: var(--steel); }
+    .comment-meta { font-size: 0.75rem; color: var(--steel); }
+    .comment-actions { display: flex; gap: var(--space-sm); margin-top: var(--space-sm); }
+    .comment-action { font-size: 0.75rem; color: var(--tshwane-blue); cursor: pointer; }
+    .comment-action:hover { text-decoration: underline; }
+
+    .comment-replies { background: #fafafa; padding: var(--space-md); border-top: 1px solid #eee; }
+    .reply-item { padding: var(--space-sm); background: var(--white); border-radius: 4px; margin-bottom: var(--space-xs); font-size: 0.85rem; }
+    .reply-item.applicant { border-left: 3px solid var(--tshwane-blue); }
+    .reply-item.examiner { border-left: 3px solid var(--success); }
+
+    .add-comment-box { margin-top: var(--space-md); padding: var(--space-md); background: #f5f5f5; border-radius: 6px; }
+    .add-comment-box textarea { width: 100%; padding: var(--space-sm); border: 1px solid #ddd; border-radius: 4px; font-size: 0.9rem; min-height: 80px; resize: vertical; }
+    .add-comment-box select { width: 100%; padding: var(--space-sm); border: 1px solid #ddd; border-radius: 4px; margin-top: var(--space-sm); }
+    .add-comment-box .btn { width: 100%; margin-top: var(--space-sm); padding: var(--space-sm); background: var(--tshwane-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
+
+    /* === APPLICATION INFO === */
+    .app-info-section { margin-bottom: var(--space-lg); }
+    .app-info-section h4 { font-size: 0.8rem; color: var(--steel); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-sm); }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm); }
+    .info-item label { font-size: 0.75rem; color: var(--steel); }
+    .info-item div { font-size: 0.9rem; font-weight: 500; }
+
+    /* === REVISION HISTORY === */
+    .revision-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+    .revision-item { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-sm); background: var(--white); border: 1px solid #eee; border-radius: 4px; cursor: pointer; }
+    .revision-item:hover { border-color: var(--tshwane-blue); }
+    .revision-item.current { border-color: var(--tshwane-blue); background: #e8f5e9; }
+    .revision-number { font-weight: 600; color: var(--tshwane-blue); }
+    .revision-date { font-size: 0.8rem; color: var(--steel); }
+    .revision-status { font-size: 0.75rem; }
+    .revision-changes { font-size: 0.75rem; color: var(--steel); margin-left: auto; }
+
+    /* === ACTION BUTTONS === */
+    .action-buttons { padding: var(--space-md); border-top: 1px solid #eee; display: flex; gap: var(--space-sm); }
+    .action-buttons .btn { flex: 1; padding: var(--space-md); border: none; border-radius: 4px; font-weight: 600; cursor: pointer; }
+    .btn-approve { background: var(--success); color: white; }
+    .btn-reject { background: var(--danger); color: white; }
+    .btn-revision { background: var(--warning); color: white; }
+
+    /* === AI ANALYSIS === */
+    .ai-analysis { margin-bottom: var(--space-lg); }
+    .ai-item { display: flex; align-items: flex-start; gap: var(--space-sm); padding: var(--space-sm); background: var(--white); border: 1px solid #eee; border-radius: 4px; margin-bottom: var(--space-xs); }
+    .ai-status { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; }
+    .ai-status.pass { background: var(--success); }
+    .ai-status.fail { background: var(--danger); }
+    .ai-status.warn { background: var(--warning); }
+    .ai-content { flex: 1; }
+    .ai-clause { font-family: var(--font-mono); font-size: 0.75rem; color: var(--steel); }
+    .ai-text { font-size: 0.85rem; }
+
+    /* === NO PLAN SELECTED === */
+    .no-selection { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--steel); }
+    .no-selection-icon { font-size: 4rem; margin-bottom: var(--space-md); opacity: 0.3; }
+    .no-selection h3 { font-family: var(--font-display); font-size: 1.2rem; margin-bottom: var(--space-sm); }
+    .no-selection p { font-size: 0.9rem; }
+
+    /* === MODAL === */
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .modal { background: var(--white); border-radius: 8px; padding: var(--space-lg); max-width: 500px; width: 90%; }
+    .modal h3 { margin-bottom: var(--space-md); }
+    .modal textarea { width: 100%; padding: var(--space-md); border: 1px solid #ddd; border-radius: 4px; min-height: 100px; }
+    .modal-buttons { display: flex; gap: var(--space-sm); margin-top: var(--space-md); justify-content: flex-end; }
+    .modal-buttons button { padding: var(--space-sm) var(--space-lg); border: none; border-radius: 4px; cursor: pointer; }
+    .modal-buttons .cancel { background: #eee; }
+    .modal-buttons .confirm { background: var(--tshwane-blue); color: white; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <a href="../../index.html" class="back-link">← Back</a>
+        <h1 style="margin-top: 8px;">Joe's Examiner</h1>
+        <p>Building Control</p>
+      </div>
+
+      <div class="search-section">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search by ref, ERF, applicant...">
+      </div>
+
+      <div class="queue-section">
+        <div class="queue-header">
+          <h3>Queue</h3>
+          <span id="queueCount">0</span>
+        </div>
+        <div id="queueList"></div>
+      </div>
+
+      <div class="notifications-section">
+        <div class="notifications-header">
+          <h3>Notifications</h3>
+          <span class="notification-badge" id="notifCount">0</span>
+        </div>
+        <div id="notificationsList"></div>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <!-- TOOLBAR -->
+      <div class="toolbar">
+        <div class="toolbar-group">
+          <button class="toolbar-btn" onclick="zoomOut()">−</button>
+          <button class="toolbar-btn" onclick="zoomIn()">+</button>
+          <button class="toolbar-btn" onclick="fitToWidth()">Fit</button>
+        </div>
+        <div class="toolbar-group">
+          <button class="toolbar-btn" id="btnPan" onclick="togglePan()">Hand</button>
+          <button class="toolbar-btn primary" id="btnComment" onclick="enableCommentMode()">💬 Add Comment</button>
+        </div>
+        <div class="toolbar-group" style="margin-left: auto;">
+          <button class="toolbar-btn" onclick="prevPage()">◀</button>
+          <span id="pageInfo">1 / 1</span>
+          <button class="toolbar-btn" onclick="nextPage()">▶</button>
+        </div>
+      </div>
+
+      <!-- VIEWER AREA -->
+      <div class="viewer-area">
+        <div class="pdf-container" id="pdfContainer">
+          <div class="no-selection" id="noSelection">
+            <div class="no-selection-icon">📐</div>
+            <h3>No Plan Selected</h3>
+            <p>Select an application from the queue to begin review</p>
+          </div>
+          <div class="pdf-page hidden" id="pdfPage">
+            <canvas class="pdf-canvas" id="pdfCanvas"></canvas>
+            <div class="annotation-layer" id="annotationLayer"></div>
+          </div>
+        </div>
+
+        <!-- DETAILS PANEL -->
+        <div class="details-panel">
+          <div class="details-header">
+            <h2 id="detailRef">-</h2>
+            <span class="ref" id="detailErf"></span>
+          </div>
+
+          <div class="details-tabs">
+            <div class="details-tab active" onclick="switchTab('info')">Info</div>
+            <div class="details-tab" onclick="switchTab('comments')">Comments</div>
+            <div class="details-tab" onclick="switchTab('ai')">AI Check</div>
+            <div class="details-tab" onclick="switchTab('revisions')">Revisions</div>
+          </div>
+
+          <div class="details-content">
+            <!-- INFO TAB -->
+            <div id="tab-info" class="tab-content">
+              <div class="app-info-section">
+                <h4>Applicant</h4>
+                <div class="info-grid">
+                  <div class="info-item"><label>Name</label><div id="infoName">-</div></div>
+                  <div class="info-item"><label>Email</label><div id="infoEmail">-</div></div>
+                  <div class="info-item"><label>Phone</label><div id="infoPhone">-</div></div>
+                </div>
+              </div>
+              <div class="app-info-section">
+                <h4>Property</h4>
+                <div class="info-grid">
+                  <div class="info-item"><label>ERF</label><div id="infoErf">-</div></div>
+                  <div class="info-item"><label>Zoning</label><div id="infoZoning">-</div></div>
+                  <div class="info-item"><label>Address</label><div id="infoAddress">-</div></div>
+                </div>
+              </div>
+              <div class="app-info-section">
+                <h4>Submission</h4>
+                <div class="info-grid">
+                  <div class="info-item"><label>Date</label><div id="infoDate">-</div></div>
+                  <div class="info-item"><label>Status</label><div id="infoStatus">-</div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- COMMENTS TAB -->
+            <div id="tab-comments" class="tab-content hidden">
+              <div class="comments-list" id="commentsList"></div>
+              <div class="add-comment-box">
+                <textarea id="newCommentText" placeholder="Add a comment... e.g., 'Door opens inward - fire safety requires outward swing'"></textarea>
+                <select id="newCommentCategory">
+                  <option value="violation">Clause Violation</option>
+                  <option value="warning">Warning</option>
+                  <option value="dimension">Dimension Error</option>
+                  <option value="missing">Missing Element</option>
+                  <option value="suggestion">Suggestion</option>
+                </select>
+                <button class="btn" onclick="addComment()">Post Comment</button>
+              </div>
+            </div>
+
+            <!-- AI TAB -->
+            <div id="tab-ai" class="tab-content hidden">
+              <div class="ai-analysis" id="aiAnalysis"></div>
+            </div>
+
+            <!-- REVISIONS TAB -->
+            <div id="tab-revisions" class="tab-content hidden">
+              <div class="revision-list" id="revisionList"></div>
+            </div>
+          </div>
+
+          <!-- ACTION BUTTONS -->
+          <div class="action-buttons">
+            <button class="btn btn-approve" onclick="makeDecision('APPROVED')">✓ Approve</button>
+            <button class="btn btn-revision" onclick="requestRevision()">↻ Revision</button>
+            <button class="btn btn-reject" onclick="makeDecision('REJECTED')">✗ Reject</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMENT MODAL -->
+  <div class="modal-overlay hidden" id="commentModal">
+    <div class="modal">
+      <h3>Add Comment</h3>
+      <textarea id="modalCommentText" placeholder="Describe the issue..."></textarea>
+      <select id="modalCommentCategory">
+        <option value="violation">Clause Violation</option>
+        <option value="warning">Warning</option>
+        <option value="dimension">Dimension Error</option>
+        <option value="missing">Missing Element</option>
+        <option value="suggestion">Suggestion</option>
+      </select>
+      <div class="modal-buttons">
+        <button class="cancel" onclick="closeModal()">Cancel</button>
+        <button class="confirm" onclick="saveComment()">Save Comment</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    // === CONFIG ===
+    const CONFIG = {
+      supabaseUrl: 'https://pmhvteytflmbvolteota.supabase.co',
+      supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtaHZ0ZXl0ZmxtYnZvbHRlb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyODIwNTUsImV4cCI6MjA5MDg1ODA1NX0.Hhby7vx9Mq4AUnR4TJiAVCMlPRBm5xQtQM6LF0yEi_w',
+      adminApiKey: null // Must be set via login
+    };
+
+    let supabase = window.supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseKey);
+    let currentApp = null;
+    let currentPage = 1;
+    let totalPages = 1;
+    let pdfDoc = null;
+    let scale = 1.5;
+    let commentMode = false;
+    let commentPosition = null;
+
+    // === INITIALIZATION ===
+    window.addEventListener('DOMContentLoaded', init);
+
+    async function init() {
+      const savedKey = localStorage.getItem('adminApiKey');
+      if (savedKey) {
+        CONFIG.adminApiKey = savedKey;
+      } else {
+        const key = prompt('Enter admin API key:');
+        if (!key) return;
+        CONFIG.adminApiKey = key;
+        localStorage.setItem('adminApiKey', key);
+      }
+      await loadQueue();
+      loadNotifications();
+    }
+
+    // === API HELPERS ===
+    async function adminFetch(url, options = {}) {
+      if (!CONFIG.adminApiKey) {
+        alert('Session expired. Please refresh and re-enter key.');
+        window.location.reload();
+        return Promise.reject(new Error('No API key'));
+      }
+      options.headers = {
+        ...options.headers,
+        'x-api-key': CONFIG.adminApiKey
+      };
+      return fetch(url, options);
+    }
+
+    // === QUEUE ===
+    async function loadQueue() {
+      try {
+        const res = await adminFetch('/api/applications');
+        const apps = await res.json();
+        renderQueue(apps);
+      } catch (e) {
+        console.error('Load queue error:', e);
+      }
+    }
+
+    function renderQueue(apps) {
+      const container = document.getElementById('queueList');
+      document.getElementById('queueCount').textContent = apps.length;
+
+      if (apps.length === 0) {
+        container.innerHTML = '<p style="padding: 16px; color: var(--steel); text-align: center;">No applications in queue</p>';
+        return;
+      }
+
+      apps.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      container.innerHTML = apps.map(app => {
+        const badgeClass = app.status === 'PENDING' ? 'NEW' :
+                          app.status === 'ANALYZING' ? 'IN_REVIEW' :
+                          app.status === 'COMPLETED' ? 'REVISION' : app.status;
+        return `
+          <div class="queue-item ${currentApp?.id === app.id ? 'active' : ''}" onclick="selectApplication('${app.id}')">
+            <div class="queue-ref">${app.reference}</div>
+            <div class="queue-meta">${app.owner_name} • ERF ${app.erf_number || '-'}</div>
+            <span class="queue-badge badge-${badgeClass}">${app.status}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // === SELECT APPLICATION ===
+    async function selectApplication(id) {
+      try {
+        const res = await adminFetch('/api/applications/' + id);
+        const app = await res.json();
+        currentApp = app;
+
+        renderQueue([app]);
+
+        document.getElementById('noSelection').classList.add('hidden');
+        document.getElementById('pdfPage').classList.remove('hidden');
+
+        document.getElementById('detailRef').textContent = app.reference;
+        document.getElementById('detailErf').textContent = 'ERF ' + (app.erf_number || '-');
+        document.getElementById('infoName').textContent = app.owner_name;
+        document.getElementById('infoEmail').textContent = app.owner_email;
+        document.getElementById('infoPhone').textContent = app.owner_phone || '-';
+        document.getElementById('infoErf').textContent = app.erf_number || '-';
+        document.getElementById('infoZoning').textContent = app.zoning || '-';
+        document.getElementById('infoAddress').textContent = app.street_address || '-';
+        document.getElementById('infoDate').textContent = new Date(app.created_at).toLocaleDateString();
+        document.getElementById('infoStatus').textContent = app.status;
+
+        renderComments(app.comments || []);
+        renderAIAnalysis(app.application_analysis || []);
+        renderRevisions(app);
+        loadAppPDF(app.application_documents);
+
+      } catch (e) {
+        console.error('Select error:', e);
+      }
+    }
+
+    let pdfDoc = null;
+    let pdfScale = 1.0;
+
+    async function loadAppPDF(documents) {
+      const container = document.getElementById('pdfContainer');
+
+      const planDoc = documents?.find(d => d.doc_type === 'building_plans');
+
+      if (!planDoc?.storage_path) {
+        showPdfPlaceholder(container);
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/documents/${planDoc.storage_path}`);
+        const data = await res.json();
+
+        if (!data.url) {
+          showPdfPlaceholder(container);
+          return;
+        }
+
+        const loadingTask = pdfjsLib.getDocument(data.url);
+        pdfDoc = await loadingTask.promise;
+
+        await renderPdfPage(1);
+
+      } catch (e) {
+        console.error('PDF load error:', e);
+        showPdfPlaceholder(container);
+      }
+    }
+
+    async function renderPdfPage(pageNum) {
+      if (!pdfDoc) return;
+
+      const page = await pdfDoc.getPage(pageNum);
+      const viewport = page.getViewport({ scale: pdfScale });
+
+      const canvas = document.getElementById('pdfCanvas');
+      const ctx = canvas.getContext('2d');
+
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+
+      await page.render({
+        canvasContext: ctx,
+        viewport: viewport
+      }).promise;
+
+      window.currentPdfPage = pageNum;
+      window.currentPdfViewport = viewport;
+    }
+
+    function showPdfPlaceholder(container) {
+      container.innerHTML = `
+        <div class="pdf-page">
+          <div style="padding: 60px; text-align: center; background: white; width: 600px;">
+            <h2 style="color: var(--tshwane-dark); margin-bottom: 16px;">Building Plan Preview</h2>
+            <p style="color: var(--steel); margin-bottom: 16px;">${currentApp?.reference}</p>
+            <p style="color: var(--steel); font-size: 0.9rem;">PDF viewer would display here. Upload actual building plan PDF to see it here.</p>
+            <div style="margin-top: 24px; padding: 16px; background: #f5f5f5; border-radius: 8px;">
+              <strong>Sample Comment Pin</strong>
+              <div style="margin-top: 8px; display: flex; justify-content: center; gap: 8px;">
+                <div style="width: 24px; height: 24px; background: #ef3636; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">1</div>
+                <div style="width: 24px; height: 24px; background: #f57c00; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">2</div>
+                <div style="width: 24px; height: 24px; background: #2E7D32; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">3</div>
+              </div>
+              <p style="font-size: 0.8rem; color: var(--steel); margin-top: 8px;">Click "Add Comment" then click on plan to add pins</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // === COMMENTS ===
+    function renderComments(comments) {
+      const container = document.getElementById('commentsList');
+
+      if (!comments || comments.length === 0) {
+        container.innerHTML = '<p style="color: var(--steel); text-align: center; padding: 16px;">No comments yet. Click on the plan to add one.</p>';
+        return;
+      }
+
+      container.innerHTML = comments.map((c, i) => `
+        <div class="comment-thread">
+          <div class="comment-main">
+            <div class="comment-header">
+              <div class="comment-pin-icon" style="background: ${c.category === 'violation' ? '#ef3636' : c.category === 'warning' ? '#f57c00' : '#2E7D32'}">${i+1}</div>
+              <span class="comment-category cat-${c.category}">${c.category}</span>
+            </div>
+            <div class="comment-text">${c.text}</div>
+            <div class="comment-clause">${c.clause || ''}</div>
+            <div class="comment-meta">${c.author} • ${new Date(c.created_at).toLocaleString()}</div>
+            <div class="comment-actions">
+              <span class="comment-action" onclick="resolveComment('${c.id}')">✓ Resolve</span>
+              <span class="comment-action" onclick="replyToComment('${c.id}')">↩ Reply</span>
+            </div>
+          </div>
+          ${c.replies ? `
+            <div class="comment-replies">
+              ${c.replies.map(r => `
+                <div class="reply-item ${r.author === 'Applicant' ? 'applicant' : 'examiner'}">
+                  <strong>${r.author}:</strong> ${r.text}
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    // === COMMENTING ===
+    function enableCommentMode() {
+      commentMode = true;
+      document.getElementById('btnComment').classList.add('active');
+      document.getElementById('annotationLayer').style.cursor = 'crosshair';
+    }
+
+    function toggleCommentMode() {
+      commentMode = !commentMode;
+      document.getElementById('btnComment').classList.toggle('active');
+    }
+
+    document.addEventListener('click', function(e) {
+      if (!commentMode) return;
+      const layer = document.getElementById('annotationLayer');
+      if (!layer) return;
+
+      const rect = layer.getBoundingClientRect();
+      commentPosition = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+        page: currentPage
+      };
+
+      openCommentModal();
+    });
+
+    function openCommentModal() {
+      document.getElementById('commentModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('commentModal').classList.add('hidden');
+      commentMode = false;
+      document.getElementById('btnComment').classList.remove('active');
+    }
+
+    function saveComment() {
+      const text = document.getElementById('modalCommentText').value;
+      const category = document.getElementById('modalCommentCategory').value;
+
+      if (!text.trim()) {
+        alert('Please enter a comment');
+        return;
+      }
+
+      const layer = document.getElementById('annotationLayer');
+      if (layer && commentPosition) {
+        const pin = document.createElement('div');
+        pin.className = `comment-pin ${category}`;
+        pin.style.left = commentPosition.x + 'px';
+        pin.style.top = commentPosition.y + 'px';
+        pin.textContent = '1';
+        pin.onclick = () => showCommentDetail(text, category);
+        layer.appendChild(pin);
+      }
+
+      closeModal();
+      document.getElementById('modalCommentText').value = '';
+    }
+
+    function showCommentDetail(text, category) {
+      alert(`${category.toUpperCase()}: ${text}`);
+    }
+
+    // === AI ANALYSIS ===
+    function renderAIAnalysis(analysis) {
+      const container = document.getElementById('aiAnalysis');
+
+      if (!analysis || analysis.length === 0) {
+        container.innerHTML = '<p style="color: var(--steel); text-align: center; padding: 16px;">Run AI analysis to check compliance</p>';
+        return;
+      }
+
+      container.innerHTML = analysis.map(a => `
+        <div class="ai-item">
+          <div class="ai-status ${a.status === 'PASS' ? 'pass' : a.status === 'FAIL' ? 'fail' : 'warn'}"></div>
+          <div class="ai-content">
+            <div class="ai-clause">${a.clause_id}</div>
+            <div class="ai-text">${a.reasoning || a.violation_text || 'No issues found'}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // === REVISIONS ===
+    function renderRevisions(app) {
+      const container = document.getElementById('revisionList');
+
+      const revisions = [
+        { number: 1, date: app.created_at, status: 'current', changes: 'Initial submission' }
+      ];
+
+      container.innerHTML = revisions.map(r => `
+        <div class="revision-item ${r.status === 'current' ? 'current' : ''}">
+          <span class="revision-number">Rev ${r.number}</span>
+          <span class="revision-date">${new Date(r.date).toLocaleDateString()}</span>
+          <span class="revision-status">${r.status}</span>
+          <span class="revision-changes">${r.changes}</span>
+        </div>
+      `).join('');
+    }
+
+    // === TABS ===
+    function switchTab(tabName) {
+      document.querySelectorAll('.details-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+
+      event.target.classList.add('active');
+      document.getElementById('tab-' + tabName).classList.remove('hidden');
+    }
+
+    // === ACTIONS ===
+    async function makeDecision(decision) {
+      if (!currentApp) return;
+      if (!confirm(`Are you sure you want to ${decision.toLowerCase()} this application?`)) return;
+
+      try {
+        const res = await adminFetch('/api/applications/' + currentApp.id + '/decision', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ decision })
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          alert('Application ' + decision);
+          loadQueue();
+        }
+      } catch (e) {
+        console.error('Decision error:', e);
+      }
+    }
+
+    function requestRevision() {
+      if (!currentApp) return;
+      const note = prompt('Enter revision notes for applicant:');
+      if (!note) return;
+
+      makeDecision('REVISION');
+    }
+
+    // === NOTIFICATIONS ===
+    function loadNotifications() {
+      const notifications = [
+        { text: 'New application submitted - Plan #124', time: '5 min ago' },
+        { text: 'Revision received - Plan #122', time: '1 hour ago' },
+        { text: 'Plan #120 requires attention', time: '2 hours ago' }
+      ];
+
+      const container = document.getElementById('notificationsList');
+      document.getElementById('notifCount').textContent = notifications.length;
+
+      container.innerHTML = notifications.map(n => `
+        <div class="notification-item">${n.text}</div>
+      `).join('');
+    }
+
+    // === PDF CONTROLS ===
+    function zoomIn() { scale = Math.min(scale + 0.25, 3); }
+    function zoomOut() { scale = Math.max(scale - 0.25, 0.5); }
+    function fitToWidth() { scale = 1.5; }
+    function prevPage() { if (currentPage > 1) currentPage--; }
+    function nextPage() { if (currentPage < totalPages) currentPage++; }
+    function togglePan() { document.getElementById('btnPan').classList.toggle('active'); }
+
+    // === SEARCH ===
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+      const query = e.target.value.toLowerCase();
+    });
+  </script>
+</body>
+</html>

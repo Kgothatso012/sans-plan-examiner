@@ -1,0 +1,9 @@
+{
+  "name": "tshwane-complaint-triage",
+  "version": "1.0.0",
+  "description": "AI Complaint Triage Bot",
+  "main": "index.js",
+  "dependencies": {
+    "node-telegram-bot-api": "^0.64.0"
+  }
+}

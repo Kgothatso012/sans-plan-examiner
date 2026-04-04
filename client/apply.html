@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apply | SANS Plan Examiner</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Droid+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Tshwane Municipal Blue */
+      --tshwane-blue: #2E7D32;
+      --tshwane-dark: #1B5E20;
+      --tshwane-light: #0077c8;
+
+      /* SANS10400 Red Accent */
+      --sans-red: #ef3636;
+
+      /* Neutrals */
+      --ink: #1a1a1a;
+      --steel: #666666;
+      --graphite: #333333;
+      --paper: #f5f5f5;
+      --white: #ffffff;
+
+      /* Status */
+      --success: #2e7d32;
+      --warning: #f57c00;
+      --danger: #ef3636;
+      --pending: #757575;
+
+      --font-body: 'Droid Sans', 'Segoe UI', sans-serif;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--tshwane-blue) 0%, var(--tshwane-dark) 100%);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    .header-content {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .logo-icon {
+      font-size: 2rem;
+    }
+
+    .logo-text {
+      color: white;
+    }
+
+    .logo-text h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .logo-text p {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      margin-left: var(--space-lg);
+      font-weight: 500;
+    }
+
+    .container { max-width: 800px; margin: 0 auto; padding: 0 var(--space-lg) var(--space-xl); }
+
+    .form-section {
+      background: var(--white);
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: var(--space-lg);
+      margin-bottom: var(--space-lg);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    h2 {
+      color: var(--tshwane-dark);
+      font-size: 1.2rem;
+      font-weight: 600;
+      border-bottom: 2px solid var(--tshwane-blue);
+      padding-bottom: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
+    }
+
+    .form-row.single { grid-template-columns: 1fr; }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--graphite);
+      margin-bottom: var(--space-xs);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px var(--space-md);
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--tshwane-blue);
+    }
+
+    .file-upload {
+      border: 2px dashed var(--tshwane-blue);
+      padding: var(--space-lg);
+      text-align: center;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #f8fbff;
+    }
+
+    .file-upload:hover { background: #e8f4fc; }
+
+    .file-upload input { display: none; }
+
+    .file-upload-label {
+      color: var(--tshwane-blue);
+      font-weight: 500;
+    }
+
+    .file-list { margin-top: var(--space-sm); }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8f8f8;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: 4px;
+      margin-bottom: var(--space-xs);
+      font-size: 0.85rem;
+    }
+
+    .file-item .remove {
+      color: var(--danger);
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .doc-type {
+      font-size: 0.8rem;
+      color: var(--steel);
+      margin-bottom: var(--space-xs);
+      font-weight: 500;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: auto;
+      margin-top: 3px;
+    }
+
+    .checkbox-group label {
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: var(--space-md) var(--space-xl);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--tshwane-blue);
+      color: white;
+      width: 100%;
+    }
+
+    .btn-primary:hover { background: var(--tshwane-dark); }
+
+    .btn-primary:disabled { background: var(--steel); cursor: not-allowed; }
+
+    .alert {
+      padding: var(--space-md);
+      border-radius: 4px;
+      margin-bottom: var(--space-md);
+      font-size: 0.9rem;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      border: 1px solid var(--success);
+      color: var(--success);
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .reference-result {
+      text-align: center;
+      padding: var(--space-xl);
+    }
+
+    .reference-number {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--tshwane-blue);
+      letter-spacing: 0.1em;
+      margin: var(--space-md) 0;
+    }
+
+    .loading { text-align: center; padding: var(--space-xl); color: var(--steel); }
+    .hidden { display: none; }
+
+    footer {
+      text-align: center;
+      padding: var(--space-lg);
+      background: var(--tshwane-dark);
+      color: white;
+    }
+
+    footer a { color: white; }
+
+    .required { color: var(--danger); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div class="logo">
+        <span class="logo-icon">🏛️</span>
+        <div class="logo-text">
+          <h1>SANS Plan Examiner</h1>
+          <p>Building Plan Application</p>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="track.html">Track Application</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <form id="applicationForm">
+      <!-- Property Info -->
+      <div class="form-section">
+        <h2>1. Property Information</h2>
+        <div class="form-row">
+          <div>
+            <label>ERF Number <span class="required">*</span></label>
+            <input type="text" id="erf_number" required placeholder="e.g., 12345">
+          </div>
+          <div>
+            <label>Street Address</label>
+            <input type="text" id="street_address" placeholder="123 Main Street, Pretoria">
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Zoning <span class="required">*</span></label>
+            <select id="zoning" required>
+              <option value="">Select Zoning</option>
+              <option value="Residential">Residential</option>
+              <option value="Commercial">Commercial</option>
+              <option value="Industrial">Industrial</option>
+              <option value="Institutional">Institutional</option>
+              <option value="Agricultural">Agricultural</option>
+              <option value="Mixed Use">Mixed Use</option>
+            </select>
+          </div>
+          <div>
+            <label>Application Description</label>
+            <input type="text" id="description" placeholder="New dwelling / Addition / Alteration">
+          </div>
+        </div>
+      </div>
+
+      <!-- Owner Details -->
+      <div class="form-section">
+        <h2>2. Owner Details</h2>
+        <div class="form-row">
+          <div>
+            <label>Full Name <span class="required">*</span></label>
+            <input type="text" id="owner_name" required>
+          </div>
+          <div>
+            <label>ID Number</label>
+            <input type="text" id="owner_id" placeholder="13 digits">
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Email Address <span class="required">*</span></label>
+            <input type="email" id="owner_email" required>
+          </div>
+          <div>
+            <label>Phone Number <span class="required">*</span></label>
+            <input type="tel" id="owner_phone" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- Professional -->
+      <div class="form-section">
+        <h2>3. Professional Person (If Applicable)</h2>
+        <div class="form-row">
+          <div>
+            <label>Name</label>
+            <input type="text" id="professional_name">
+          </div>
+          <div>
+            <label>Company</label>
+            <input type="text" id="professional_company">
+          </div>
+        </div>
+        <div class="form-row single">
+          <div>
+            <label>Contact Details</label>
+            <input type="text" id="professional_contact">
+          </div>
+        </div>
+      </div>
+
+      <!-- Documents -->
+      <div class="form-section">
+        <h2>4. Required Documents</h2>
+        <p style="color: var(--steel); font-size: 0.85rem; margin-bottom: var(--space-md);">
+          Upload required documents (PDF, max 10MB each)
+        </p>
+
+        <div style="margin-bottom: var(--space-lg);">
+          <div class="doc-type">Zoning Certificate <span class="required">*</span></div>
+          <label class="file-upload">
+            <input type="file" id="doc_zoning" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this, 'zoning')">
+            <span class="file-upload-label">Click to upload</span>
+          </label>
+          <div class="file-list" id="file_zoning"></div>
+        </div>
+
+        <div style="margin-bottom: var(--space-lg);">
+          <div class="doc-type">S.G. Diagram <span class="required">*</span></div>
+          <label class="file-upload">
+            <input type="file" id="doc_sg" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this, 'sg')">
+            <span class="file-upload-label">Click to upload</span>
+          </label>
+          <div class="file-list" id="file_sg"></div>
+        </div>
+
+        <div style="margin-bottom: var(--space-lg);">
+          <div class="doc-type">Title Deed <span class="required">*</span></div>
+          <label class="file-upload">
+            <input type="file" id="doc_title" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this, 'title_deed')">
+            <span class="file-upload-label">Click to upload</span>
+          </label>
+          <div class="file-list" id="file_title_deed"></div>
+        </div>
+
+        <div style="margin-bottom: var(--space-lg);">
+          <div class="doc-type">Drainage Diagram</div>
+          <label class="file-upload">
+            <input type="file" id="doc_drainage" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this, 'drainage')">
+            <span class="file-upload-label">Click to upload</span>
+          </label>
+          <div class="file-list" id="file_drainage"></div>
+        </div>
+
+        <div style="margin-bottom: var(--space-lg);">
+          <div class="doc-type">Building Plans <span class="required">*</span></div>
+          <label class="file-upload">
+            <input type="file" id="doc_plans" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this, 'building_plans')">
+            <span class="file-upload-label">Click to upload</span>
+          </label>
+          <div class="file-list" id="file_building_plans"></div>
+        </div>
+      </div>
+
+      <!-- Declaration -->
+      <div class="form-section">
+        <h2>5. Declaration</h2>
+        <div class="checkbox-group">
+          <input type="checkbox" id="declaration" required>
+          <label>I declare that the information furnished is true and correct. I accept that any misrepresentation may render my application invalid.</label>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="sans_declaration" required>
+          <label>My building plan will comply with SANS 10400 requirements.</label>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="submitBtn">Submit Application</button>
+    </form>
+
+    <div id="loading" class="loading hidden">Submitting...</div>
+
+    <div id="successResult" class="hidden">
+      <div class="form-section">
+        <div class="reference-result">
+          <h2>Application Submitted</h2>
+          <p>Your reference number:</p>
+          <div class="reference-number" id="refNumber">TC00000000</div>
+          <p>Use this to track your application</p>
+          <a href="track.html" class="btn btn-primary" style="margin-top: var(--space-md); max-width: 200px;">Track Application</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="errorAlert" class="alert alert-error hidden"></div>
+  </div>
+
+  <footer>
+    <p>SANS Plan Examiner Municipality | Building Control</p>
+    <p>012 358 9999 | building.control@tshwane.gov.za</p>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = 'https://pmhvteytflmbvolteota.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtaHZ0ZXl0ZmxtYnZvbHRlb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyODIwNTUsImV4cCI6MjA5MDg1ODA1NX0.Hhby7vx9Mq4AUnR4TJiAVCMlPRBm5xQtQM6LF0yEi_w';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const uploadedFiles = {};
+
+    function handleFile(input, type) {
+      const file = input.files[0];
+      if (!file) return;
+      if (file.size > 10 * 1024 * 1024) {
+        showError('File too large. Max 10MB.');
+        input.value = '';
+        return;
+      }
+      uploadedFiles[type] = { name: file.name, size: file.size, type: file.type, data: file };
+      const container = document.getElementById('file_' + type);
+      container.innerHTML = `<div class="file-item"><span>${file.name} (${(file.size/1024).toFixed(1)} KB)</span><span class="remove" onclick="removeFile('${type}')">Remove</span></div>`;
+    }
+
+    function removeFile(type) {
+      delete uploadedFiles[type];
+      document.getElementById('file_' + type).innerHTML = '';
+    }
+
+    function showError(msg) {
+      const alert = document.getElementById('errorAlert');
+      alert.textContent = msg;
+      alert.classList.remove('hidden');
+      setTimeout(() => alert.classList.add('hidden'), 5000);
+    }
+
+    document.getElementById('applicationForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submitBtn');
+      const form = document.getElementById('applicationForm');
+      const loading = document.getElementById('loading');
+      const successResult = document.getElementById('successResult');
+
+      if (!uploadedFiles.zoning || !uploadedFiles.sg || !uploadedFiles.title_deed || !uploadedFiles.building_plans) {
+        showError('Please upload all required documents');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      loading.classList.remove('hidden');
+      form.classList.add('hidden');
+
+      try {
+        const documents = [];
+        for (const [type, fileData] of Object.entries(uploadedFiles)) {
+          const filePath = `applications/${Date.now()}_${fileData.name}`;
+          try {
+            await supabase.storage.from('plans').upload(filePath, fileData.data);
+          } catch (err) { console.warn('Upload warn:', err); }
+          documents.push({ type, path: filePath, name: fileData.name, size: fileData.size });
+        }
+
+        const formData = {
+          erf_number: document.getElementById('erf_number').value,
+          street_address: document.getElementById('street_address').value,
+          zoning: document.getElementById('zoning').value,
+          owner_name: document.getElementById('owner_name').value,
+          owner_email: document.getElementById('owner_email').value,
+          owner_phone: document.getElementById('owner_phone').value,
+          owner_id: document.getElementById('owner_id').value,
+          professional_name: document.getElementById('professional_name').value,
+          professional_company: document.getElementById('professional_company').value,
+          professional_contact: document.getElementById('professional_contact').value,
+          description: document.getElementById('description').value,
+          documents
+        };
+
+        const response = await fetch('/api/applications/submit', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          document.getElementById('refNumber').textContent = result.reference;
+          loading.classList.add('hidden');
+          successResult.classList.remove('hidden');
+        } else { throw new Error(result.error); }
+      } catch (error) {
+        loading.classList.add('hidden');
+        form.classList.remove('hidden');
+        submitBtn.disabled = false;
+        showError(error.message || 'Submission failed');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "tshwane-plan-examiner-bot",
+  "version": "1.0.0",
+  "description": "WhatsApp bot for building plan compliance checking",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "@supabase/supabase-js": "^2.39.0",
+    "form-data": "^4.0.0",
+    "fs-extra": "^11.1.0"
+  }
+}

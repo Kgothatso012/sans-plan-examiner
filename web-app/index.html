@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Joe's Examiner | Plan Compliance System</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================
+       DESIGN SYSTEM: Industrial Government Technical
+       Aesthetic: Blueprint / Technical Drawing
+       DFII: 12 (Excellent)
+       ============================================ */
+
+    :root {
+      /* Blueprint Blue - Technical Authority */
+      --blueprint-dark: #0a1628;
+      --blueprint-mid: #1a365d;
+      --blueprint-light: #2d5a8c;
+      --blueprint-accent: #4a9eff;
+
+      /* Technical Neutrals */
+      --ink: #1a1f2e;
+      --steel: #64748b;
+      --graphite: #334155;
+      --paper: #f1f5f9;
+      --white: #ffffff;
+
+      /* Status Colors - Muted Industrial */
+      --success: #059669;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --pending: #6b7280;
+
+      /* Typography */
+      --font-display: 'Oswald', sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+
+      /* Spacing */
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+
+      /* Grid for blueprint effect */
+      --grid-size: 20px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-mono);
+      background: var(--blueprint-dark);
+      color: var(--paper);
+      min-height: 100vh;
+      line-height: 1.6;
+      background-image:
+        linear-gradient(rgba(74, 158, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(74, 158, 255, 0.03) 1px, transparent 1px);
+      background-size: var(--grid-size) var(--grid-size);
+      background-position: -1px -1px;
+    }
+
+    /* ============================================
+       LAYOUT
+       ============================================ */
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: var(--space-lg);
+    }
+
+    /* ============================================
+       HEADER - Technical Stamp Style
+       ============================================ */
+
+    header {
+      background: var(--ink);
+      border: 2px solid var(--blueprint-accent);
+      padding: var(--space-lg) var(--space-xl);
+      position: relative;
+      margin-bottom: var(--space-xl);
+    }
+
+    header::before {
+      content: 'TSHWANE MUNICIPALITY';
+      position: absolute;
+      top: -10px;
+      left: var(--space-lg);
+      background: var(--blueprint-dark);
+      padding: 0 var(--space-sm);
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      color: var(--blueprint-accent);
+      font-weight: 600;
+    }
+
+    header h1 {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--white);
+      line-height: 1;
+    }
+
+    header h1 span {
+      color: var(--blueprint-accent);
+    }
+
+    header .subtitle {
+      font-size: 0.75rem;
+      color: var(--steel);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: var(--space-xs);
+    }
+
+    .command-bar {
+      display: flex;
+      gap: var(--space-sm);
+      margin-top: var(--space-lg);
+      flex-wrap: wrap;
+    }
+
+    .cmd-btn {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: var(--space-sm) var(--space-md);
+      border: 1px solid var(--blueprint-light);
+      background: transparent;
+      color: var(--blueprint-accent);
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: all 0.2s ease;
+    }
+
+    .cmd-btn:hover {
+      background: var(--blueprint-accent);
+      color: var(--blueprint-dark);
+    }
+
+    .cmd-btn.active {
+      background: var(--blueprint-accent);
+      color: var(--blueprint-dark);
+    }
+
+    /* ============================================
+       SETUP PANEL - Collapsed Technical Form
+       ============================================ */
+
+    .setup-panel {
+      background: var(--ink);
+      border: 1px solid var(--graphite);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-lg);
+    }
+
+    .setup-panel h3 {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--steel);
+      margin-bottom: var(--space-md);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-md);
+    }
+
+    .form-field label {
+      display: block;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--steel);
+      margin-bottom: var(--space-xs);
+    }
+
+    .form-field input {
+      width: 100%;
+      padding: var(--space-sm) var(--space-md);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      background: var(--blueprint-dark);
+      border: 1px solid var(--graphite);
+      color: var(--paper);
+      transition: border-color 0.2s;
+    }
+
+    .form-field input:focus {
+      outline: none;
+      border-color: var(--blueprint-accent);
+    }
+
+    .btn {
+      font-family: var(--font-mono);
+      padding: var(--space-sm) var(--space-lg);
+      border: none;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--blueprint-accent);
+      color: var(--blueprint-dark);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: var(--white);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: var(--white);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--blueprint-accent);
+      color: var(--blueprint-accent);
+    }
+
+    .btn-outline:hover {
+      background: var(--blueprint-accent);
+      color: var(--blueprint-dark);
+    }
+
+    /* ============================================
+       UPLOAD ZONE - Blueprint Area
+       ============================================ */
+
+    .upload-zone {
+      border: 2px dashed var(--graphite);
+      padding: var(--space-2xl);
+      text-align: center;
+      background: var(--ink);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      margin-bottom: var(--space-lg);
+    }
+
+    .upload-zone:hover,
+    .upload-zone.dragover {
+      border-color: var(--blueprint-accent);
+      background: rgba(74, 158, 255, 0.05);
+    }
+
+    .upload-zone.has-file {
+      border-color: var(--success);
+    }
+
+    .upload-icon {
+      font-size: 2.5rem;
+      margin-bottom: var(--space-md);
+      opacity: 0.7;
+    }
+
+    .upload-zone h2 {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--paper);
+      margin-bottom: var(--space-sm);
+    }
+
+    .upload-zone p {
+      font-size: 0.75rem;
+      color: var(--steel);
+    }
+
+    .file-input { display: none; }
+
+    .file-badge {
+      display: inline-block;
+      background: var(--success);
+      color: var(--white);
+      padding: var(--space-xs) var(--space-sm);
+      font-size: 0.7rem;
+      margin-top: var(--space-md);
+    }
+
+    /* ============================================
+       STATUS BAR - Technical Progress
+       ============================================ */
+
+    .status-bar {
+      background: var(--ink);
+      border: 1px solid var(--graphite);
+      padding: var(--space-md);
+      margin-bottom: var(--space-lg);
+      display: none;
+    }
+
+    .status-bar.active { display: block; }
+
+    .status-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-sm);
+    }
+
+    .status-text {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--blueprint-accent);
+    }
+
+    .status-percent {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--paper);
+    }
+
+    .progress-track {
+      height: 4px;
+      background: var(--graphite);
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--blueprint-accent);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* ============================================
+       RESULTS SECTION
+       ============================================ */
+
+    .results { display: none; }
+    .results.active { display: block; }
+
+    .results-header {
+      background: var(--ink);
+      border: 2px solid var(--blueprint-light);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-lg);
+    }
+
+    .results-header h2 {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--blueprint-accent);
+      margin-bottom: var(--space-md);
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .meta-item {
+      border-left: 2px solid var(--graphite);
+      padding-left: var(--space-md);
+    }
+
+    .meta-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--steel);
+    }
+
+    .meta-value {
+      font-size: 0.85rem;
+      color: var(--paper);
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: flex;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      flex: 1;
+      min-width: 100px;
+      background: var(--blueprint-dark);
+      border: 1px solid var(--graphite);
+      padding: var(--space-md);
+      text-align: center;
+    }
+
+    .stat-card.pass { border-color: var(--success); }
+    .stat-card.fail { border-color: var(--danger); }
+    .stat-card.total { border-color: var(--blueprint-accent); }
+
+    .stat-number {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .stat-card.pass .stat-number { color: var(--success); }
+    .stat-card.fail .stat-number { color: var(--danger); }
+    .stat-card.total .stat-number { color: var(--blueprint-accent); }
+
+    .stat-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--steel);
+      margin-top: var(--space-xs);
+    }
+
+    /* ============================================
+       CLAUSE CARDS - Technical Blocks
+       ============================================ */
+
+    .clause-card {
+      background: var(--ink);
+      border: 1px solid var(--graphite);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-md);
+      position: relative;
+    }
+
+    .clause-card.pass { border-left: 3px solid var(--success); }
+    .clause-card.fail { border-left: 3px solid var(--danger); }
+    .clause-card.pending { border-left: 3px solid var(--pending); }
+
+    .clause-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--space-md);
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    .clause-id {
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: var(--blueprint-dark);
+      padding: var(--space-xs) var(--space-sm);
+      border: 1px solid var(--graphite);
+    }
+
+    .clause-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--paper);
+      flex: 1;
+      margin: 0 var(--space-md);
+    }
+
+    .status-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+    }
+
+    .status-badge.pass { background: var(--success); color: var(--white); }
+    .status-badge.fail { background: var(--danger); color: var(--white); }
+    .status-badge.pending { background: var(--pending); color: var(--white); }
+
+    .clause-description {
+      font-size: 0.8rem;
+      color: var(--steel);
+      margin-bottom: var(--space-sm);
+    }
+
+    .clause-requirement {
+      background: var(--blueprint-dark);
+      border-left: 2px solid var(--blueprint-light);
+      padding: var(--space-md);
+      font-size: 0.75rem;
+      color: var(--paper);
+      margin-bottom: var(--space-md);
+    }
+
+    .clause-requirement strong {
+      color: var(--blueprint-accent);
+      text-transform: uppercase;
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+    }
+
+    /* Tshwane Checklist Tags */
+    .checklist-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-md);
+    }
+
+    .checklist-tag {
+      font-size: 0.6rem;
+      padding: 2px 6px;
+      background: var(--graphite);
+      color: var(--steel);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .violation-block {
+      background: rgba(220, 38, 38, 0.1);
+      border: 1px solid var(--danger);
+      padding: var(--space-md);
+      margin-bottom: var(--space-md);
+    }
+
+    .violation-block strong {
+      color: var(--danger);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: block;
+      margin-bottom: var(--space-xs);
+    }
+
+    .violation-block p {
+      font-size: 0.8rem;
+      color: var(--paper);
+    }
+
+    .correction-actions {
+      display: flex;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+    }
+
+    .btn-sm {
+      padding: var(--space-xs) var(--space-sm);
+      font-size: 0.65rem;
+    }
+
+    .corrected-notice {
+      display: none;
+      color: var(--success);
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .correction-actions.corrected .corrected-notice {
+      display: inline-block;
+    }
+
+    .correction-actions.corrected .btn-correct {
+      display: none;
+    }
+
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.8rem; }
+      .container { padding: var(--space-md); }
+      .stats-grid { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- HEADER -->
+    <header>
+      <h1>Joe's <span>Examiner</span></h1>
+      <p class="subtitle">Building Plan Compliance System • Tshwane Municipality</p>
+      <div class="command-bar">
+        <button class="cmd-btn" onclick="runCommand('analyze')">/analyze</button>
+        <button class="cmd-btn" onclick="runCommand('report')">/report</button>
+        <button class="cmd-btn" onclick="runCommand('export')">/export</button>
+      </div>
+    </header>
+
+    <!-- SETUP PANEL -->
+    <div class="setup-panel">
+      <h3>API Configuration</h3>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Supabase URL</label>
+          <input type="text" id="supabaseUrl" placeholder="https://xxxxx.supabase.co">
+        </div>
+        <div class="form-field">
+          <label>Supabase Anon Key</label>
+          <input type="password" id="supabaseKey" placeholder="eyJxxxxx">
+        </div>
+        <div class="form-field">
+          <label>MiniMax API Key</label>
+          <input type="password" id="minimaxKey" placeholder="Enter your API key">
+        </div>
+      </div>
+      <button class="btn btn-outline" onclick="saveConfig()" style="margin-top: var(--space-md);">Save Configuration</button>
+    </div>
+
+    <!-- UPLOAD ZONE -->
+    <div class="upload-zone" id="uploadZone">
+      <div class="upload-icon">📐</div>
+      <h2>Upload Building Plan</h2>
+      <p>Drag and drop PDF, or click to browse</p>
+      <input type="file" class="file-input" id="fileInput" accept=".pdf">
+      <div class="file-badge" id="fileBadge" style="display:none;">File loaded</div>
+    </div>
+
+    <!-- STATUS BAR -->
+    <div class="status-bar" id="statusBar">
+      <div class="status-info">
+        <span class="status-text" id="statusText">Initializing...</span>
+        <span class="status-percent" id="statusPercent">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results" id="results">
+      <div class="results-header">
+        <h2>Compliance Report</h2>
+        <div class="meta-grid">
+          <div class="meta-item">
+            <div class="meta-label">File</div>
+            <div class="meta-value" id="fileName">—</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Date</div>
+            <div class="meta-value" id="analyzeDate">—</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Pages</div>
+            <div class="meta-value" id="planInfo">—</div>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card pass">
+            <div class="stat-number" id="passCount">0</div>
+            <div class="stat-label">Pass</div>
+          </div>
+          <div class="stat-card fail">
+            <div class="stat-number" id="failCount">0</div>
+            <div class="stat-label">Fail</div>
+          </div>
+          <div class="stat-card total">
+            <div class="stat-number" id="examinedCount">0</div>
+            <div class="stat-label">Examined</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CLAUSES LIST -->
+      <div id="clausesList"></div>
+    </div>
+
+  </div>
+
+  <script>
+    // ============================================
+    // DESIGN SYSTEM: Industrial Government Technical
+    // ============================================
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    let supabase = null;
+    let config = { supabaseUrl: '', supabaseKey: '', minimaxKey: '' };
+    let extractedText = '';
+    let analysisResults = [];
+    let plansExamined = 0;
+    let currentFile = null;
+
+    // ============================================
+    // CONFIG
+    // ============================================
+
+    function loadConfig() {
+      const saved = localStorage.getItem('joesExaminerConfig');
+      if (saved) {
+        config = JSON.parse(saved);
+        document.getElementById('supabaseUrl').value = config.supabaseUrl || '';
+        document.getElementById('supabaseKey').value = config.supabaseKey || '';
+        document.getElementById('minimaxKey').value = config.minimaxKey || '';
+      }
+    }
+    loadConfig();
+
+    function saveConfig() {
+      config.supabaseUrl = document.getElementById('supabaseUrl').value.trim();
+      config.supabaseKey = document.getElementById('supabaseKey').value.trim();
+      config.minimaxKey = document.getElementById('minimaxKey').value.trim();
+      localStorage.setItem('joesExaminerConfig', JSON.stringify(config));
+      alert('Configuration saved.');
+    }
+
+    function initSupabase() {
+      if (!config.supabaseUrl || !config.supabaseKey) return false;
+      try {
+        supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
+        return true;
+      } catch (e) {
+        console.error('Supabase init error:', e);
+        return false;
+      }
+    }
+
+    // ============================================
+    // TOOL SYSTEM
+    // ============================================
+
+    const tools = {};
+
+    async function initTools() {
+      try {
+        const clausesRes = await fetch('sans-clauses.json');
+        const clausesData = await clausesRes.json();
+
+        clausesData.clauses.forEach(clause => {
+          tools[clause.id] = {
+            name: clause.id,
+            description: clause.description,
+            requirement: clause.requirement,
+            check_points: clause.check_points || [],
+            tshwane_checklist: clause.tshwane_checklist || [],
+            execute: async (text) => {
+              const hasEvidence = clause.check_points.some(point =>
+                text.toLowerCase().includes(point.toLowerCase())
+              );
+              return {
+                clause_id: clause.id,
+                status: hasEvidence ? 'PASS' : 'FAIL',
+                evidence: clause.check_points.filter(point =>
+                  text.toLowerCase().includes(point.toLowerCase())
+                ),
+                missing: clause.check_points.filter(point =>
+                  !text.toLowerCase().includes(point.toLowerCase())
+                )
+              };
+            }
+          };
+        });
+        console.log(`Loaded ${Object.keys(tools).length} clause tools`);
+      } catch (e) {
+        console.log('Tools init:', e.message);
+      }
+    }
+
+    // ============================================
+    // SKILL SYSTEM
+    // ============================================
+
+    const skills = {
+      'examine-building-plan': {
+        name: 'examine-building-plan',
+        description: 'Full building plan examination',
+        steps: [
+          'TSHWANE-SITE', 'TSHWANE-FLOOR', 'TSHWANE-ROOF',
+          'TSHWANE-ELEV', 'TSHWANE-SECT', 'TSHWANE-STR',
+          'SANS10400-XA1', 'SANS10400-XA2', 'SANS10400-XA3', 'SANS10400-B1'
+        ],
+        execute: async function(text) {
+          const results = [];
+          for (const clauseId of this.steps) {
+            if (tools[clauseId]) {
+              const result = await tools[clauseId].execute(text);
+              results.push(result);
+              updateProgress(Math.round((results.length / this.steps.length) * 80));
+            }
+          }
+          return results;
+        }
+      }
+    };
+
+    initTools();
+
+    // ============================================
+    // UPLOAD HANDLER
+    // ============================================
+
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+
+    uploadZone.addEventListener('click', () => fileInput.click());
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.classList.add('dragover');
+    });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type === 'application/pdf') handleFile(file);
+    });
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files[0]) handleFile(e.target.files[0]);
+    });
+
+    async function handleFile(file) {
+      if (!config.supabaseUrl || !config.supabaseKey || !config.minimaxKey) {
+        alert('Please configure all API keys first.');
+        return;
+      }
+
+      currentFile = file;
+      showStatus('Parsing PDF...');
+      document.getElementById('fileBadge').style.display = 'inline-block';
+      uploadZone.classList.add('has-file');
+
+      try {
+        extractedText = await parsePDF(file);
+        showStatus('Analyzing with AI...', 20);
+        await analyzePlan(file.name, extractedText);
+      } catch (e) {
+        alert('Error: ' + e.message);
+        hideStatus();
+      }
+    }
+
+    async function parsePDF(file) {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let text = '';
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        const pageText = content.items.map(item => item.str).join(' ');
+        text += `Page ${i}: ${pageText}\n`;
+        updateProgress(Math.round((i / pdf.numPages) * 20));
+      }
+
+      document.getElementById('fileName').textContent = file.name;
+      document.getElementById('analyzeDate').textContent = new Date().toLocaleDateString();
+      document.getElementById('planInfo').textContent = pdf.numPages;
+
+      return text;
+    }
+
+    // ============================================
+    // MEMORY SYSTEM
+    // ============================================
+
+    async function fetchCorrections() {
+      if (!initSupabase()) return [];
+      try {
+        const { data, error } = await supabase
+          .from('corrections')
+          .select('clause_id, ai_status, corrected_status, created_at')
+          .order('created_at', { ascending: false })
+          .limit(50);
+        if (error) throw error;
+        return data || [];
+      } catch (e) {
+        console.log('No corrections yet');
+        return [];
+      }
+    }
+
+    async function analyzePlan(fileName, text) {
+      const clausesRes = await fetch('sans-clauses.json');
+      const clauses = await clausesRes.json();
+
+      const corrections = await fetchCorrections();
+      const learningContext = corrections.length > 0
+        ? `LEARNINGS FROM PREVIOUS EXAMINATIONS:\n${corrections.map(c =>
+            `- Clause ${c.clause_id}: AI said ${c.ai_status}, corrected to ${c.corrected_status}`
+          ).join('\n')}\n\n`
+        : '';
+
+      const prompt = `You are a building plan examiner for Tshwane Municipality, South Africa. Analyze the following building plan against SANS 10400 and Tshwane checklist requirements.
+${learningContext}Each clause has specific checklist items. Check if they appear in the plan.
+
+PLAN TEXT:
+${text.substring(0, 8000)}
+
+CLAUSES:
+${JSON.stringify(clauses.clauses, null, 2)}
+
+For each clause return JSON: {"clause_id":"X","status":"PASS|FAIL|PENDING","reasoning":"...","violation_text":"..."}`;
+
+      updateProgress(30);
+
+      try {
+        const response = await fetch('https://api.minimax.chat/v1/text/chatcompletion_pro', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${config.minimaxKey}`
+          },
+          body: JSON.stringify({
+            model: 'abab6.5s-chat',
+            messages: [{ role: 'user', content: prompt }],
+            temperature: 0.3
+          })
+        });
+
+        const data = await response.json();
+        updateProgress(70);
+
+        let resultText = data.choices?.[0]?.message?.content || '';
+
+        const jsonMatch = resultText.match(/\[[\s\S]*\]/);
+        if (jsonMatch) {
+          analysisResults = JSON.parse(jsonMatch[0]);
+        } else {
+          analysisResults = clauses.clauses.map(c => ({
+            clause_id: c.id,
+            status: 'PENDING',
+            reasoning: 'Could not parse AI response',
+            violation_text: ''
+          }));
+        }
+
+        const existingIds = analysisResults.map(r => r.clause_id);
+        clauses.clauses.forEach(c => {
+          if (!existingIds.includes(c.id)) {
+            analysisResults.push({
+              clause_id: c.id,
+              status: 'PENDING',
+              reasoning: 'Not assessed',
+              violation_text: ''
+            });
+          }
+        });
+
+        updateProgress(90);
+        displayResults();
+        updateProgress(100);
+        hideStatus();
+
+      } catch (e) {
+        alert('API Error: ' + e.message);
+        hideStatus();
+      }
+    }
+
+    // ============================================
+    // DISPLAY RESULTS
+    // ============================================
+
+    function displayResults() {
+      const list = document.getElementById('clausesList');
+      list.innerHTML = '';
+
+      let passCount = 0, failCount = 0;
+
+      fetch('sans-clauses.json').then(r => r.json()).then(clausesData => {
+        const clauseMap = {};
+        clausesData.clauses.forEach(c => clauseMap[c.id] = c);
+
+        analysisResults.forEach(result => {
+          const clause = clauseMap[result.clause_id] || {
+            title: result.clause_id,
+            description: '',
+            requirement: '',
+            tshwane_checklist: []
+          };
+          const isFail = result.status === 'FAIL';
+          const isPass = result.status === 'PASS';
+
+          if (isFail) failCount++;
+          if (isPass) passCount++;
+
+          let checklistHtml = '';
+          if (clause.tshwane_checklist && clause.tshwane_checklist.length > 0) {
+            checklistHtml = `<div class="checklist-tags">
+              ${clause.tshwane_checklist.map(item =>
+                `<span class="checklist-tag">${item}</span>`
+              ).join('')}
+            </div>`;
+          }
+
+          const card = document.createElement('div');
+          card.className = `clause-card ${isFail ? 'fail' : isPass ? 'pass' : 'pending'}`;
+          card.innerHTML = `
+            <div class="clause-header">
+              <span class="clause-id">${result.clause_id}</span>
+              <span class="clause-title">${clause.title}</span>
+              <span class="status-badge ${isFail ? 'fail' : isPass ? 'pass' : 'pending'}">${result.status}</span>
+            </div>
+            <div class="clause-description">${clause.description}</div>
+            <div class="clause-requirement"><strong>Requirement</strong> ${clause.requirement}</div>
+            ${checklistHtml}
+            ${isFail && result.violation_text ? `
+              <div class="violation-block">
+                <strong>Violation Found</strong>
+                <p>${result.violation_text}</p>
+              </div>
+            ` : ''}
+            <div class="correction-actions" id="actions-${result.clause_id}">
+              <button class="btn btn-success btn-sm" onclick="markCorrect('${result.clause_id}', true)">✓ Correct</button>
+              <button class="btn btn-danger btn-sm" onclick="markCorrect('${result.clause_id}', false)">✗ False Alarm</button>
+              <span class="corrected-notice">✓ Saved</span>
+            </div>
+          `;
+          list.appendChild(card);
+        });
+
+        document.getElementById('passCount').textContent = passCount;
+        document.getElementById('failCount').textContent = failCount;
+        plansExamined++;
+        document.getElementById('examinedCount').textContent = plansExamined;
+        document.getElementById('results').classList.add('active');
+      });
+    }
+
+    async function markCorrect(clauseId, isCorrect) {
+      if (!initSupabase()) {
+        alert('Supabase not configured.');
+        return;
+      }
+
+      try {
+        const { error } = await supabase
+          .from('corrections')
+          .upsert({
+            clause_id: clauseId,
+            ai_status: 'FAIL',
+            corrected_status: isCorrect ? 'CORRECT' : 'FALSE_ALARM',
+            created_at: new Date().toISOString()
+          }, { onConflict: 'clause_id' });
+
+        if (error) throw error;
+
+        const actions = document.getElementById(`actions-${clauseId}`);
+        actions.classList.add('corrected');
+        actions.querySelector('.corrected-notice').textContent = isCorrect ? '✓ Correct' : '✓ False Alarm Saved';
+
+      } catch (e) {
+        alert('Error saving: ' + e.message);
+      }
+    }
+
+    // ============================================
+    // STATUS
+    // ============================================
+
+    function showStatus(text, percent) {
+      document.getElementById('statusText').textContent = text;
+      document.getElementById('statusBar').classList.add('active');
+      if (percent !== undefined) updateProgress(percent);
+    }
+
+    function updateProgress(percent) {
+      document.getElementById('progressFill').style.width = percent + '%';
+      document.getElementById('statusPercent').textContent = percent + '%';
+    }
+
+    function hideStatus() {
+      setTimeout(() => {
+        document.getElementById('statusBar').classList.remove('active');
+      }, 500);
+    }
+
+    // ============================================
+    // COMMANDS
+    // ============================================
+
+    async function runCommand(cmd) {
+      switch(cmd) {
+        case 'analyze':
+          if (!extractedText) {
+            document.getElementById('fileInput').click();
+          } else {
+            await analyzePlan('Re-analysis', extractedText);
+          }
+          break;
+        case 'report':
+          document.getElementById('results').classList.add('active');
+          document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+          break;
+        case 'export':
+          exportReport();
+          break;
+      }
+    }
+
+    function exportReport() {
+      if (!analysisResults.length) {
+        alert('No results to export. Analyze a plan first.');
+        return;
+      }
+
+      let report = `JOE'S EXAMINER - COMPLIANCE REPORT\n`;
+      report += `=================================\n\n`;
+      report += `Date: ${new Date().toLocaleString()}\n`;
+      report += `Plans Examined: ${plansExamined}\n\n`;
+      report += `CLAUSES:\n`;
+      analysisResults.forEach(r => {
+        report += `  ${r.clause_id}: ${r.status}\n`;
+        if (r.violation_text) report += `    Violation: ${r.violation_text}\n`;
+      });
+
+      const blob = new Blob([report], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `examination-${Date.now()}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
