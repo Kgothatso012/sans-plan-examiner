@@ -554,7 +554,7 @@ app.post('/api/applications/:id/decision', requireAdminAuth, async (req, res) =>
     const { id } = req.params;
     const { decision } = req.body;
 
-    const validDecisions = ['APPROVED', 'REJECTED', 'REVISION', 'PENDING'];
+    const validDecisions = ['COMPLETED', 'REJECTED'];
     if (!validDecisions.includes(decision)) {
       return res.status(400).json({ error: 'Invalid decision' });
     }
