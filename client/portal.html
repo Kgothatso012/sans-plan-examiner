@@ -306,6 +306,9 @@
   </div>
 
   <script>
+    // === PDF.js Worker Setup ===
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
     // === CONFIG ===
     const SUPABASE_URL = 'https://pmhvteytflmbvolteota.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtaHZ0ZXl0ZmxtYnZvbHRlb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyODIwNTUsImV4cCI6MjA5MDg1ODA1NX0.Hhby7vx9Mq4AUnR4TJiAVCMlPRBm5xQtQM6LF0yEi_w';
@@ -499,6 +502,8 @@
         } catch (e) { revisions = []; }
 
         currentApp = app;
+        currentApp.comments = comments;
+        currentApp.revisions = revisions;
 
         renderApps(currentFilter === 'all' ? allApps : allApps.filter(a => a.status === currentFilter));
 
@@ -647,6 +652,81 @@
 
       event.target.classList.add('active');
       document.getElementById('panel-' + tab).classList.add('active');
+
+      // Load PDF when view tab is selected
+      if (tab === 'view' && currentApp) {
+        loadApplicantPdf();
+      }
+    }
+
+    // === PDF VIEWER FOR APPLICANTS ===
+    let applicantPdfDoc = null;
+    let applicantPdfPage = 1;
+
+    async function loadApplicantPdf() {
+      const container = document.getElementById('pdfViewer');
+      if (!currentApp || !currentApp.application_documents || currentApp.application_documents.length === 0) {
+        container.innerHTML = '<div style="color: white; text-align: center; padding: 40px;"><p>No documents available</p></div>';
+        return;
+      }
+
+      const doc = currentApp.application_documents[0];
+      try {
+        // Get document URL
+        const res = await fetch(`/api/documents/${currentApp.id}/${doc.id}`);
+        const data = await res.json();
+
+        // Load PDF using PDF.js
+        const loadingTask = pdfjsLib.getDocument(data.url);
+        applicantPdfDoc = await loadingTask.promise;
+
+        await renderApplicantPage(1);
+      } catch (e) {
+        console.error('PDF load error:', e);
+        container.innerHTML = '<div style="color: white; text-align: center; padding: 40px;"><p>Unable to load PDF</p><p style="font-size: 0.8rem; opacity: 0.7;">' + e.message + '</p></div>';
+      }
+    }
+
+    async function renderApplicantPage(pageNum) {
+      if (!applicantPdfDoc) return;
+
+      const container = document.getElementById('pdfViewer');
+      const page = await applicantPdfDoc.getPage(pageNum);
+      const viewport = page.getViewport({ scale: 1.2 });
+
+      // Create canvas
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      canvas.style.display = 'block';
+
+      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+      // Build page container with pins
+      const pageContainer = document.createElement('div');
+      pageContainer.className = 'pdf-page';
+      pageContainer.appendChild(canvas);
+
+      // Add comment pins
+      if (comments && comments.length > 0) {
+        comments.forEach((c, i) => {
+          if (c.x_position && c.y_position) {
+            const pin = document.createElement('div');
+            pin.className = `pdf-comment-pin ${c.comment_type || 'violation'}`;
+            pin.style.left = (c.x_position * 100) + '%';
+            pin.style.top = (c.y_position * 100) + '%';
+            pin.textContent = i + 1;
+            pin.title = c.comment_text || 'Comment';
+            pin.onclick = (e) => { e.stopPropagation(); showCommentDetail(c.id, c.x_position, c.y_position); };
+            pageContainer.appendChild(pin);
+          }
+        });
+      }
+
+      container.innerHTML = '';
+      container.appendChild(pageContainer);
+      applicantPdfPage = pageNum;
     }
 
     // === ACTIONS ===

@@ -58,6 +58,10 @@
     .queue-section { flex: 1; overflow-y: auto; padding: var(--space-sm); }
     .queue-header { display: flex; justify-content: space-between; align-items: center; padding: var(--space-sm) var(--space-md); }
     .queue-header h3 { font-size: 0.85rem; color: var(--steel); text-transform: uppercase; letter-spacing: 0.05em; }
+    .queue-filters { display: flex; gap: 4px; padding: 4px var(--space-md); background: #f8f8f8; border-bottom: 1px solid #eee; }
+    .filter-btn { flex: 1; padding: 6px 8px; font-size: 0.7rem; border: none; background: transparent; color: var(--steel); cursor: pointer; border-radius: 4px; transition: all 0.2s; }
+    .filter-btn:hover { background: #e0e0e0; }
+    .filter-btn.active { background: var(--tshwane-blue); color: white; }
     .queue-item { padding: var(--space-md); border: 1px solid #eee; border-radius: 6px; margin-bottom: var(--space-sm); cursor: pointer; transition: all 0.2s; }
     .queue-item:hover { border-color: var(--tshwane-blue); background: #f8fcf8; }
     .queue-item.active { border-color: var(--tshwane-blue); background: #e8f5e9; }
@@ -86,6 +90,10 @@
     .toolbar-btn:hover { background: #f5f5f5; }
     .toolbar-btn.active { background: var(--tshwane-blue); color: white; border-color: var(--tshwane-blue); }
     .toolbar-btn.primary { background: var(--tshwane-blue); color: white; border-color: var(--tshwane-blue); }
+    .toolbar-btn.ai-analyze-btn { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border: none; font-weight: 600; padding: 8px 16px; border-radius: 4px; }
+    .toolbar-btn.ai-analyze-btn:hover { background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); }
+    .toolbar-btn.ai-analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .toolbar-btn.ai-analyze-btn.loading { animation: pulse 1.5s infinite; }
 
     /* === PDF VIEWER === */
     .pdf-container { flex: 1; overflow: auto; background: #525659; display: flex; justify-content: center; padding: var(--space-lg); }
@@ -165,14 +173,34 @@
 
     /* === AI ANALYSIS === */
     .ai-analysis { margin-bottom: var(--space-lg); }
-    .ai-item { display: flex; align-items: flex-start; gap: var(--space-sm); padding: var(--space-sm); background: var(--white); border: 1px solid #eee; border-radius: 4px; margin-bottom: var(--space-xs); }
-    .ai-status { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; }
+    .ai-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-sm); margin-bottom: var(--space-md); padding: var(--space-sm); background: #f8f9fa; border-radius: 6px; }
+    .ai-summary-item { text-align: center; padding: var(--space-xs); }
+    .ai-summary-number { font-size: 1.5rem; font-weight: 700; }
+    .ai-summary-label { font-size: 0.7rem; text-transform: uppercase; color: var(--steel); }
+    .ai-summary-item.pass .ai-summary-number { color: var(--success); }
+    .ai-summary-item.fail .ai-summary-number { color: var(--danger); }
+    .ai-summary-item.warn .ai-summary-number { color: var(--warning); }
+    .ai-summary-item.info .ai-summary-number { color: var(--info); }
+    .ai-category { margin-bottom: var(--space-md); }
+    .ai-category-title { font-size: 0.75rem; text-transform: uppercase; color: var(--steel); margin-bottom: var(--space-xs); padding-bottom: 4px; border-bottom: 1px solid #eee; }
+    .ai-item { display: flex; align-items: flex-start; gap: var(--space-sm); padding: var(--space-sm); background: var(--white); border: 1px solid #e9ecef; border-radius: 6px; margin-bottom: var(--space-xs); border-left: 3px solid #ccc; }
+    .ai-item.pass { border-left-color: var(--success); }
+    .ai-item.fail { border-left-color: var(--danger); }
+    .ai-item.warn { border-left-color: var(--warning); border-left-color: var(--info); }
+    .ai-status { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
     .ai-status.pass { background: var(--success); }
     .ai-status.fail { background: var(--danger); }
     .ai-status.warn { background: var(--warning); }
+    .ai-status.info { background: var(--info); }
     .ai-content { flex: 1; }
-    .ai-clause { font-family: var(--font-mono); font-size: 0.75rem; color: var(--steel); }
-    .ai-text { font-size: 0.85rem; }
+    .ai-clause { font-family: var(--font-mono); font-size: 0.75rem; color: var(--steel); display: flex; justify-content: space-between; align-items: center; }
+    .ai-clause-title { font-weight: 600; }
+    .ai-confidence { font-size: 0.65rem; padding: 2px 6px; border-radius: 10px; background: #f0f0f0; }
+    .ai-text { font-size: 0.85rem; color: #555; margin-top: 4px; }
+    .ai-measurements { display: flex; gap: var(--space-md); font-size: 0.75rem; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #eee; }
+    .ai-measured { color: #666; }
+    .ai-required { color: #888; }
+    .ai-suggestion { font-size: 0.8rem; color: var(--danger); margin-top: 6px; padding: 6px; background: #fff5f5; border-radius: 4px; border-left: 2px solid var(--danger); }
 
     /* === NO PLAN SELECTED === */
     .no-selection { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--steel); }
@@ -212,6 +240,12 @@
           <h3>Queue</h3>
           <span id="queueCount">0</span>
         </div>
+        <div class="queue-filters">
+          <button class="filter-btn active" onclick="filterQueue('all')">All</button>
+          <button class="filter-btn" onclick="filterQueue('SUBMITTED')">New</button>
+          <button class="filter-btn" onclick="filterQueue('IN_REVIEW')">Review</button>
+          <button class="filter-btn" onclick="filterQueue('REVISION')">Revision</button>
+        </div>
         <div id="queueList"></div>
       </div>
 
@@ -236,6 +270,9 @@
         <div class="toolbar-group">
           <button class="toolbar-btn" id="btnPan" onclick="togglePan()">Hand</button>
           <button class="toolbar-btn primary" id="btnComment" onclick="enableCommentMode()">💬 Add Comment</button>
+        </div>
+        <div class="toolbar-group" id="aiButtonGroup">
+          <button class="toolbar-btn ai-analyze-btn" id="btnAIAnalyze" onclick="runAIAnalysis()">🤖 Run AI Analysis</button>
         </div>
         <div class="toolbar-group" style="margin-left: auto;">
           <button class="toolbar-btn" onclick="prevPage()">◀</button>
@@ -476,21 +513,37 @@
       }
     }
 
-    function renderQueue(apps) {
-      const container = document.getElementById('queueList');
-      document.getElementById('queueCount').textContent = apps.length;
+    let currentQueueFilter = 'all';
+    let allQueueApps = [];
 
-      if (apps.length === 0) {
-        container.innerHTML = '<p style="padding: 16px; color: var(--steel); text-align: center;">No applications in queue</p>';
+    function filterQueue(status) {
+      currentQueueFilter = status;
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      renderQueue(allQueueApps);
+    }
+
+    function renderQueue(apps) {
+      allQueueApps = apps;
+      const container = document.getElementById('queueList');
+
+      // Filter by status
+      const filtered = currentQueueFilter === 'all' ? apps : apps.filter(a => a.status === currentQueueFilter);
+      document.getElementById('queueCount').textContent = filtered.length + (currentQueueFilter !== 'all' ? '/' + apps.length : '');
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p style="padding: 16px; color: var(--steel); text-align: center;">${currentQueueFilter === 'all' ? 'No applications' : 'No ' + currentQueueFilter.toLowerCase() + ' applications'}</p>`;
         return;
       }
 
-      apps.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-      container.innerHTML = apps.map(app => {
-        const badgeClass = app.status === 'PENDING' ? 'NEW' :
-                          app.status === 'ANALYZING' ? 'IN_REVIEW' :
-                          app.status === 'COMPLETED' ? 'REVISION' : app.status;
+      container.innerHTML = filtered.map(app => {
+        const badgeClass = app.status === 'SUBMITTED' ? 'NEW' :
+                          app.status === 'IN_REVIEW' ? 'IN_REVIEW' :
+                          app.status === 'REVISION' ? 'REVISION' :
+                          app.status === 'APPROVED' ? 'APPROVED' :
+                          app.status === 'REJECTED' ? 'REJECTED' : 'NEW';
         return `
           <div class="queue-item ${currentApp?.id === app.id ? 'active' : ''}" onclick="selectApplication('${app.id}')">
             <div class="queue-ref">${app.reference}</div>
@@ -673,6 +726,11 @@
       document.getElementById('btnComment').classList.toggle('active');
     }
 
+    // Pin marker styles
+    const pinStyle = document.createElement('style');
+    pinStyle.textContent = '.temp-pin-marker { position: absolute; width: 24px; height: 24px; background: var(--sans-red); border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 2px 8px rgba(0,0,0,0.3); z-index: 100; animation: pin-drop 0.3s ease; } @keyframes pin-drop { from { transform: translate(-50%, -50%) scale(0); } to { transform: translate(-50%, -50%) scale(1); } }';
+    document.head.appendChild(pinStyle);
+
     document.addEventListener('click', function(e) {
       if (!commentMode) return;
       const layer = document.getElementById('annotationLayer');
@@ -685,6 +743,23 @@
         page: currentPage
       };
 
+      // Show immediate pin feedback
+      const existingPin = document.querySelector('.temp-pin-marker');
+      if (existingPin) existingPin.remove();
+
+      const pinMarker = document.createElement('div');
+      pinMarker.className = 'temp-pin-marker';
+      pinMarker.style.left = commentPosition.x + 'px';
+      pinMarker.style.top = commentPosition.y + 'px';
+      layer.appendChild(pinMarker);
+
+      // Brief flash animation
+      pinMarker.animate([
+        { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+        { transform: 'translate(-50%, -50%) scale(1.3)', opacity: 0.7 },
+        { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 }
+      ], { duration: 300 });
+
       openCommentModal();
     });
 
@@ -693,6 +768,10 @@
     }
 
     function closeModal() {
+      // Remove temp pin marker if user cancels
+      const tempPin = document.querySelector('.temp-pin-marker');
+      if (tempPin) tempPin.remove();
+
       document.getElementById('commentModal').classList.add('hidden');
       commentMode = false;
       document.getElementById('btnComment').classList.remove('active');
@@ -709,6 +788,10 @@
 
       const layer = document.getElementById('annotationLayer');
       if (layer && commentPosition) {
+        // Remove temp pin marker
+        const tempPin = document.querySelector('.temp-pin-marker');
+        if (tempPin) tempPin.remove();
+
         const pin = document.createElement('div');
         pin.className = `comment-pin ${category}`;
         pin.style.left = commentPosition.x + 'px';
@@ -727,6 +810,49 @@
       showToast(`${category.toUpperCase()}: ${text}`, 'info');
     }
 
+    // === COMMENT ACTIONS ===
+    async function resolveComment(commentId) {
+      try {
+        const res = await adminFetch('/api/comments/' + commentId + '/fix', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ resolved: true })
+        });
+        const result = await res.json();
+        if (result.success) {
+          showToast('Comment resolved', 'success');
+          // Refresh comments
+          const commentsRes = await fetch('/api/applications/' + currentApp.id + '/comments');
+          const comments = await commentsRes.json();
+          renderComments(comments);
+        }
+      } catch (e) {
+        showToast('Failed to resolve comment', 'error');
+      }
+    }
+
+    async function replyToComment(commentId) {
+      const reply = prompt('Enter your reply:');
+      if (!reply) return;
+      try {
+        const res = await fetch('/api/comments/' + commentId + '/reply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reply_text: reply, user_type: 'admin' })
+        });
+        const result = await res.json();
+        if (result.success) {
+          showToast('Reply added', 'success');
+          // Refresh comments
+          const commentsRes = await fetch('/api/applications/' + currentApp.id + '/comments');
+          const comments = await commentsRes.json();
+          renderComments(comments);
+        }
+      } catch (e) {
+        showToast('Failed to add reply', 'error');
+      }
+    }
+
     // === AI ANALYSIS ===
     function renderAIAnalysis(analysis) {
       const container = document.getElementById('aiAnalysis');
@@ -736,15 +862,81 @@
         return;
       }
 
-      container.innerHTML = analysis.map(a => `
-        <div class="ai-item">
-          <div class="ai-status ${a.status === 'PASS' ? 'pass' : a.status === 'FAIL' ? 'fail' : 'warn'}"></div>
-          <div class="ai-content">
-            <div class="ai-clause">${a.clause_id}</div>
-            <div class="ai-text">${a.reasoning || a.violation_text || 'No issues found'}</div>
-          </div>
+      // Calculate summary stats
+      const passCount = analysis.filter(a => a.status === 'PASS').length;
+      const failCount = analysis.filter(a => a.status === 'FAIL').length;
+      const warnCount = analysis.filter(a => a.status === 'WARNING').length;
+      const infoCount = analysis.filter(a => a.status === 'NEED_INFO').length;
+
+      // Group by category
+      const categories = {
+        'Structural & Foundation': ['SANS10400-A1', 'SANS10400-A2', 'SANS10400-A3', 'SANS10400-J1', 'SANS10400-J2', 'SANS10400-J3'],
+        'Fire Safety': ['SANS10400-B1', 'SANS10400-B2', 'SANS10400-B3', 'SANS10400-B4'],
+        'Access & Egress': ['SANS10400-D1', 'SANS10400-D2', 'SANS10400-D3', 'SANS10400-D4', 'SANS10400-D5'],
+        'Light & Ventilation': ['SANS10400-G1', 'SANS10400-G2', 'SANS10400-G3'],
+        'Parking & Access': ['SANS10400-F1', 'SANS10400-F2', 'SANS10400-F3'],
+        'Occupancy & Rooms': ['SANS10400-E1', 'SANS10400-E2', 'SANS10400-E3'],
+        'Height & Boundaries': ['SANS10400-H1', 'SANS10400-H2', 'SANS10400-H3'],
+        'Energy Efficiency': ['SANS10400-XA1', 'SANS10400-XA2', 'SANS10400-XA3']
+      };
+
+      let html = `
+        <div class="ai-summary">
+          <div class="ai-summary-item pass"><div class="ai-summary-number">${passCount}</div><div class="ai-summary-label">Pass</div></div>
+          <div class="ai-summary-item fail"><div class="ai-summary-number">${failCount}</div><div class="ai-summary-label">Fail</div></div>
+          <div class="ai-summary-item warn"><div class="ai-summary-number">${warnCount}</div><div class="ai-summary-label">Warning</div></div>
+          <div class="ai-summary-item info"><div class="ai-summary-number">${infoCount}</div><div class="ai-summary-label">Need Info</div></div>
         </div>
-      `).join('');
+      `;
+
+      // Render by category
+      for (const [catName, catClauses] of Object.entries(categories)) {
+        const catItems = analysis.filter(a => catClauses.includes(a.clause_id));
+        if (catItems.length === 0) continue;
+
+        html += `<div class="ai-category"><div class="ai-category-title">${catName}</div>`;
+        html += catItems.map(a => {
+          const confidencePct = a.confidence ? Math.round(a.confidence * 100) : 0;
+          return `
+            <div class="ai-item ${a.status.toLowerCase().replace('_', '')}">
+              <div class="ai-status ${a.status === 'PASS' ? 'pass' : a.status === 'FAIL' ? 'fail' : a.status === 'WARNING' ? 'warn' : 'info'}"></div>
+              <div class="ai-content">
+                <div class="ai-clause">
+                  <span class="ai-clause-title">${a.clause_id}: ${a.clause_title || ''}</span>
+                  <span class="ai-confidence">${confidencePct}% confidence</span>
+                </div>
+                <div class="ai-text">${a.reasoning || a.violation_text || 'No issues found'}</div>
+                ${a.measured_value || a.required_value ? `
+                  <div class="ai-measurements">
+                    ${a.measured_value ? `<span class="ai-measured">Measured: ${a.measured_value}</span>` : ''}
+                    ${a.required_value ? `<span class="ai-required">Required: ${a.required_value}</span>` : ''}
+                  </div>
+                ` : ''}
+                ${a.suggestion ? `<div class="ai-suggestion">Fix: ${a.suggestion}</div>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+        html += '</div>';
+      }
+
+      // Items not in categories
+      const otherItems = analysis.filter(a => !Object.values(categories).flat().includes(a.clause_id));
+      if (otherItems.length > 0) {
+        html += `<div class="ai-category"><div class="ai-category-title">Other</div>`;
+        html += otherItems.map(a => `
+          <div class="ai-item ${a.status.toLowerCase().replace('_', '')}">
+            <div class="ai-status ${a.status === 'PASS' ? 'pass' : a.status === 'FAIL' ? 'fail' : 'warn'}"></div>
+            <div class="ai-content">
+              <div class="ai-clause"><span class="ai-clause-title">${a.clause_id}</span></div>
+              <div class="ai-text">${a.reasoning || a.violation_text || 'No issues found'}</div>
+            </div>
+          </div>
+        `).join('');
+        html += '</div>';
+      }
+
+      container.innerHTML = html;
     }
 
     // === REVISIONS ===
@@ -779,6 +971,13 @@
       if (!currentApp) return;
       if (!confirm(`Are you sure you want to ${decision.toLowerCase()} this application?`)) return;
 
+      // Set loading state
+      const btnClass = decision === 'APPROVED' ? 'btn-approve' : 'btn-reject';
+      const btn = document.querySelector('.' + btnClass);
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
+
       try {
         const res = await adminFetch('/api/applications/' + currentApp.id + '/decision', {
           method: 'POST',
@@ -793,6 +992,47 @@
         }
       } catch (e) {
         console.error('Decision error:', e);
+        showToast('Failed to process decision', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
+    }
+
+    async function runAIAnalysis() {
+      if (!currentApp) {
+        showToast('Select an application first', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('btnAIAnalyze');
+      btn.disabled = true;
+      btn.classList.add('loading');
+      btn.textContent = 'Analyzing...';
+
+      try {
+        showToast('Running AI analysis...', 'info');
+        const res = await adminFetch('/api/applications/' + currentApp.id + '/analyze', {
+          method: 'POST'
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          showToast(`Analysis complete: ${result.violationsFound || 0} issues found`, result.violationsFound > 0 ? 'warning' : 'success');
+          // Refresh analysis display
+          const analysisRes = await fetch('/api/applications/' + currentApp.id + '/analysis');
+          const analysis = await analysisRes.json();
+          renderAIAnalysis(analysis);
+        } else {
+          showToast('Analysis failed: ' + (result.error || 'Unknown error'), 'error');
+        }
+      } catch (e) {
+        console.error('AI analysis error:', e);
+        showToast('Failed to run analysis', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove('loading');
+        btn.textContent = '🤖 Run AI Analysis';
       }
     }
 

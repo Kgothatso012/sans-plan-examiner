@@ -8,9 +8,16 @@ const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 
+// AI Analysis
+const SansAnalyzer = require('./ai/sans-analyzer');
+
 // JWT for applicant auth
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET || 'joe-examiner-jwt-secret-2024';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error('ERROR: JWT_SECRET must be set in environment');
+  // Don't exit - allow read-only mode
+}
 
 // Email (nodemailer)
 const nodemailer = require('nodemailer');
@@ -33,15 +40,24 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 const MINIMAX_API_KEY = process.env.MINIMAX_API_KEY;
 const MINIMAX_BASE_URL = 'https://api.minimax.chat/v1';
 
-// Admin API Key (required)
+// Admin API Key (optional - endpoints check for it)
 const ADMIN_API_KEY = process.env.ADMIN_API_KEY;
-if (!ADMIN_API_KEY) {
-  console.error('WARNING: ADMIN_API_KEY not set. Admin endpoints will not work.');
-}
+const isAdmin = (key) => key === ADMIN_API_KEY;
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Request logging
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    console.log(`${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
+  });
+  next();
+});
 
 // Static files - serve from root directory
 app.use(express.static(path.join(__dirname, '..')));
@@ -55,10 +71,20 @@ app.get('/', (req, res) => {
 const upload = multer({
   dest: 'uploads/',
   limits: { fileSize: 50 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowedMimes = ['application/pdf', 'image/jpeg', 'image/png', 'image/tiff'];
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PDF and image files are allowed'));
+    }
+  },
   storage: multer.diskStorage({
     destination: 'uploads/',
     filename: (req, file, cb) => {
-      cb(null, Date.now() + '-' + file.originalname);
+      // Sanitize filename
+      const safeName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
+      cb(null, Date.now() + '-' + safeName);
     }
   })
 });
@@ -97,6 +123,17 @@ const requireAuth = (req, res, next) => {
   }
 };
 
+// ============ INPUT VALIDATION ============
+
+// Sanitize string input
+const sanitizeStr = (str, maxLen = 500) => {
+  if (!str || typeof str !== 'string') return '';
+  return str.slice(0, maxLen).replace(/[<>]/g, '');
+};
+
+// Validate email
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
 // ============ APPLICANT AUTH ENDPOINTS ============
 
 // Register new applicant
@@ -106,6 +143,14 @@ app.post('/api/auth/register', async (req, res) => {
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password required' });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
     }
 
     // Hash password
@@ -605,6 +650,16 @@ app.get('/api/applications/:id/revisions', async (req, res) => {
 
 // ============ ANALYSIS ENDPOINTS ============
 
+// Initialize AI Analyzer
+const sansAnalyzer = new SansAnalyzer({
+  minimax: {
+    apiKey: process.env.MINIMAX_API_KEY,
+    baseUrl: process.env.MINIMAX_BASE_URL || 'https://api.minimax.chat/v1',
+    model: process.env.MINIMAX_MODEL || 'abab6.5s-chat'
+  },
+  db: supabase
+});
+
 // Run AI analysis
 app.post('/api/applications/:id/analyze', requireAdminAuth, async (req, res) => {
   try {
@@ -634,75 +689,66 @@ app.post('/api/applications/:id/analyze', requireAdminAuth, async (req, res) => 
 
     // Extract text from PDF
     let textContent = '';
+    let numPages = 0;
     try {
       const pdf = require('pdf-parse');
       const dataBuffer = Buffer.from(await fileData.arrayBuffer());
-      const data = await pdf(dataBuffer);
-      textContent = data.text;
+      const pdfData = await pdf(dataBuffer);
+      textContent = pdfData.text;
+      numPages = pdfData.numpages;
     } catch (e) {
+      console.error('PDF extraction error:', e.message);
       textContent = 'PDF text extraction failed - using placeholder';
     }
 
-    // Call MiniMax API for analysis
-    const analysisPrompt = `You are a building plan compliance examiner for Tshwane Municipality, South Africa.
-Analyze the following building plan text for compliance with SANS 10400 (National Building Regulations).
-
-Check for:
-1. Site coverage (max 60%)
-2. Parking requirements
-3. Fire safety exits
-4. Accessibility (wheelchair access)
-5. Ventilation requirements
-6. Sanitation facilities
-7. Structural requirements
-
-For each violation found, respond in this format:
-CLAUSE: [SANS clause ID]
-VIOLATION: [description of violation]
-REASONING: [why it doesn't comply]
-
-Text content:
-${textContent.slice(0, 8000)}`;
-
-    const response = await fetch(`${MINIMAX_BASE_URL}/text/chatcompletion_v2`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${MINIMAX_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'MiniMax-Text-01',
-        messages: [{ role: 'user', content: analysisPrompt }]
-      })
+    // Run AI analysis using SansAnalyzer
+    const result = await sansAnalyzer.analyze(id, {
+      pdfBuffer: Buffer.from(await fileData.arrayBuffer())
     });
 
-    const aiResult = await response.json();
-    const analysisText = aiResult.choices?.[0]?.message?.content || 'Analysis completed';
+    if (!result.success) {
+      // Fallback to rule-based analysis
+      const MiniMaxClient = require('./ai/minimax-client');
+      const minimax = new MiniMaxClient({
+        apiKey: process.env.MINIMAX_API_KEY
+      });
+      const fallbackResults = await minimax._fallbackAnalyze(
+        textContent.substring(0, 5000),
+        id
+      );
 
-    // Parse and store analysis results
-    const clauses = analysisText.match(/CLAUSE: (.*?)\nVIOLATION: (.*?)\nREASONING: (.*?)(?=\nCLAUSE:|$)/gs) || [];
-
-    for (const clause of clauses) {
-      const match = clause.match(/CLAUSE: (.*?)\nVIOLATION: (.*?)\nREASONING: (.*?)$/s);
-      if (match) {
+      // Store fallback results
+      for (const r of fallbackResults) {
         await supabase.from('application_analysis').insert({
           application_id: id,
-          clause_id: match[1].trim(),
-          status: 'FAIL',
-          violation_text: match[2].trim(),
-          reasoning: match[3].trim()
+          clause_id: r.clause_id,
+          status: r.status,
+          violation_text: r.status === 'FAIL' ? r.suggestion : null,
+          reasoning: r.reasoning,
+          confidence: r.confidence,
+          analyzed_at: r.analyzed_at
         });
       }
+
+      return res.json({
+        success: true,
+        analysis: fallbackResults,
+        summary: 'Rule-based analysis completed (MiniMax API not available)',
+        violationsFound: fallbackResults.filter(r => r.status === 'FAIL').length,
+        mode: 'fallback'
+      });
     }
 
-    // If no specific violations found, add a pass
-    if (clauses.length === 0) {
+    // Store AI analysis results
+    for (const r of result.results) {
       await supabase.from('application_analysis').insert({
         application_id: id,
-        clause_id: 'OVERALL',
-        status: 'PASS',
-        violation_text: null,
-        reasoning: analysisText.slice(0, 500)
+        clause_id: r.clause_id,
+        status: r.status,
+        violation_text: r.status === 'FAIL' ? r.suggestion : null,
+        reasoning: r.reasoning,
+        confidence: r.confidence,
+        analyzed_at: r.analyzed_at
       });
     }
 
@@ -714,11 +760,50 @@ ${textContent.slice(0, 8000)}`;
 
     res.json({
       success: true,
-      analysis: analysisText,
-      violationsFound: clauses.length
+      analysis: result.results,
+      summary: result.summary,
+      extractedInfo: result.extractedInfo,
+      violationsFound: result.results.filter(r => r.status === 'FAIL').length,
+      mode: 'ai'
     });
   } catch (error) {
     console.error('Analysis error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Process examiner feedback for learning
+app.post('/api/applications/:id/feedback', requireAdminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { corrections } = req.body;
+
+    // Get current analysis results
+    const { data: analysis } = await supabase
+      .from('application_analysis')
+      .select('*')
+      .eq('application_id', id);
+
+    // Process each correction
+    const learnings = [];
+    for (const correction of corrections) {
+      const original = analysis.find(a => a.clause_id === correction.clause_id);
+      if (original) {
+        const learning = await sansAnalyzer.processFeedback(
+          id,
+          analysis,
+          [{ clause_id: correction.clause_id, correction: correction.explanation, context: correction.context }]
+        );
+        if (learning) learnings.push(learning);
+      }
+    }
+
+    res.json({
+      success: true,
+      learnings: learnings
+    });
+  } catch (error) {
+    console.error('Feedback processing error:', error);
     res.status(500).json({ error: error.message });
   }
 });
