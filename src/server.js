@@ -273,7 +273,7 @@ app.post('/api/auth/register', async (req, res) => {
 
     res.json({ success: true, token, applicant: { id: applicant.id, email: applicant.email, name: applicant.name } });
   } catch (error) {
-    return;
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -305,7 +305,6 @@ app.post('/api/auth/login', async (req, res) => {
 
     res.json({ success: true, token, applicant: { id: applicant.id, email: applicant.email, name: applicant.name } });
   } catch (error) {
-    console.error('Login error:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -395,7 +394,7 @@ app.post('/api/applications/submit', upload.array('documents', 10), async (req, 
           .upload(fileName, fileBuffer);
 
         if (uploadError) {
-          console.error('Storage upload error:', uploadError);
+          // Upload failed silently
         }
 
         // Save document reference
@@ -418,7 +417,6 @@ app.post('/api/applications/submit', upload.array('documents', 10), async (req, 
       message: 'Application submitted successfully'
     });
   } catch (error) {
-    console.error('Submit error:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -465,7 +463,6 @@ app.get('/api/applications/:reference', async (req, res) => {
       revisions: revisions || []
     });
   } catch (error) {
-    console.error('Get application error:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -482,7 +479,6 @@ app.get('/api/applications/all', requireAdminAuth, async (req, res) => {
 
     res.json(applications);
   } catch (error) {
-    console.error('List applications error:', error);
     res.status(500).json({ error: error.message });
   }
 });
