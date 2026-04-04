@@ -390,8 +390,9 @@ app.post('/api/applications/submit', upload.array('documents', 10), async (req, 
     if (error) throw error;
 
     // Upload documents
-    if (req.files && req.files.length > 0) {
-      for (const file of req.files) {
+    const files = Array.isArray(req.files) ? req.files : (req.files ? [req.files] : []);
+    if (files.length > 0) {
+      for (const file of files) {
         const fileName = `${application.id}/${Date.now()}-${file.originalname}`;
 
         // Upload to Supabase Storage
@@ -719,8 +720,9 @@ app.post('/api/applications/:id/revisions', upload.array('documents', 10), async
     if (error) throw error;
 
     // Upload revision documents
-    if (req.files && req.files.length > 0) {
-      for (const file of req.files) {
+    const revisionFiles = Array.isArray(req.files) ? req.files : (req.files ? [req.files] : []);
+    if (revisionFiles.length > 0) {
+      for (const file of revisionFiles) {
         const fileName = `${id}/rev${newRevision}/${Date.now()}-${file.originalname}`;
         const fileBuffer = fs.readFileSync(file.path);
 
