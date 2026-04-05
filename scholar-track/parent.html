@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parent Dashboard | ScholarTrack</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <style>
+    :root {
+      --primary: #2E7D32;
+      --primary-dark: #1B5E20;
+      --accent: #4CAF50;
+      --warning: #f57c00;
+      --danger: #ef3636;
+      --info: #1976d2;
+      --gray: #666;
+      --light: #f5f5f5;
+      --white: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--light); color: #1a1a1a; min-height: 100vh; }
+    
+    .header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 20px; text-align: center; }
+    .header h1 { font-size: 1.5rem; margin-bottom: 4px; }
+    .header p { font-size: 0.9rem; opacity: 0.9; }
+    
+    .login-section { max-width: 400px; margin: 40px auto; padding: 20px; }
+    .login-card { background: var(--white); border-radius: 12px; padding: 24px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .login-card h2 { color: var(--primary); margin-bottom: 20px; text-align: center; }
+    .login-input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; }
+    .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 1rem; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    
+    .dashboard { display: none; padding: 20px; max-width: 800px; margin: 0 auto; }
+    .dashboard.active { display: block; }
+    
+    .child-card { background: var(--white); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .child-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+    .child-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 600; }
+    .child-info h2 { font-size: 1.3rem; color: var(--primary-dark); }
+    .child-info p { color: var(--gray); font-size: 0.9rem; }
+    
+    .status-badge { display: inline-block; padding: 6px 16px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; }
+    .status-badge.at_home { background: #eee; color: #666; }
+    .status-badge.on_board { background: #fff3e0; color: var(--warning); }
+    .status-badge.at_school { background: #e8f5e9; color: var(--primary); }
+    .status-badge.dropped { background: #e3f2fd; color: var(--info); }
+    
+    .tracking-card { background: var(--white); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .tracking-card h3 { color: var(--primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    
+    .driver-info { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8fcf8; border-radius: 8px; margin-bottom: 16px; }
+    .driver-avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+    .driver-details h4 { font-size: 1rem; color: var(--primary-dark); }
+    .driver-details p { font-size: 0.8rem; color: var(--gray); }
+    
+    .location-display { font-family: 'Courier New', monospace; background: #f5f5f5; padding: 16px; border-radius: 8px; text-align: center; }
+    .location-label { font-size: 0.8rem; color: var(--gray); display: block; margin-bottom: 4px; }
+    .location-value { font-size: 1.2rem; color: var(--primary); font-weight: 600; }
+    
+    .eta-display { text-align: center; padding: 16px; background: linear-gradient(135deg, #fff3e0 0%, #fff8e1 100%); border-radius: 8px; margin-top: 12px; }
+    .eta-label { font-size: 0.8rem; color: var(--gray); }
+    .eta-value { font-size: 1.5rem; font-weight: 700; color: var(--warning); }
+    
+    .timeline { position: relative; padding-left: 24px; }
+    .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: #ddd; }
+    .timeline-item { position: relative; padding-bottom: 16px; }
+    .timeline-item::before { content: ''; position: absolute; left: -20px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--primary); border: 2px solid white; }
+    .timeline-item.pending::before { background: #ccc; }
+    .timeline-time { font-size: 0.8rem; color: var(--gray); }
+    .timeline-text { font-weight: 500; }
+    .timeline-item.pending .timeline-text { color: var(--gray); }
+    
+    .map-container { height: 250px; background: #e0e0e0; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--gray); font-size: 1.1rem; }
+    
+    .notifications { position: fixed; bottom: 20px; right: 20px; max-width: 350px; }
+    .notification { background: var(--white); border-radius: 8px; padding: 16px; margin-bottom: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-left: 4px solid var(--primary); animation: slideIn 0.3s ease; }
+    .notification.pickup { border-left-color: var(--warning); }
+    .notification.dropoff { border-left-color: var(--info); }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    
+    .logout-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+    .logout-btn:hover { background: rgba(255,255,255,0.3); }
+    
+    @media (max-width: 600px) {
+      .login-section { margin: 20px; }
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1><i class="fas fa-bus-school"></i> ScholarTrack</h1>
+    <p>Real-time School Transport Tracking</p>
+    <button class="logout-btn" onclick="logout()" style="display:none;" id="logoutBtn">Logout</button>
+  </div>
+
+  <div class="login-section" id="loginSection">
+    <div class="login-card">
+      <h2><i class="fas fa-user-circle"></i> Parent Login</h2>
+      <p style="text-align:center;color:var(--gray);margin-bottom:16px;">Enter your child's Student ID</p>
+      <input type="text" class="login-input" id="studentIdInput" placeholder="Student ID (e.g., student-001)">
+      <button class="btn btn-primary" onclick="login()"><i class="fas fa-sign-in-alt"></i> Login</button>
+      <p style="text-align:center;margin-top:16px;font-size:0.8rem;color:var(--gray);">Demo ID: student-001</p>
+    </div>
+  </div>
+
+  <div class="dashboard" id="dashboard">
+    <div class="child-card">
+      <div class="child-header">
+        <div class="child-avatar" id="childAvatar">A</div>
+        <div class="child-info">
+          <h2 id="childName">Alice Smith</h2>
+          <p>Demo Primary School - Grade 3</p>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <span class="status-badge" id="statusBadge">at_home</span>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.8rem;color:var(--gray);">Route</div>
+          <div style="font-weight:600;" id="routeName">Route 1 - Morning</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tracking-card">
+      <h3><i class="fas fa-map-marker-alt"></i> Live Tracking</h3>
+      <div id="trackingStatus" style="text-align:center;padding:20px;color:var(--gray);">
+        <i class="fas fa-satellite-dish" style="font-size:2rem;margin-bottom:8px;display:block;"></i>
+        Waiting for bus update...
+      </div>
+      <div id="trackingContent" style="display:none;">
+        <div class="driver-info">
+          <div class="driver-avatar"><i class="fas fa-user"></i></div>
+          <div class="driver-details">
+            <h4 id="driverName">John Driver</h4>
+            <p>Vehicle: <span id="vehicleNumber">SBK 123</span></p>
+          </div>
+        </div>
+        <div class="location-display">
+          <span class="location-label">Current Location</span>
+          <span class="location-value" id="liveLocation">--</span>
+        </div>
+        <div class="eta-display">
+          <div class="eta-label">Estimated Arrival</div>
+          <div class="eta-value" id="etaValue">-- mins</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tracking-card">
+      <h3><i class="fas fa-clock"></i> Today's Schedule</h3>
+      <div class="timeline" id="timeline">
+        <div class="timeline-item">
+          <div class="timeline-time">06:30</div>
+          <div class="timeline-text">Pick up from Stop 1 - Oak Street</div>
+        </div>
+        <div class="timeline-item pending">
+          <div class="timeline-time">06:45</div>
+          <div class="timeline-text">Pick up from Stop 2 - Pine Avenue</div>
+        </div>
+        <div class="timeline-item pending">
+          <div class="timeline-time">07:00</div>
+          <div class="timeline-text">Pick up from Stop 3 - Cedar Road</div>
+        </div>
+        <div class="timeline-item pending">
+          <div class="timeline-time">07:30</div>
+          <div class="timeline-text">Arrive at Demo Primary School</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tracking-card">
+      <h3><i class="fas fa-route"></i> Route Map</h3>
+      <div class="map-container">
+        <i class="fas fa-map" style="margin-right:8px;"></i> Real-time map will appear here
+      </div>
+    </div>
+  </div>
+
+  <div class="notifications" id="notifications"></div>
+
+  <script>
+    let currentStudentId = null;
+    let ws = null;
+    let locationInterval = null;
+
+    function login() {
+      const studentId = document.getElementById('studentIdInput').value.trim() || 'student-001';
+      currentStudentId = studentId;
+      
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('dashboard').classList.add('active');
+      document.getElementById('logoutBtn').style.display = 'block';
+      
+      loadStudentData(studentId);
+      connectWebSocket();
+      startPolling();
+    }
+
+    function logout() {
+      currentStudentId = null;
+      if (ws) ws.close();
+      if (locationInterval) clearInterval(locationInterval);
+      
+      document.getElementById('loginSection').style.display = 'block';
+      document.getElementById('dashboard').classList.remove('active');
+      document.getElementById('logoutBtn').style.display = 'none';
+    }
+
+    async function loadStudentData(studentId) {
+      const mockData = {
+        'student-001': { name: 'Alice Smith', status: 'at_home', school: 'Demo Primary School', route: 'Route 1 - Morning', driver: { name: 'John Driver', vehicle: 'SBK 123' } },
+        'student-002': { name: 'Bob Johnson', status: 'on_board', school: 'Demo Primary School', route: 'Route 1 - Morning', driver: { name: 'John Driver', vehicle: 'SBK 123' } },
+        'student-003': { name: 'Charlie Brown', status: 'at_school', school: 'Demo Primary School', route: 'Route 1 - Morning', driver: { name: 'John Driver', vehicle: 'SBK 123' } }
+      };
+      
+      const data = mockData[studentId] || mockData['student-001'];
+      
+      document.getElementById('childAvatar').textContent = data.name.charAt(0);
+      document.getElementById('childName').textContent = data.name;
+      document.getElementById('routeName').textContent = data.route;
+      document.getElementById('statusBadge').textContent = data.status.replace('_', ' ').toUpperCase();
+      document.getElementById('statusBadge').className = 'status-badge ' + data.status;
+      document.getElementById('driverName').textContent = data.driver.name;
+      document.getElementById('vehicleNumber').textContent = data.driver.vehicle;
+      
+      updateTimeline(data.status);
+    }
+
+    function updateTimeline(status) {
+      const timeline = document.getElementById('timeline');
+      const items = timeline.querySelectorAll('.timeline-item');
+      
+      if (status === 'at_home') {
+        items[0].classList.remove('pending');
+      } else if (status === 'on_board') {
+        items[0].classList.remove('pending');
+        items[1].classList.remove('pending');
+      } else if (status === 'at_school') {
+        items.forEach(item => item.classList.remove('pending'));
+      }
+    }
+
+    function connectWebSocket() {
+      ws = new WebSocket(`ws://${window.location.hostname}:3001`);
+      
+      ws.onopen = () => {
+        ws.send(JSON.stringify({ type: 'parent_subscribe', studentId: currentStudentId }));
+      };
+      
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          handleWebSocketMessage(data);
+        } catch (e) {
+          console.log('WS message:', event.data);
+        }
+      };
+      
+      ws.onerror = () => {
+        console.log('WebSocket - running in demo mode');
+      };
+    }
+
+    function handleWebSocketMessage(data) {
+      if (data.type === 'location_update') {
+        updateLocationDisplay(data.lat, data.lng);
+      } else if (data.type === 'student_update') {
+        if (data.studentId === currentStudentId) {
+          showNotification('Status Update: ' + data.status, data.status);
+          document.getElementById('statusBadge').textContent = data.status.replace('_', ' ').toUpperCase();
+          document.getElementById('statusBadge').className = 'status-badge ' + data.status;
+          updateTimeline(data.status);
+        }
+      }
+    }
+
+    function updateLocationDisplay(lat, lng) {
+      document.getElementById('trackingStatus').style.display = 'none';
+      document.getElementById('trackingContent').style.display = 'block';
+      document.getElementById('liveLocation').textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      
+      const eta = Math.floor(Math.random() * 20) + 5;
+      document.getElementById('etaValue').textContent = `${eta} mins`;
+    }
+
+    function startPolling() {
+      let lat = -25.7500;
+      let lng = 28.1950;
+      
+      locationInterval = setInterval(() => {
+        lat += 0.0002;
+        lng += 0.0001;
+        updateLocationDisplay(lat, lng);
+      }, 5000);
+    }
+
+    function showNotification(message, type) {
+      const container = document.getElementById('notifications');
+      const notif = document.createElement('div');
+      notif.className = 'notification ' + (type === 'on_board' ? 'pickup' : 'dropoff');
+      notif.innerHTML = `<i class="fas fa-bell"></i> ${message}`;
+      container.appendChild(notif);
+      
+      setTimeout(() => notif.remove(), 5000);
+    }
+
+    // Check URL for student ID
+    const urlParams = new URLSearchParams(window.location.search);
+    const sid = urlParams.get('sid');
+    if (sid) {
+      document.getElementById('studentIdInput').value = sid;
+    }
+  </script>
+</body>
+</html>
