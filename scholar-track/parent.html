@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Parent Dashboard | ScholarTrack</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     :root {
       --primary: #2E7D32;
@@ -175,9 +177,7 @@
 
     <div class="tracking-card">
       <h3><i class="fas fa-route"></i> Route Map</h3>
-      <div class="map-container">
-        <i class="fas fa-map" style="margin-right:8px;"></i> Real-time map will appear here
-      </div>
+      <div id="map" class="map-container" style="height:300px;border-radius:8px;"></div>
     </div>
   </div>
 
@@ -187,18 +187,30 @@
     let currentStudentId = null;
     let ws = null;
     let locationInterval = null;
+    let map = null;
+    let driverMarker = null;
+    let routePolyline = null;
 
     function login() {
       const studentId = document.getElementById('studentIdInput').value.trim() || 'student-001';
       currentStudentId = studentId;
-      
+
       document.getElementById('loginSection').style.display = 'none';
       document.getElementById('dashboard').classList.add('active');
       document.getElementById('logoutBtn').style.display = 'block';
-      
+
+      initMap();
       loadStudentData(studentId);
       connectWebSocket();
       startPolling();
+    }
+
+    function initMap() {
+      if (map) return;
+      map = L.map('map').setView([-25.7500, 28.1950], 14);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap'
+      }).addTo(map);
     }
 
     function logout() {
