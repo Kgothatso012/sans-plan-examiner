@@ -217,7 +217,13 @@
       currentStudentId = null;
       if (ws) ws.close();
       if (locationInterval) clearInterval(locationInterval);
-      
+      if (map) {
+        map.remove();
+        map = null;
+        driverMarker = null;
+        routePolyline = null;
+      }
+
       document.getElementById('loginSection').style.display = 'block';
       document.getElementById('dashboard').classList.remove('active');
       document.getElementById('logoutBtn').style.display = 'none';
@@ -300,6 +306,30 @@
 
       const eta = Math.floor(Math.random() * 20) + 5;
       document.getElementById('etaValue').textContent = `${eta} mins`;
+
+      updateDriverMarker(lat, lng);
+    }
+
+    function updateDriverMarker(lat, lng) {
+      if (!map) return;
+      if (!driverMarker) {
+        driverMarker = L.marker([lat, lng], {
+          icon: L.divIcon({
+            className: 'driver-marker',
+            html: '<div style="background:#2E7D32;color:white;padding:8px;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;"><i class="fas fa-bus"></i></div>',
+            iconSize: [36, 36],
+            iconAnchor: [18, 18]
+          })
+        }).addTo(map);
+        const routeCoords = [
+          [-25.7479, 28.1911], [-25.7500, 28.1950], [-25.7520, 28.2000], [-25.7550, 28.2100]
+        ];
+        routePolyline = L.polyline(routeCoords, { color: '#2E7D32', weight: 4, opacity: 0.7 }).addTo(map);
+        L.polyline(routeCoords.reverse(), { color: '#1976d2', weight: 4, opacity: 0.7, dashArray: '10, 10' }).addTo(map);
+        map.fitBounds(routePolyline.getBounds(), { padding: [20, 20] });
+      } else {
+        driverMarker.setLatLng([lat, lng]);
+      }
     }
 
     function startPolling() {
