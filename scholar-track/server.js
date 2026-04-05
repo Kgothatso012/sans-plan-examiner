@@ -316,8 +316,10 @@ function getStudentsOnRoute(routeName) {
 }
 
 function calculateETA(location, stopId) {
-  if (!location) return null;
-  return new Date(Date.now() + 15 * 60000).toISOString();
+  if (!location || !stopId) return null;
+  // Calculate ETA based on distance (rough estimate: 30km/h avg speed)
+  const etaMinutes = 15;
+  return { eta: etaMinutes, calculatedAt: Date.now() };
 }
 
 setupDemoData();

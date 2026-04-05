@@ -123,7 +123,10 @@
       <div class="students-section">
         <div class="section-header">
           <div class="section-title"><i class="fas fa-users"></i> Students</div>
-          <button class="btn btn-primary" onclick="startRoute()"><i class="fas fa-play"></i> Start Route</button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-primary" onclick="startRoute()"><i class="fas fa-play"></i> Start</button>
+            <button class="btn btn-warning" onclick="completeCurrentStop()"><i class="fas fa-check"></i> Complete Stop</button>
+          </div>
         </div>
         <div class="student-list" id="studentList"></div>
       </div>
@@ -220,19 +223,42 @@
     function toggleStudentStatus(studentId) {
       const student = students.find(s => s.id === studentId);
       if (!student) return;
-      
+
       if (student.status === 'at_home') {
         student.status = 'on_board';
-        if (ws && ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ type: 'student_pickup', studentId, status: 'on_board', driverId }));
-        }
+        broadcastStudentStatus(studentId, 'on_board');
       } else if (student.status === 'on_board') {
         student.status = 'dropped';
-        if (ws && ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ type: 'student_pickup', studentId, status: 'dropped', driverId }));
-        }
+        broadcastStudentStatus(studentId, 'dropped');
+      } else if (student.status === 'dropped') {
+        student.status = 'at_home';
+        broadcastStudentStatus(studentId, 'at_home');
       }
-      
+
+      renderStudents();
+      updateStats();
+    }
+
+    function broadcastStudentStatus(studentId, status) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'student_pickup', studentId, status, driverId }));
+      }
+    }
+
+    function completeCurrentStop() {
+      if (!currentRoute || currentStopIndex >= currentRoute.stops.length) return;
+
+      const stop = currentRoute.stops[currentStopIndex];
+      stop.completed = true;
+
+      // Mark all students at this stop as dropped if on_board
+      students.filter(s => s.stopId === stop.id && s.status === 'on_board').forEach(s => {
+        s.status = 'dropped';
+        broadcastStudentStatus(s.id, 'dropped');
+      });
+
+      currentStopIndex++;
+      renderStops();
       renderStudents();
       updateStats();
     }

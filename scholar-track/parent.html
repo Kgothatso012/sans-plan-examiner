@@ -268,22 +268,24 @@
 
     function handleWebSocketMessage(data) {
       if (data.type === 'location_update') {
-        updateLocationDisplay(data.lat, data.lng);
+        updateLocationDisplay(data.lat, data.lng, data.speed);
       } else if (data.type === 'student_update') {
-        if (data.studentId === currentStudentId) {
-          showNotification('Status Update: ' + data.status, data.status);
-          document.getElementById('statusBadge').textContent = data.status.replace('_', ' ').toUpperCase();
-          document.getElementById('statusBadge').className = 'status-badge ' + data.status;
-          updateTimeline(data.status);
+        if (data.studentId === currentStudentId || data.studentId === undefined) {
+          const status = data.status;
+          const statusText = status === 'on_board' ? 'Picked Up' : status === 'dropped' ? 'Dropped Off' : status === 'at_home' ? 'Waiting at Home' : 'At School';
+          showNotification('Child Update: ' + statusText, status);
+          document.getElementById('statusBadge').textContent = statusText;
+          document.getElementById('statusBadge').className = 'status-badge ' + status;
+          updateTimeline(status);
         }
       }
     }
 
-    function updateLocationDisplay(lat, lng) {
+    function updateLocationDisplay(lat, lng, speed) {
       document.getElementById('trackingStatus').style.display = 'none';
       document.getElementById('trackingContent').style.display = 'block';
       document.getElementById('liveLocation').textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-      
+
       const eta = Math.floor(Math.random() * 20) + 5;
       document.getElementById('etaValue').textContent = `${eta} mins`;
     }
@@ -291,11 +293,13 @@
     function startPolling() {
       let lat = -25.7500;
       let lng = 28.1950;
-      
+      let speed = 30;
+
       locationInterval = setInterval(() => {
         lat += 0.0002;
         lng += 0.0001;
-        updateLocationDisplay(lat, lng);
+        speed = Math.floor(Math.random() * 30) + 20;
+        updateLocationDisplay(lat, lng, speed);
       }, 5000);
     }
 
