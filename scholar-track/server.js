@@ -216,18 +216,21 @@ app.get('/api/parent/student/:studentId', (req, res) => {
       route: 'route1',
       status: 'at_school',
       driver: null,
-      eta: null
+      eta: null,
+      lastUpdate: Date.now()
     });
   }
-  
+
   const driver = student.driverId ? drivers.get(student.driverId) : null;
   const location = driver ? locations.get(driver.id) : null;
-  
+  const eta = calculateETA(location, student.stopId);
+
   res.json({
     ...student,
     driver: driver ? { name: driver.name, vehicle: driver.vehicle, phone: driver.phone } : null,
     location,
-    eta: calculateETA(location, student.stopId)
+    eta: eta ? eta.eta : null,
+    lastUpdate: Date.now()
   });
 });
 
@@ -326,7 +329,7 @@ setupDemoData();
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
-  console.log(`ScholarTrack server running on port ${PORT}`);
+  // Server started on port
 });
 
 module.exports = { app, wss };
