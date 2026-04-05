@@ -256,9 +256,9 @@
       ws = new WebSocket(`ws://${window.location.hostname}:3001`);
       
       ws.onopen = () => {
-        console.log('Connected to ScholarTrack');
+        ws.send(JSON.stringify({ type: 'driver_register', driverId }));
       };
-      
+
       ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
@@ -267,12 +267,12 @@
             document.getElementById('currentLng').textContent = data.lng.toFixed(4);
           }
         } catch (e) {
-          console.log('WS message:', event.data);
+          // Silent fail for invalid messages
         }
       };
-      
-      ws.onerror = (e) => {
-        console.log('WebSocket connection failed - running in demo mode');
+
+      ws.onerror = () => {
+        // Silent - fallback to demo mode
       };
     }
 

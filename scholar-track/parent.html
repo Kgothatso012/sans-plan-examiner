@@ -257,12 +257,12 @@
           const data = JSON.parse(event.data);
           handleWebSocketMessage(data);
         } catch (e) {
-          console.log('WS message:', event.data);
+          // Silent fail for invalid messages
         }
       };
-      
+
       ws.onerror = () => {
-        console.log('WebSocket - running in demo mode');
+        // Silent - fallback to polling
       };
     }
 
