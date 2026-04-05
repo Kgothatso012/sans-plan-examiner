@@ -1,11 +1,8 @@
 // ScholarTrack - School Transport Tracking System
-// Express server with WebSocket for real-time tracking
-
 const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const cors = require('cors');
-const crypto = require('crypto');
 require('dotenv').config();
 
 const app = express();
@@ -27,13 +24,16 @@ wss.on('connection', (ws) => {
       const data = JSON.parse(message);
       handleMessage(ws, data);
     } catch (e) {
-      console.error('Invalid message:', e);
+      // Silent fail for invalid messages
     }
   });
 });
 
 function handleMessage(ws, data) {
   switch (data.type) {
+    case 'driver_register':
+      ws.driverId = data.driverId;
+      break;
     case 'driver_location':
       updateDriverLocation(data);
       broadcastLocation(data);
@@ -58,7 +58,7 @@ function updateDriverLocation(data) {
     lat: data.lat,
     lng: data.lng,
     speed: data.speed || 0,
-    heading: data.heading || 0,
+    driverId: data.driverId,
     timestamp: Date.now()
   });
 }
@@ -69,9 +69,10 @@ function broadcastLocation(data) {
     driverId: data.driverId,
     lat: data.lat,
     lng: data.lng,
+    speed: data.speed,
     timestamp: Date.now()
   };
-  
+
   wss.clients.forEach(client => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(location));
@@ -80,14 +81,16 @@ function broadcastLocation(data) {
 }
 
 function broadcastStudentUpdate(data) {
+  const update = {
+    type: 'student_update',
+    studentId: data.studentId,
+    status: data.status,
+    timestamp: Date.now()
+  };
+
   wss.clients.forEach(client => {
     if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify({
-        type: 'student_update',
-        studentId: data.studentId,
-        status: data.status,
-        timestamp: Date.now()
-      }));
+      client.send(JSON.stringify(update));
     }
   });
 }
@@ -98,7 +101,6 @@ function updateStudentStatus(data) {
     student.status = data.status;
     student.lastUpdate = Date.now();
     student.driverId = data.driverId;
-    student.location = data.location;
   }
 }
 
@@ -110,10 +112,27 @@ function sendRouteToClient(ws, routeId) {
 }
 
 function handleParentSubscribe(ws, studentId) {
+  ws.studentId = studentId;
   if (!parentSessions.has(studentId)) {
     parentSessions.set(studentId, new Set());
   }
   parentSessions.get(studentId).add(ws);
+
+  // Send initial location if driver is active
+  const student = students.get(studentId);
+  if (student && student.driverId) {
+    const location = locations.get(student.driverId);
+    if (location) {
+      ws.send(JSON.stringify({
+        type: 'location_update',
+        driverId: student.driverId,
+        lat: location.lat,
+        lng: location.lng,
+        speed: location.speed,
+        timestamp: Date.now()
+      }));
+    }
+  }
 }
 
 app.post('/api/driver/login', (req, res) => {
