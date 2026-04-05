@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Driver Dashboard | ScholarTrack</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <style>
+    :root {
+      --primary: #2E7D32;
+      --primary-dark: #1B5E20;
+      --accent: #4CAF50;
+      --warning: #f57c00;
+      --danger: #ef3636;
+      --info: #1976d2;
+      --gray: #666;
+      --light: #f5f5f5;
+      --white: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--light); color: #1a1a1a; min-height: 100vh; }
+    
+    .header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+    .header h1 { font-size: 1.3rem; }
+    .header-info { display: flex; gap: 20px; align-items: center; }
+    .vehicle-badge { background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 0.9rem; }
+    
+    .container { display: flex; min-height: calc(100vh - 60px); }
+    
+    .sidebar { width: 300px; background: var(--white); border-right: 1px solid #ddd; padding: 16px; display: flex; flex-direction: column; }
+    .route-title { font-size: 1.1rem; font-weight: 600; color: var(--primary); margin-bottom: 16px; }
+    .route-stops { list-style: none; }
+    .route-stops li { padding: 12px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; border: 1px solid #eee; }
+    .route-stops li:hover { background: #f8fcf8; border-color: var(--primary); }
+    .route-stops li.active { background: #e8f5e9; border-color: var(--primary); }
+    .stop-time { font-size: 0.8rem; color: var(--gray); }
+    .stop-name { font-weight: 500; }
+    .stop-status { font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 4px; }
+    .stop-status.pending { background: #eee; color: #666; }
+    .stop-status.completed { background: #e8f5e9; color: var(--primary); }
+    .stop-status.current { background: #fff3e0; color: var(--warning); }
+    
+    .main { flex: 1; padding: 20px; }
+    
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+    .stat-card { background: var(--white); padding: 16px; border-radius: 8px; border: 1px solid #eee; text-align: center; }
+    .stat-value { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
+    .stat-label { font-size: 0.8rem; color: var(--gray); }
+    
+    .students-section { background: var(--white); border-radius: 8px; border: 1px solid #ddd; padding: 16px; }
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .section-title { font-size: 1.1rem; font-weight: 600; }
+    
+    .student-list { display: grid; gap: 12px; }
+    .student-card { display: flex; align-items: center; padding: 12px; border: 1px solid #eee; border-radius: 8px; background: var(--white); }
+    .student-card.picked { border-color: var(--primary); background: #f1f8e9; }
+    .student-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 12px; }
+    .student-info { flex: 1; }
+    .student-name { font-weight: 600; }
+    .student-stop { font-size: 0.8rem; color: var(--gray); }
+    .student-status { padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; cursor: pointer; }
+    .student-status.at_home { background: #eee; color: #666; }
+    .student-status.on_board { background: #e8f5e9; color: var(--primary); }
+    .student-status.dropped { background: #e3f2fd; color: var(--info); }
+    
+    .map-section { background: var(--white); border-radius: 8px; border: 1px solid #ddd; padding: 16px; margin-top: 20px; }
+    #map { height: 300px; background: #e0e0e0; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--gray); }
+    
+    .location-panel { background: var(--white); border-radius: 8px; border: 1px solid #ddd; padding: 16px; margin-top: 20px; }
+    .location-panel h3 { margin-bottom: 12px; color: var(--primary); }
+    .location-display { font-family: monospace; font-size: 0.9rem; color: var(--gray); }
+    
+    .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-success { background: var(--primary); color: white; }
+    
+    @media (max-width: 768px) {
+      .container { flex-direction: column; }
+      .sidebar { width: 100%; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1><i class="fas fa-bus"></i> ScholarTrack Driver</h1>
+    <div class="header-info">
+      <span class="vehicle-badge"><i class="fas fa-car"></i> <span id="vehicleId">Loading...</span></span>
+      <span><i class="fas fa-user"></i> <span id="driverName">Loading...</span></span>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="sidebar">
+      <div class="route-title"><i class="fas fa-route"></i> <span id="routeName">Route 1</span></div>
+      <ul class="route-stops" id="stopsList">
+        <li class="stop pending">Loading stops...</li>
+      </ul>
+    </div>
+
+    <div class="main">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-value" id="totalStudents">0</div>
+          <div class="stat-label">Total Students</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="pickedUp">0</div>
+          <div class="stat-label">Picked Up</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="remaining">0</div>
+          <div class="stat-label">Remaining</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="completedStops">0/0</div>
+          <div class="stat-label">Stops Completed</div>
+        </div>
+      </div>
+
+      <div class="students-section">
+        <div class="section-header">
+          <div class="section-title"><i class="fas fa-users"></i> Students</div>
+          <button class="btn btn-primary" onclick="startRoute()"><i class="fas fa-play"></i> Start Route</button>
+        </div>
+        <div class="student-list" id="studentList"></div>
+      </div>
+
+      <div class="map-section">
+        <h3><i class="fas fa-map-marker-alt"></i> Live Location</h3>
+        <div id="map"><i class="fas fa-map" style="font-size: 2rem; margin-right: 8px;"></i> Map View</div>
+        <div class="location-display">
+          Lat: <span id="currentLat">--</span> | Lng: <span id="currentLng">--</span> | Speed: <span id="currentSpeed">0</span> km/h
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let driverId = 'driver-001';
+    let currentRoute = null;
+    let students = [];
+    let ws = null;
+    let currentStopIndex = 0;
+    let routeStarted = false;
+
+    const demoStudents = [
+      { id: 'student-001', name: 'Alice Smith', stopId: 1, stopName: 'Stop 1 - Oak Street', status: 'at_home' },
+      { id: 'student-002', name: 'Bob Johnson', stopId: 2, stopName: 'Stop 2 - Pine Avenue', status: 'at_home' },
+      { id: 'student-003', name: 'Charlie Brown', stopId: 3, stopName: 'Stop 3 - Cedar Road', status: 'at_home' },
+      { id: 'student-004', name: 'Diana Prince', stopId: 1, stopName: 'Stop 1 - Oak Street', status: 'at_home' }
+    ];
+
+    const demoStops = [
+      { id: 1, name: 'Stop 1 - Oak Street', lat: -25.7479, lng: 28.1911, time: '06:30', completed: false },
+      { id: 2, name: 'Stop 2 - Pine Avenue', lat: -25.7500, lng: 28.1950, time: '06:45', completed: false },
+      { id: 3, name: 'Stop 3 - Cedar Road', lat: -25.7520, lng: 28.2000, time: '07:00', completed: false },
+      { id: 4, name: 'Demo Primary School', lat: -25.7550, lng: 28.2100, time: '07:30', completed: false }
+    ];
+
+    function init() {
+      loadDashboard();
+      connectWebSocket();
+      startLocationSimulator();
+    }
+
+    async function loadDashboard() {
+      document.getElementById('driverName').textContent = 'John Driver';
+      document.getElementById('vehicleId').textContent = 'SBK 123';
+      document.getElementById('routeName').textContent = 'Route 1 - Morning';
+      
+      students = [...demoStudents];
+      currentRoute = { id: 'route1', stops: [...demoStops] };
+      
+      renderStops();
+      renderStudents();
+      updateStats();
+    }
+
+    function renderStops() {
+      const list = document.getElementById('stopsList');
+      list.innerHTML = currentRoute.stops.map((stop, index) => `
+        <li class="stop ${stop.completed ? 'completed' : index === currentStopIndex ? 'current' : 'pending'}" onclick="goToStop(${index})">
+          <div class="stop-time">${stop.time}</div>
+          <div class="stop-name">${stop.name}</div>
+          <div class="stop-status ${stop.completed ? 'completed' : index === currentStopIndex ? 'current' : 'pending'}">
+            ${stop.completed ? 'Completed' : index === currentStopIndex ? 'Current' : 'Pending'}
+          </div>
+        </li>
+      `).join('');
+    }
+
+    function renderStudents() {
+      const list = document.getElementById('studentList');
+      list.innerHTML = students.map(student => `
+        <div class="student-card ${student.status === 'on_board' ? 'picked' : ''}">
+          <div class="student-avatar">${student.name.charAt(0)}</div>
+          <div class="student-info">
+            <div class="student-name">${student.name}</div>
+            <div class="student-stop">${student.stopName}</div>
+          </div>
+          <div class="student-status ${student.status}" onclick="toggleStudentStatus('${student.id}')">
+            ${student.status === 'at_home' ? 'Pick Up' : student.status === 'on_board' ? 'On Board' : 'Dropped'}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateStats() {
+      document.getElementById('totalStudents').textContent = students.length;
+      document.getElementById('pickedUp').textContent = students.filter(s => s.status === 'on_board').length;
+      document.getElementById('remaining').textContent = students.filter(s => s.status === 'at_home').length;
+      
+      const completed = currentRoute.stops.filter(s => s.completed).length;
+      document.getElementById('completedStops').textContent = `${completed}/${currentRoute.stops.length}`;
+    }
+
+    function toggleStudentStatus(studentId) {
+      const student = students.find(s => s.id === studentId);
+      if (!student) return;
+      
+      if (student.status === 'at_home') {
+        student.status = 'on_board';
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'student_pickup', studentId, status: 'on_board', driverId }));
+        }
+      } else if (student.status === 'on_board') {
+        student.status = 'dropped';
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'student_pickup', studentId, status: 'dropped', driverId }));
+        }
+      }
+      
+      renderStudents();
+      updateStats();
+    }
+
+    function startRoute() {
+      routeStarted = true;
+      currentStopIndex = 0;
+      currentRoute.stops.forEach(s => s.completed = false);
+      students.forEach(s => s.status = 'at_home');
+      renderStops();
+      renderStudents();
+      updateStats();
+    }
+
+    function goToStop(index) {
+      currentStopIndex = index;
+      renderStops();
+    }
+
+    function connectWebSocket() {
+      ws = new WebSocket(`ws://${window.location.hostname}:3001`);
+      
+      ws.onopen = () => {
+        console.log('Connected to ScholarTrack');
+      };
+      
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'location_update') {
+            document.getElementById('currentLat').textContent = data.lat.toFixed(4);
+            document.getElementById('currentLng').textContent = data.lng.toFixed(4);
+          }
+        } catch (e) {
+          console.log('WS message:', event.data);
+        }
+      };
+      
+      ws.onerror = (e) => {
+        console.log('WebSocket connection failed - running in demo mode');
+      };
+    }
+
+    function startLocationSimulator() {
+      let lat = -25.7479;
+      let lng = 28.1911;
+      
+      setInterval(() => {
+        lat += 0.0005;
+        lng += 0.0003;
+        
+        const speed = Math.floor(Math.random() * 40) + 20;
+        
+        document.getElementById('currentLat').textContent = lat.toFixed(4);
+        document.getElementById('currentLng').textContent = lng.toFixed(4);
+        document.getElementById('currentSpeed').textContent = speed;
+        
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({
+            type: 'driver_location',
+            driverId,
+            lat,
+            lng,
+            speed
+          }));
+        }
+      }, 3000);
+    }
+
+    init();
+  </script>
+</body>
+</html>
