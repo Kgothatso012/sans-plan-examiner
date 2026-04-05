@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "sans-plan-examiner": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/server-filesystem",
+        "/home/kgothatso012/sans-plan-examiner"
+      ]
+    }
+  }
+}

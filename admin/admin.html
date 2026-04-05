@@ -33,6 +33,27 @@
       --space-lg: 24px;
       --space-xl: 32px;
     }
+    [data-theme="dark"] {
+      --ink: #e0e0e0;
+      --steel: #a0a0a0;
+      --graphite: #2a2a2a;
+      --paper: #121212;
+      --white: #1e1e1e;
+    }
+    [data-theme="dark"] body { background: var(--paper); color: var(--ink); }
+    [data-theme="dark"] .sidebar,
+    [data-theme="dark"] .details-panel { background: var(--white); border-color: #444; }
+    [data-theme="dark"] .queue-item { border-color: #444; }
+    [data-theme="dark"] .queue-item:hover { background: #2a2a2a; }
+    [data-theme="dark"] .toolbar { background: #1e1e1e; border-color: #444; }
+    [data-theme="dark"] .toolbar-btn { background: #333; color: #e0e0e0; border-color: #555; }
+    [data-theme="dark"] .toolbar-btn:hover { background: #444; }
+    [data-theme="dark"] .toolbar-btn.primary { background: var(--tshwane-blue); }
+    [data-theme="dark"] .details-section { border-color: #444; }
+    [data-theme="dark"] .details-section h3 { color: var(--ink); }
+    [data-theme="dark"] input, [data-theme="dark"] textarea, [data-theme="dark"] select { background: #2a2a2a; color: var(--ink); border-color: #555; }
+    [data-theme="dark"] .comment-item { background: #2a2a2a; border-color: #444; }
+    [data-theme="dark"] .pdf-page { background: #333; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: var(--font-body); background: var(--paper); color: var(--ink); min-height: 100vh; overflow: hidden; }
 
@@ -63,7 +84,8 @@
     .filter-btn { flex: 1; padding: 6px 8px; font-size: 0.7rem; border: none; background: transparent; color: var(--steel); cursor: pointer; border-radius: 4px; transition: all 0.2s; }
     .filter-btn:hover { background: #e0e0e0; }
     .filter-btn.active { background: var(--tshwane-blue); color: white; }
-    .queue-item { padding: var(--space-md); border: 1px solid #eee; border-radius: 6px; margin-bottom: var(--space-sm); cursor: pointer; transition: all 0.2s; }
+    .queue-item { display: flex; align-items: center; gap: 8px; padding: var(--space-md); border: 1px solid #eee; border-radius: 6px; margin-bottom: var(--space-sm); cursor: pointer; transition: all 0.2s; }
+    .queue-checkbox { width: 18px; height: 18px; cursor: pointer; }
     .queue-item:hover { border-color: var(--tshwane-blue); background: #f8fcf8; }
     .queue-item.active { border-color: var(--tshwane-blue); background: #e8f5e9; }
     .queue-ref { font-family: var(--font-mono); font-weight: 600; color: var(--tshwane-blue); font-size: 0.9rem; }
@@ -78,7 +100,13 @@
     .queue-comments span { color: var(--sans-red); }
 
     /* === NOTIFICATIONS === */
-    .notifications-section { padding: var(--space-md); border-top: 1px solid #eee; background: #fafafa; }
+    .notifications-section { padding: var(--space-md); border-top: 1px solid #eee; background: #fafafa; max-height: 200px; overflow: hidden; transition: max-height 0.3s ease; }
+    .notifications-section.collapsed { max-height: 0; padding: 0; border-top: none; }
+    .notifications-section.expanded { max-height: 300px; }
+    .notif-toggle { background: transparent; border: none; color: var(--tshwane-blue); cursor: pointer; font-size: 0.8rem; padding: 4px 8px; display: flex; align-items: center; gap: 4px; }
+    .notif-toggle:hover { text-decoration: underline; }
+    .notif-toggle .indicator { width: 8px; height: 8px; background: var(--sans-red); border-radius: 50%; display: none; }
+    .notif-toggle .indicator.visible { display: inline-block; }
     .notifications-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm); }
     .notifications-header h3 { font-size: 0.8rem; color: var(--steel); text-transform: uppercase; }
     .notification-badge { background: var(--sans-red); color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; }
@@ -90,6 +118,7 @@
     .toolbar-btn { padding: var(--space-sm) var(--space-md); background: transparent; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
     .toolbar-btn:hover { background: #f5f5f5; }
     .toolbar-btn.active { background: var(--tshwane-blue); color: white; border-color: var(--tshwane-blue); }
+    .batch-toolbar { display: flex; }
     .toolbar-btn.primary { background: var(--tshwane-blue); color: white; border-color: var(--tshwane-blue); }
     .toolbar-btn.ai-analyze-btn { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border: none; font-weight: 600; padding: 8px 16px; border-radius: 4px; }
     .toolbar-btn.ai-analyze-btn:hover { background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); }
@@ -109,11 +138,28 @@
     .scale-ruler.visible { display: block; }
     .scale-ruler span { font-weight: 700; }
 
-    /* Fullscreen */
-    .fullscreen-mode .sidebar, .fullscreen-mode .details-panel { display: none; }
-    .fullscreen-mode .viewer-area { width: 100%; }
-    .fullscreen-mode .toolbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-    .fullscreen-mode .pdf-container { padding-top: 60px; }
+    /* Fullscreen - hide everything except PDF */
+    .fullscreen-mode .sidebar,
+    .fullscreen-mode .details-panel,
+    .fullscreen-mode .toolbar { display: none !important; }
+    .fullscreen-mode .viewer-area { width: 100vw !important; height: 100vh !important; }
+    .fullscreen-mode .pdf-container { padding: 20px !important; }
+    .fullscreen-mode .pdf-page { margin: auto; }
+
+    /* Compare Mode */
+    .compare-mode .sidebar, .compare-mode .details-panel { display: none; }
+    .compare-mode .viewer-area { width: 100vw !important; }
+    .compare-container { display: flex; width: 100%; height: 100%; gap: 4px; }
+    .compare-pane { flex: 1; position: relative; overflow: auto; background: #333; }
+    .compare-pane canvas { display: block; margin: auto; }
+    .compare-label { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; z-index: 10; }
+
+    /* Fullscreen floating toolbar */
+    .fullscreen-toolbar { display: none; position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1000; background: rgba(0,0,0,0.85); padding: 8px 16px; border-radius: 8px; gap: 8px; align-items: center; }
+    .fullscreen-mode .fullscreen-toolbar { display: flex; }
+    .fullscreen-toolbar button { background: transparent; border: 1px solid #555; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+    .fullscreen-toolbar button:hover { background: #333; }
+    .fullscreen-toolbar span { color: #aaa; font-size: 0.8rem; }
 
     /* CAD Tools */
     .cad-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 50; }
@@ -127,6 +173,19 @@
     /* Toolbar CAD buttons */
     .cad-btn.active { background: #00aaff; color: white; border-color: #00aaff; }
     .cad-tool-group { display: flex; gap: 4px; margin-left: 8px; padding-left: 8px; border-left: 1px solid #ddd; }
+
+    /* Examine Drawing Tools */
+    .drawing-tools { position: absolute; top: 10px; right: 10px; display: none; z-index: 200; }
+    .drawing-tools.active { display: flex; gap: 4px; }
+    .draw-canvas { position: absolute; top: 0; left: 0; pointer-events: auto; cursor: crosshair; }
+    .stamp-menu { position: absolute; top: 40px; right: 10px; background: white; border: 1px solid #ddd; border-radius: 8px; padding: 10px; display: none; z-index: 200; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .stamp-menu.visible { display: block; }
+    .stamp-option { padding: 8px 16px; cursor: pointer; border-radius: 4px; margin: 2px 0; }
+    .stamp-option:hover { background: #f0f0f0; }
+    .stamp-option.approved { color: #2e7d32; font-weight: 600; }
+    .stamp-option.rejected { color: #ef3636; font-weight: 600; }
+    .stamp-option.revision { color: #f57c00; font-weight: 600; }
+    .stamp-option.custom { color: #1a1a1a; font-weight: 500; border-top: 1px solid #ddd; }
 
     /* === PDF VIEWER === */
     .pdf-container { flex: 1; overflow: auto; background: #525659; display: flex; justify-content: center; padding: var(--space-lg); }
@@ -262,6 +321,7 @@
         <a href="../../index.html" class="back-link">← Back</a>
         <h1 style="margin-top: 8px;">Joe's Examiner</h1>
         <p>Building Control</p>
+        <button onclick="showExaminersPanel()" style="margin-top:8px;padding:4px 12px;background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.3);border-radius:4px;cursor:pointer;font-size:0.75rem;">👥 Examiners</button>
       </div>
 
       <div class="search-section">
@@ -291,12 +351,26 @@
         <div style="margin-top: 8px; text-align: center;">
           <span style="font-size: 0.75rem; color: var(--steel);">Approval Rate: <strong id="statRate">0%</strong></span>
         </div>
+        <div id="statsChart" style="display:flex;gap:4px;height:60px;align-items:flex-end;padding:8px 0;">
+          <div id="chartPending" style="flex:1;background:#1565c0;height:0%;border-radius:4px 4px 0 0;transition:height 0.3s;" title="Pending"></div>
+          <div id="chartApproved" style="flex:1;background:#2e7d32;height:0%;border-radius:4px 4px 0 0;transition:height 0.3s;" title="Approved"></div>
+          <div id="chartRejected" style="flex:1;background:#ef3636;height:0%;border-radius:4px 4px 0 0;transition:height 0.3s;" title="Rejected"></div>
+        </div>
+        <div style="display:flex;justify-content:space-around;font-size:0.65rem;color:var(--steel);">
+          <span>Pending</span><span>Approved</span><span>Rejected</span>
+        </div>
       </div>
 
       <div class="queue-section">
         <div class="queue-header">
           <h3>Queue</h3>
           <span id="queueCount">0</span>
+        </div>
+        <div class="batch-toolbar" id="batchButtonGroup" style="display:none;padding:8px;background:#e8f5e9;border-bottom:1px solid var(--tshwane-blue);gap:8px;align-items:center;">
+          <span id="selectedCount" style="font-size:0.8rem;font-weight:600;">0</span>
+          <span style="font-size:0.75rem;">selected</span>
+          <button class="toolbar-btn" id="btnBatchAnalyze" onclick="batchAnalyze()" style="background:var(--tshwane-blue);color:white;">🤖 Batch Analyze</button>
+          <button class="toolbar-btn" onclick="selectedQueueApps=[];updateBatchButtons();loadQueue();" style="background:#666;color:white;">Clear</button>
         </div>
         <div class="queue-filters">
           <button class="filter-btn active" onclick="filterQueue('all')">All</button>
@@ -307,9 +381,12 @@
         <div id="queueList"></div>
       </div>
 
-      <div class="notifications-section">
+      <div class="notifications-section" id="notificationsSection">
         <div class="notifications-header">
-          <h3>Notifications</h3>
+          <button class="notif-toggle" onclick="toggleNotifications()">
+            <span>Notifications</span>
+            <span class="indicator" id="notifIndicator"></span>
+          </button>
           <span class="notification-badge" id="notifCount">0</span>
         </div>
         <div id="notificationsList"></div>
@@ -335,24 +412,31 @@
         <!-- View Mode -->
         <div class="toolbar-group">
           <button class="toolbar-btn" id="btnFullscreen" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+          <button class="toolbar-btn" id="btnDarkMode" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
+          <button class="toolbar-btn" id="btnCompare" onclick="toggleCompareMode()" title="Compare Documents">⚖️</button>
           <button class="toolbar-btn" id="btnPan" onclick="togglePan()">✋ Pan</button>
           <button class="toolbar-btn primary" id="btnComment" onclick="enableCommentMode()">💬 Comment</button>
         </div>
 
-        <!-- AI & Export -->
+        <!-- AI & Verification -->
         <div class="toolbar-group" id="aiButtonGroup">
           <button class="toolbar-btn ai-analyze-btn" id="btnAIAnalyze" onclick="runAIAnalysis()">🤖 Analyze</button>
+          <button class="toolbar-btn" id="btnVerifyDocs" onclick="runDocVerification()" style="background:#059669;color:white;border:none;">📋 Verify Docs</button>
         </div>
         <div class="toolbar-group">
           <button class="toolbar-btn" onclick="exportCSV()">📊 CSV</button>
           <button class="toolbar-btn" onclick="exportPDF()">📄 PDF</button>
+          <button class="toolbar-btn" onclick="saveAnnotatedPDF()" title="Save with stamps">💾 Save</button>
         </div>
 
         <!-- Document & Page -->
         <div class="toolbar-group" style="margin-left: auto;">
           <input type="file" id="uploadDocInput" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload(event)">
           <button class="toolbar-btn" onclick="document.getElementById('uploadDocInput').click()">📤 Upload</button>
-          <button class="toolbar-btn" onclick="prevPage()">◀</button>
+          <input type="text" id="pdfSearch" placeholder="Search..." style="width:80px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;font-size:0.8rem;" onkeyup="if(event.key==='Enter')searchPDF()">
+          <button class="toolbar-btn" id="btnSearchPDF" onclick="searchPDF()" title="Search PDF">🔍</button>
+          <button class="toolbar-btn" onclick="prevMatch()" title="Previous match">◀</button>
+          <button class="toolbar-btn" onclick="nextMatch()" title="Next match">▶</button>
           <span id="pageInfo">1 / 1</span>
           <button class="toolbar-btn" onclick="nextPage()">▶</button>
         </div>
@@ -364,10 +448,31 @@
           <button class="toolbar-btn" id="btnMeasure" onclick="toggleMeasure()">📐 Measure</button>
           <button class="toolbar-btn" id="btnCoords" onclick="toggleCoords()">📍 Coords</button>
         </div>
+
+        <!-- Examine Tools -->
+        <div class="toolbar-group">
+          <button class="toolbar-btn" id="btnLine" onclick="toggleLineTool()" title="Draw Line">📏 Line</button>
+          <button class="toolbar-btn" id="btnRect" onclick="toggleRectTool()" title="Draw Rectangle">⬜ Rect</button>
+          <button class="toolbar-btn" id="btnArrow" onclick="toggleArrowTool()" title="Draw Arrow">➡ Arrow</button>
+          <button class="toolbar-btn" id="btnStamp" onclick="showStampMenu()">🖊 Stamp</button>
+        </div>
       </div>
 
       <!-- VIEWER AREA -->
       <div class="viewer-area" id="viewerArea">
+        <!-- Fullscreen floating toolbar -->
+        <div class="fullscreen-toolbar">
+          <button onclick="exitFullscreen()">✕ Exit</button>
+          <span>|</span>
+          <button onclick="zoomOut()">−</button>
+          <button onclick="zoomIn()">+</button>
+          <button onclick="prevPage()">◀</button>
+          <span id="fsPageInfo">1/1</span>
+          <button onclick="nextPage()">▶</button>
+          <span>|</span>
+          <button onclick="toggleCoords()">📍 Coords</button>
+          <button onclick="toggleScaleRuler()">📏 Scale</button>
+        </div>
         <div class="pdf-container" id="pdfContainer">
           <div class="no-selection" id="noSelection">
             <div class="no-selection-icon">📐</div>
@@ -381,6 +486,12 @@
               <div class="cad-coords" id="cadCoords">X: 0 Y: 0</div>
             </div>
             <div class="scale-ruler" id="scaleRuler">Scale: <span>1cm = 10mm</span> @ <span id="currentScale">150%</span></div>
+            <div class="stamp-menu" id="stampMenu">
+              <div class="stamp-option approved" onclick="applyStamp('approved')">✓ APPROVED</div>
+              <div class="stamp-option rejected" onclick="applyStamp('rejected')">✕ REJECTED</div>
+              <div class="stamp-option revision" onclick="applyStamp('revision')">⚠ REVISION REQUIRED</div>
+              <div class="stamp-option custom" onclick="showCustomStampInput()">✎ Custom</div>
+            </div>
           </div>
         </div>
 
@@ -389,6 +500,14 @@
           <div class="details-header">
             <h2 id="detailRef">-</h2>
             <span class="ref" id="detailErf"></span>
+            <span id="detailPayment" style="font-size:0.75rem;margin-top:4px;"></span>
+          </div>
+          <div class="quick-actions" style="display:flex;gap:8px;padding:12px;border-bottom:1px solid #eee;flex-wrap:wrap;">
+            <button class="quick-btn approved" onclick="quickStatus('APPROVED')" style="flex:1;min-width:80px;padding:10px;background:#2e7d32;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:600;">✓ Approve</button>
+            <button class="quick-btn rejected" onclick="quickStatus('REJECTED')" style="flex:1;min-width:80px;padding:10px;background:#ef3636;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:600;">✕ Reject</button>
+            <button class="quick-btn revision" onclick="quickStatus('REVISION')" style="flex:1;min-width:80px;padding:10px;background:#f57c00;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:600;">⚠ Revise</button>
+            <button class="toolbar-btn" onclick="requestPayment()" style="flex:1;min-width:80px;padding:10px;background:#1565c0;color:white;border:none;border-radius:4px;cursor:pointer;font-size:0.85rem;">💳 Payment</button>
+            <button class="toolbar-btn" onclick="assignToMe()" style="flex:1;min-width:80px;padding:10px;background:#666;color:white;border:none;border-radius:4px;cursor:pointer;font-size:0.85rem;">👤 Assign</button>
           </div>
 
           <div class="details-tabs">
@@ -396,6 +515,7 @@
             <div class="details-tab" onclick="switchTab('comments')">Comments</div>
             <div class="details-tab" onclick="switchTab('ai')">AI Check</div>
             <div class="details-tab" onclick="switchTab('revisions')">Revisions</div>
+            <div class="details-tab" onclick="switchTab('audit')">Audit</div>
           </div>
 
           <div class="details-content">
@@ -450,6 +570,13 @@
             <!-- REVISIONS TAB -->
             <div id="tab-revisions" class="tab-content hidden">
               <div class="revision-list" id="revisionList"></div>
+            </div>
+
+            <!-- AUDIT TAB -->
+            <div id="tab-audit" class="tab-content hidden">
+              <div class="audit-list" id="auditList" style="padding:12px;">
+                <p style="color:var(--steel);text-align:center;">Loading audit history...</p>
+              </div>
             </div>
           </div>
 
@@ -728,6 +855,15 @@
         const zoningEl = document.getElementById('infoZoning');
         if (zoningEl) zoningEl.textContent = app.zoning || '-';
 
+        const payEl = document.getElementById('detailPayment');
+        if (payEl) {
+          if (app.payment_reference) {
+            payEl.innerHTML = `💳 ${app.payment_status} <span style="color:#666;">(${app.payment_reference})</span>`;
+          } else {
+            payEl.textContent = '';
+          }
+        }
+
         const addrEl = document.getElementById('infoAddress');
         if (addrEl) addrEl.textContent = app.street_address || '-';
 
@@ -752,15 +888,44 @@
     async function loadAppPDF(documents) {
       const container = document.getElementById('pdfContainer');
 
-      const planDoc = documents?.find(d => d.doc_type === 'building_plans');
+      // Show all document types available for this application
+      if (!documents || documents.length === 0) {
+        showPdfPlaceholder(container);
+        return;
+      }
+
+      // Build document selector
+      const docSelector = document.getElementById('docTypeSelector');
+      let selectorHtml = '<select id="docTypeSelect" onchange="switchDocument(this.value)" style="padding:8px;border-radius:4px;border:1px solid #ddd;">';
+      documents.forEach((doc, idx) => {
+        const label = doc.doc_type?.replace('_', ' ').toUpperCase() || 'DOCUMENT ' + (idx + 1);
+        const selected = idx === 0 ? 'selected' : '';
+        selectorHtml += `<option value="${idx}" ${selected}>${label}</option>`;
+      });
+      selectorHtml += '</select>';
+
+      // Store for switching
+      window.currentAppDocs = documents;
+
+      // Try to load first document (prefer building_plans)
+      const planDoc = documents.find(d => d.doc_type === 'building_plans') || documents[0];
 
       if (!planDoc?.storage_path) {
         showPdfPlaceholder(container);
         return;
       }
 
+      // Add selector above PDF
+      let selectorEl = document.getElementById('docTypeSelectorContainer');
+      if (!selectorEl) {
+        selectorEl = document.createElement('div');
+        selectorEl.id = 'docTypeSelectorContainer';
+        selectorEl.style.cssText = 'position:absolute;top:10px;left:10px;z-index:100;';
+        container.appendChild(selectorEl);
+      }
+      selectorEl.innerHTML = selectorHtml;
+
       try {
-        // Use appId/docId format
         const res = await fetch(`/api/documents/${currentApp.id}/${planDoc.id}`);
         const data = await res.json();
 
@@ -775,7 +940,35 @@
         await renderPdfPage(1);
 
       } catch (e) {
-        console.error('PDF load error:', e);
+        // PDF load error
+      }
+    }
+
+    function switchDocument(idx) {
+      const docs = window.currentAppDocs;
+      if (!docs || !docs[idx]) return;
+
+      const doc = docs[idx];
+      loadSpecificDocument(doc);
+    }
+
+    async function loadSpecificDocument(doc) {
+      const container = document.getElementById('pdfContainer');
+
+      try {
+        const res = await fetch(`/api/documents/${currentApp.id}/${doc.id}`);
+        const data = await res.json();
+
+        if (!data.url) return;
+
+        const loadingTask = pdfjsLib.getDocument(data.url);
+        pdfDoc = await loadingTask.promise;
+        currentPage = 1;
+        await renderPdfPage(1);
+      } catch (e) {
+        // Error loading document
+      }
+    }
         showPdfPlaceholder(container);
       }
     }
@@ -1181,6 +1374,119 @@
 
       event.target.classList.add('active');
       document.getElementById('tab-' + tabName).classList.remove('hidden');
+
+      // Load audit log when tab is opened
+      if (tabName === 'audit' && currentApp) {
+        loadAuditLog();
+      }
+    }
+
+    async function loadAuditLog() {
+      const container = document.getElementById('auditList');
+      if (!currentApp) {
+        container.innerHTML = '<p style="color:var(--steel);">Select an application first</p>';
+        return;
+      }
+      try {
+        const res = await adminFetch('/api/audit?target_id=' + currentApp.id + '&limit=50');
+        const logs = await res.json();
+        if (!logs || logs.length === 0) {
+          container.innerHTML = '<p style="color:var(--steel);">No audit history</p>';
+          return;
+        }
+        container.innerHTML = logs.map(log => `
+          <div style="padding:8px;border-bottom:1px solid #eee;font-size:0.85rem;">
+            <span style="font-weight:600;color:var(--tshwane-blue);">${log.action}</span>
+            <span style="color:var(--steel);"> - ${log.target_type}</span>
+            <div style="font-size:0.75rem;color:var(--steel);margin-top:2px;">
+              ${log.admin_email} • ${new Date(log.created_at).toLocaleString()}
+            </div>
+            ${log.details ? '<div style="font-size:0.75rem;margin-top:4px;">' + JSON.stringify(log.details) + '</div>' : ''}
+          </div>
+        `).join('');
+      } catch (e) {
+        container.innerHTML = '<p style="color:var(--danger);">Error loading audit: ' + e.message + '</p>';
+      }
+    }
+
+    function showExaminersPanel() {
+      const panel = document.createElement('div');
+      panel.id = 'examinersPanel';
+      panel.style.cssText = 'position:fixed;top:0;right:-400px;width:400px;height:100vh;background:white;z-index:1000;box-shadow:-4px 0 20px rgba(0,0,0,0.2);transition:right 0.3s;display:flex;flex-direction:column;';
+      panel.innerHTML = `
+        <div style="padding:16px;background:var(--tshwane-blue);color:white;display:flex;justify-content:space-between;align-items:center;">
+          <h3 style="margin:0;">Examiners</h3>
+          <button onclick="closeExaminersPanel()" style="background:none;border:none;color:white;font-size:24px;cursor:pointer;">&times;</button>
+        </div>
+        <div style="padding:16px;border-bottom:1px solid #eee;">
+          <h4 style="margin:0 0 12px;">Add New Examiner</h4>
+          <input type="text" id="newExaminerName" placeholder="Full Name" style="width:100%;padding:8px;margin-bottom:8px;border:1px solid #ddd;border-radius:4px;">
+          <input type="email" id="newExaminerEmail" placeholder="Email" style="width:100%;padding:8px;margin-bottom:8px;border:1px solid #ddd;border-radius:4px;">
+          <input type="text" id="newExaminerEmpNum" placeholder="Employee Number" style="width:100%;padding:8px;margin-bottom:8px;border:1px solid #ddd;border-radius:4px;">
+          <input type="password" id="newExaminerPass" placeholder="Password" style="width:100%;padding:8px;margin-bottom:12px;border:1px solid #ddd;border-radius:4px;">
+          <button onclick="registerExaminer()" style="width:100%;padding:10px;background:var(--tshwane-blue);color:white;border:none;border-radius:4px;cursor:pointer;">Register Examiner</button>
+        </div>
+        <div id="examinersList" style="flex:1;overflow-y:auto;padding:16px;"></div>
+      `;
+      document.body.appendChild(panel);
+      setTimeout(() => panel.style.right = '0', 10);
+      loadExaminers();
+    }
+
+    function closeExaminersPanel() {
+      const panel = document.getElementById('examinersPanel');
+      if (panel) {
+        panel.style.right = '-400px';
+        setTimeout(() => panel.remove(), 300);
+      }
+    }
+
+    async function loadExaminers() {
+      const list = document.getElementById('examinersList');
+      try {
+        const res = await adminFetch('/api/examiners');
+        const examiners = await res.json();
+        list.innerHTML = examiners.map(ex => `
+          <div style="padding:12px;border:1px solid #eee;border-radius:6px;margin-bottom:8px;">
+            <div style="font-weight:600;">${ex.name}</div>
+            <div style="font-size:0.85rem;color:var(--steel);">${ex.email}</div>
+            <div style="font-size:0.75rem;color:var(--steel);">Emp#: ${ex.employee_number || '-'}</div>
+          </div>
+        `).join('');
+      } catch (e) {
+        list.innerHTML = '<p style="color:var(--danger);">Error: ' + e.message + '</p>';
+      }
+    }
+
+    async function registerExaminer() {
+      const name = document.getElementById('newExaminerName').value.trim();
+      const email = document.getElementById('newExaminerEmail').value.trim();
+      const empNum = document.getElementById('newExaminerEmpNum').value.trim();
+      const password = document.getElementById('newExaminerPass').value;
+      if (!name || !email || !password) {
+        alert('Name, email, and password required');
+        return;
+      }
+      try {
+        const res = await fetch('/api/examiners/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-api-key': 'joe-examiner-secret-2024' },
+          body: JSON.stringify({ name, email, password, employee_number: empNum })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert('Examiner registered successfully');
+          document.getElementById('newExaminerName').value = '';
+          document.getElementById('newExaminerEmail').value = '';
+          document.getElementById('newExaminerEmpNum').value = '';
+          document.getElementById('newExaminerPass').value = '';
+          loadExaminers();
+        } else {
+          alert(data.error || 'Failed to register');
+        }
+      } catch (e) {
+        alert('Error: ' + e.message);
+      }
     }
 
     // === ACTIONS ===
@@ -1255,8 +1561,71 @@
       } finally {
         btn.disabled = false;
         btn.classList.remove('loading');
-        btn.textContent = '🤖 Run AI Analysis';
+        btn.textContent = '🤖 Analyze';
       }
+    }
+
+    // Run document verification
+    async function runDocVerification() {
+      if (!currentApp) {
+        showToast('Select an application first', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('btnVerifyDocs');
+      btn.disabled = true;
+      btn.textContent = 'Verifying...';
+
+      try {
+        showToast('Verifying documents...', 'info');
+        const res = await adminFetch('/api/applications/' + currentApp.id + '/verify-docs', {
+          method: 'POST'
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          const v = result.verification;
+          const issues = v.issues || [];
+
+          if (issues.length > 0) {
+            showToast(`Document issues: ${issues.length} found`, 'warning');
+            alert('Document Verification Results:\n\n' + issues.map(i => '• ' + i).join('\n'));
+          } else {
+            showToast('All documents verified successfully', 'success');
+          }
+
+          // Show in verification panel or analysis section
+          renderDocVerification(v);
+        } else {
+          showToast('Verification failed: ' + (result.error || 'Unknown'), 'error');
+        }
+      } catch (e) {
+        showToast('Verification failed', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '📋 Verify Docs';
+      }
+    }
+
+    function renderDocVerification(verification) {
+      // Add to analysis section
+      const section = document.getElementById('analysisSection');
+      if (!section) return;
+
+      let html = '<div class="doc-verification"><h4>📋 Document Verification</h4>';
+
+      Object.entries(verification.verification).forEach(([key, check]) => {
+        const icon = check.status === 'PASS' ? '✅' : check.status === 'WARN' ? '⚠️' : '❌';
+        const color = check.status === 'PASS' ? 'green' : check.status === 'WARN' ? 'orange' : 'red';
+        html += `<div style="padding:8px;border-left:3px solid ${color};margin:4px 0;">${icon} <strong>${key}:</strong> ${check.message}</div>`;
+      });
+
+      html += '</div>';
+
+      // Insert after analysis header
+      const existing = section.querySelector('.doc-verification');
+      if (existing) existing.remove();
+      section.insertAdjacentHTML('afterbegin', html);
     }
 
     function requestRevision() {
@@ -1280,7 +1649,25 @@
     }
 
     // === NOTIFICATIONS ===
+    let notificationsExpanded = false;
+
+    function toggleNotifications() {
+      const section = document.getElementById('notificationsSection');
+      notificationsExpanded = !notificationsExpanded;
+      if (notificationsExpanded) {
+        section.classList.add('expanded');
+        section.classList.remove('collapsed');
+      } else {
+        section.classList.remove('expanded');
+        section.classList.add('collapsed');
+      }
+    }
+
     function loadNotifications() {
+      // Default collapsed - user opens manually
+      document.getElementById('notificationsSection').classList.add('collapsed');
+
+      // Real notifications from queue
       const notifications = [
         { text: 'New application submitted - Plan #124', time: '5 min ago' },
         { text: 'Revision received - Plan #122', time: '1 hour ago' },
@@ -1289,6 +1676,12 @@
 
       const container = document.getElementById('notificationsList');
       document.getElementById('notifCount').textContent = notifications.length;
+
+      // Show indicator if there are notifications (for collapsed state)
+      const indicator = document.getElementById('notifIndicator');
+      if (notifications.length > 0) {
+        indicator.classList.add('visible');
+      }
 
       container.innerHTML = notifications.map(n => `
         <div class="notification-item">${n.text}</div>
@@ -1351,12 +1744,103 @@
       const viewerArea = document.getElementById('viewerArea');
       const btn = document.getElementById('btnFullscreen');
       if (viewerArea.classList.contains('fullscreen-mode')) {
-        viewerArea.classList.remove('fullscreen-mode');
-        btn.textContent = '⛶ Fullscreen';
+        exitFullscreen();
       } else {
         viewerArea.classList.add('fullscreen-mode');
         btn.textContent = '✕ Exit';
       }
+    }
+    function exitFullscreen() {
+      const viewerArea = document.getElementById('viewerArea');
+      const btn = document.getElementById('btnFullscreen');
+      viewerArea.classList.remove('fullscreen-mode');
+      if (btn) btn.textContent = '⛶ Fullscreen';
+    }
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      const btn = document.getElementById('btnDarkMode');
+      if (html.getAttribute('data-theme') === 'dark') {
+        html.removeAttribute('data-theme');
+        btn.textContent = '🌙';
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.setAttribute('data-theme', 'dark');
+        btn.textContent = '☀️';
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+    // Load saved theme
+    (function() {
+      if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.getElementById('btnDarkMode').textContent = '☀️';
+      }
+    })();
+    let compareMode = false;
+    let compareDocId = null;
+    function toggleCompareMode() {
+      const viewerArea = document.getElementById('viewerArea');
+      const btn = document.getElementById('btnCompare');
+      compareMode = !compareMode;
+      if (compareMode) {
+        viewerArea.classList.add('compare-mode');
+        btn.classList.add('active');
+        showCompareModal();
+      } else {
+        viewerArea.classList.remove('compare-mode');
+        btn.classList.remove('active');
+        document.getElementById('compareModal').style.display = 'none';
+      }
+    }
+    function showCompareModal() {
+      const modal = document.createElement('div');
+      modal.id = 'compareModal';
+      modal.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:20px;border-radius:8px;z-index:1000;box-shadow:0 4px 20px rgba(0,0,0,0.3);max-width:400px;';
+      modal.innerHTML = '<h3 style="margin:0 0 12px">Select Document to Compare</h3><select id="compareDocSelect" style="width:100%;padding:8px;margin-bottom:12px;"><option value="">Choose document...</option></select><div style="display:flex;gap:8px"><button onclick="runCompare()" style="flex:1;padding:8px;background:var(--tshwane-blue);color:white;border:none;border-radius:4px;cursor:pointer;">Compare</button><button onclick="toggleCompareMode()" style="flex:1;padding:8px;background:#666;color:white;border:none;border-radius:4px;cursor:pointer;">Cancel</button></div>';
+      document.body.appendChild(modal);
+      loadCompareDocs();
+    }
+    async function loadCompareDocs() {
+      const select = document.getElementById('compareDocSelect');
+      const { data:docs } = await supabase.from('application_documents').select('id,doc_type,application_id').eq('application_id', currentAppId).order('doc_type');
+      if (docs) {
+        docs.forEach(d => {
+          const opt = document.createElement('option');
+          opt.value = d.id;
+          opt.textContent = d.doc_type.replace('_',' ').toUpperCase();
+          select.appendChild(opt);
+        });
+      }
+    }
+    async function runCompare() {
+      const docId = document.getElementById('compareDocSelect').value;
+      if (!docId) return;
+      const { data:doc } = await supabase.from('application_documents').select('file_data,doc_type').eq('id', docId).single();
+      if (doc) {
+        const container = document.getElementById('pdfContainer');
+        container.innerHTML = '<div class="compare-container"><div class="compare-pane" id="compareLeft"><canvas id="compareCanvas1"></canvas><div class="compare-label">Current</div></div><div class="compare-pane" id="compareRight"><canvas id="compareCanvas2"></canvas><div class="compare-label">' + doc.doc_type.replace('_',' ').toUpperCase() + '</div></div></div>';
+        const pdfData1 = currentDocData;
+        const pdfData2 = doc.file_data;
+        renderComparePDFs(pdfData1, pdfData2);
+      }
+      document.getElementById('compareModal').style.display = 'none';
+    }
+    async function renderComparePDFs(data1, data2) {
+      const pdf1 = await pdfjsLib.getDocument({ data: data1 }).promise;
+      const pdf2 = await pdfjsLib.getDocument({ data: data2 }).promise;
+      const canvas1 = document.getElementById('compareCanvas1');
+      const canvas2 = document.getElementById('compareCanvas2');
+      const page1 = await pdf1.getPage(1);
+      const page2 = await pdf2.getPage(1);
+      const viewport1 = page1.getViewport({ scale: 1 });
+      const viewport2 = page2.getViewport({ scale: 1 });
+      const scale = Math.min(800 / viewport1.width, 800 / viewport2.width);
+      canvas1.height = viewport1.height * scale;
+      canvas1.width = viewport1.width * scale;
+      canvas2.height = viewport2.height * scale;
+      canvas2.width = viewport2.width * scale;
+      await page1.render({ canvasContext: canvas1.getContext('2d'), viewport: page1.getViewport({ scale }) }).promise;
+      await page2.render({ canvasContext: canvas2.getContext('2d'), viewport: page2.getViewport({ scale }) }).promise;
     }
     let scaleRulerVisible = false;
     function toggleScaleRuler() {
@@ -1429,7 +1913,95 @@
       const y = Math.round((e.clientY - rect.top) / scale);
       document.getElementById('cadCoords').textContent = `X: ${x} Y: ${y}`;
     });
+
+    // Examine Drawing Tools
+    let activeTool = null;
+    let drawStart = null;
+
+    function toggleLineTool() {
+      const btn = document.getElementById('btnLine');
+      activeTool = activeTool === 'line' ? null : 'line';
+      if (activeTool) {
+        btn.classList.add('active');
+        document.getElementById('annotationLayer').style.cursor = 'crosshair';
+      } else {
+        btn.classList.remove('active');
+      }
     }
+
+    function toggleRectTool() {
+      const btn = document.getElementById('btnRect');
+      activeTool = activeTool === 'rect' ? null : 'rect';
+      if (activeTool) {
+        btn.classList.add('active');
+        document.getElementById('annotationLayer').style.cursor = 'crosshair';
+      } else {
+        btn.classList.remove('active');
+      }
+    }
+
+    function toggleArrowTool() {
+      const btn = document.getElementById('btnArrow');
+      activeTool = activeTool === 'arrow' ? null : 'arrow';
+      if (activeTool) {
+        btn.classList.add('active');
+        document.getElementById('annotationLayer').style.cursor = 'crosshair';
+      } else {
+        btn.classList.remove('active');
+      }
+    }
+
+    function showStampMenu() {
+      const menu = document.getElementById('stampMenu');
+      menu.classList.toggle('visible');
+    }
+
+    function applyStamp(type) {
+      const canvas = document.getElementById('pdfCanvas');
+      const ctx = canvas.getContext('2d');
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+
+      ctx.font = 'bold 48px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      if (type === 'approved') {
+        ctx.strokeStyle = '#2e7d32';
+        ctx.lineWidth = 4;
+        ctx.strokeText('APPROVED', centerX, centerY);
+        ctx.fillStyle = '#2e7d32';
+        ctx.fillText('APPROVED', centerX, centerY);
+      } else if (type === 'rejected') {
+        ctx.strokeStyle = '#ef3636';
+        ctx.lineWidth = 4;
+        ctx.strokeText('REJECTED', centerX, centerY);
+        ctx.fillStyle = '#ef3636';
+        ctx.fillText('REJECTED', centerX, centerY);
+      } else if (type === 'revision') {
+        ctx.strokeStyle = '#f57c00';
+        ctx.lineWidth = 4;
+        ctx.strokeText('REVISION REQUIRED', centerX, centerY);
+        ctx.fillStyle = '#f57c00';
+        ctx.fillText('REVISION REQUIRED', centerX, centerY);
+      } else if (type.startsWith('custom:')) {
+        const text = type.replace('custom:', '');
+        ctx.strokeStyle = '#1a1a1a';
+        ctx.lineWidth = 3;
+        ctx.strokeText(text, centerX, centerY);
+        ctx.fillStyle = '#1a1a1a';
+        ctx.fillText(text, centerX, centerY);
+      }
+
+      document.getElementById('stampMenu').classList.remove('visible');
+    }
+    function showCustomStampInput() {
+      const text = prompt('Enter custom stamp text:');
+      if (text && text.trim()) {
+        applyStamp('custom:' + text.trim());
+      }
+    }
+
     function prevPage() {
       if (currentPage > 1) {
         currentPage--;
@@ -1445,6 +2017,53 @@
       }
     }
     function togglePan() { document.getElementById('btnPan').classList.toggle('active'); }
+
+    // === PDF SEARCH ===
+    let pdfTextContent = '';
+    let searchMatches = [];
+    let currentMatchIndex = 0;
+    async function searchPDF() {
+      const query = document.getElementById('pdfSearch').value.trim().toLowerCase();
+      if (!query || !pdfDoc) {
+        showToast('Load a PDF and enter search term', 'error');
+        return;
+      }
+      searchMatches = [];
+      currentMatchIndex = 0;
+      // Search through all pages
+      for (let i = 1; i <= totalPages; i++) {
+        const page = await pdfDoc.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items.map(item => item.str).join(' ').toLowerCase();
+        if (pageText.includes(query)) {
+          searchMatches.push(i);
+        }
+      }
+      if (searchMatches.length > 0) {
+        showToast('Found ' + searchMatches.length + ' page(s) with "' + query + '"');
+        goToMatch(0);
+      } else {
+        showToast('No matches found', 'error');
+      }
+    }
+    function goToMatch(index) {
+      if (index >= 0 && index < searchMatches.length) {
+        currentMatchIndex = index;
+        currentPage = searchMatches[index];
+        document.getElementById('pageInfo').textContent = currentPage + ' / ' + totalPages;
+        renderPdfPage(currentPage);
+      }
+    }
+    function prevMatch() {
+      if (searchMatches.length > 0) {
+        goToMatch((currentMatchIndex - 1 + searchMatches.length) % searchMatches.length);
+      }
+    }
+    function nextMatch() {
+      if (searchMatches.length > 0) {
+        goToMatch((currentMatchIndex + 1) % searchMatches.length);
+      }
+    }
 
     // === DOCUMENT UPLOAD ===
     async function handleDocUpload(event) {
@@ -1558,6 +2177,108 @@
       showToast('Report exported', 'success');
     }
 
+    function saveAnnotatedPDF() {
+      const canvas = document.getElementById('pdfCanvas');
+      if (!canvas) {
+        showToast('No PDF loaded', 'error');
+        return;
+      }
+      // Convert canvas to image then trigger download
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `${currentApp?.reference || 'plan'}-annotated.png`;
+      link.href = dataUrl;
+      link.click();
+      showToast('Annotated PDF saved as image', 'success');
+    }
+
+    async function quickStatus(status) {
+      if (!currentApp) {
+        showToast('Select an application first', 'error');
+        return;
+      }
+      const confirmMsg = status === 'APPROVED' ? 'Approve this application?' :
+                        status === 'REJECTED' ? 'Reject this application?' :
+                        'Request revision?';
+      if (!confirm(confirmMsg)) return;
+
+      try {
+        const res = await adminFetch('/api/applications/' + currentApp.id, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-api-key': 'joe-examiner-secret-2024' },
+          body: JSON.stringify({ status })
+        });
+        if (res.ok) {
+          currentApp.status = status;
+          document.getElementById('detailStatus').textContent = status;
+          loadQueue();
+          showToast('Status updated to ' + status, 'success');
+
+          // Send notification email
+          await fetch('/api/notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-api-key': 'joe-examiner-secret-2024' },
+            body: JSON.stringify({
+              app_id: currentApp.id,
+              type: 'status_change',
+              status: status
+            })
+          });
+        } else {
+          showToast('Failed to update status', 'error');
+        }
+      } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+      }
+    }
+
+    async function assignToMe() {
+      if (!currentApp) {
+        showToast('Select an application first', 'error');
+        return;
+      }
+      try {
+        const res = await adminFetch('/api/applications/' + currentApp.id + '/assign', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-api-key': 'joe-examiner-secret-2024' },
+          body: JSON.stringify({ examiner_id: 'self' }) // Backend will use authenticated examiner
+        });
+        if (res.ok) {
+          showToast('Application assigned to you', 'success');
+        } else {
+          showToast('Failed to assign', 'error');
+        }
+      } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+      }
+    }
+
+    async function requestPayment() {
+      if (!currentApp) {
+        showToast('Select an application first', 'error');
+        return;
+      }
+      const amount = prompt('Enter payment amount (default R2500):', '2500');
+      if (amount === null) return;
+      try {
+        const res = await adminFetch('/api/applications/' + currentApp.id + '/payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-api-key': 'joe-examiner-secret-2024' },
+          body: JSON.stringify({ amount: parseFloat(amount) })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast('Payment reference: ' + data.reference, 'success');
+          // Copy to clipboard
+          navigator.clipboard.writeText(data.reference);
+        } else {
+          showToast(data.error || 'Failed', 'error');
+        }
+      } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+      }
+    }
+
     // === SEARCH ===
     let searchQuery = '';
     document.getElementById('searchInput').addEventListener('input', function(e) {
@@ -1580,6 +2301,12 @@
       document.getElementById('statApproved').textContent = approved;
       document.getElementById('statRejected').textContent = rejected;
       document.getElementById('statRate').textContent = rate + '%';
+
+      // Update chart
+      const maxVal = Math.max(pending, approved, rejected, 1);
+      document.getElementById('chartPending').style.height = (pending / maxVal * 100) + '%';
+      document.getElementById('chartApproved').style.height = (approved / maxVal * 100) + '%';
+      document.getElementById('chartRejected').style.height = (rejected / maxVal * 100) + '%';
 
       const container = document.getElementById('queueList');
 
@@ -1616,12 +2343,55 @@
                           app.status === 'REJECTED' ? 'REJECTED' : 'NEW';
         return `
           <div class="queue-item ${currentApp?.id === app.id ? 'active' : ''}" onclick="selectApplication('${app.id}')">
+            <input type="checkbox" class="queue-checkbox" onclick="event.stopPropagation();toggleQueueSelect('${app.id}')" ${selectedQueueApps.includes(app.id) ? 'checked' : ''}>
             <div class="queue-ref">${app.reference}</div>
             <div class="queue-meta">${app.owner_name} • ERF ${app.erf_number || '-'}</div>
             <span class="queue-badge badge-${badgeClass}">${app.status}</span>
           </div>
         `;
       }).join('');
+    }
+    let selectedQueueApps = [];
+    function toggleQueueSelect(appId) {
+      const idx = selectedQueueApps.indexOf(appId);
+      if (idx > -1) selectedQueueApps.splice(idx, 1);
+      else selectedQueueApps.push(appId);
+      updateBatchButtons();
+    }
+    function updateBatchButtons() {
+      const batchGroup = document.getElementById('batchButtonGroup');
+      if (batchGroup) batchGroup.style.display = selectedQueueApps.length > 0 ? 'flex' : 'none';
+      const count = document.getElementById('selectedCount');
+      if (count) count.textContent = selectedQueueApps.length;
+    }
+    async function batchAnalyze() {
+      if (selectedQueueApps.length === 0) return;
+      const btn = document.getElementById('btnBatchAnalyze');
+      btn.disabled = true;
+      btn.textContent = '⏳ Running...';
+      let results = [];
+      for (const appId of selectedQueueApps) {
+        try {
+          const { data: docs } = await supabase.from('application_documents').select('*').eq('application_id', appId);
+          if (docs && docs.length > 0) {
+            const res = await fetch('/api/analyze', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'x-api-key': 'joe-examiner-secret-2024' },
+              body: JSON.stringify({ app_id: appId, documents: docs.map(d => ({ doc_type: d.doc_type, mimeType: d.mime_type })) })
+            });
+            const analysis = await res.json();
+            results.push({ app_id: appId, status: 'success', analysis });
+          }
+        } catch (e) {
+          results.push({ app_id: appId, status: 'error', error: e.message });
+        }
+      }
+      btn.disabled = false;
+      btn.textContent = '🤖 Batch Analyze';
+      alert('Analyzed ' + results.length + ' applications. ' + results.filter(r => r.status === 'success').length + ' successful.');
+      selectedQueueApps = [];
+      updateBatchButtons();
+      loadQueue();
     }
   </script>
 

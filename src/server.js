@@ -30,6 +30,7 @@ const apiLimiter = rateLimit({
 
 // AI Analysis
 const SansAnalyzer = require('./ai/sans-analyzer');
+const DocumentVerifier = require('./ai/document-verifier');
 
 // JWT for applicant auth
 const jwt = require('jsonwebtoken');
@@ -85,15 +86,74 @@ async function notifyApplicant(applicationId, type) {
       revision_submitted: `Application ${reference} - Revision Received`
     };
 
-    const bodies = {
-      submitted: `Your building plan application ${reference} has been received by Tshwane Municipality.\n\nReference: ${reference}\nStatus: ${status}\n\nTrack your application: ${portalUrl}`,
-      status_changed: `Your application ${reference} status has been updated to: ${status}.\n\nView details: ${portalUrl}`,
-      comment_added: `A new comment has been added to your application ${reference}.\n\nLog in to view: ${portalUrl}`,
-      revision_submitted: `You have received a revision request for application ${reference}.\n\nLog in to view: ${portalUrl}`
+    // Professional HTML email templates
+    const styles = `body{font-family:'Segoe UI',Arial,sans-serif;margin:0;padding:0;background:#f5f5f5}.container{max-width:600px;margin:0 auto;background:#fff}.header{background:linear-gradient(135deg,#2E7D32 0%,#1B5E20 100%);color:#fff;padding:20px;text-align:center}.header h1{margin:0;font-size:24px}.content{padding:20px;color:#333}.status{display:inline-block;padding:8px 16px;border-radius:4px;font-weight:600;margin:10px 0}.status-submitted{background:#e3f2fd;color:#1565c0}.status-in_review{background:#fff3cd;color:#856404}.status-approved{background:#e8f5e9;color:#2e7d32}.status-rejected{background:#ffebee;color:#c62828}.status-revision{background:#fce4ec;color:#c2185b}.btn{display:inline-block;padding:12px 24px;background:#2E7D32;color:#fff;text-decoration:none;border-radius:4px;margin:10px 0}.footer{background:#f5f5f5;padding:15px;text-align:center;font-size:12px;color:#666}`;
+
+    const templates = {
+      submitted: `
+<!DOCTYPE html>
+<html><head><style>${styles}</style></head>
+<body><div class="container">
+  <div class="header"><h1>🏛️ Tshwane Municipality</h1><p>Building Control Division</p></div>
+  <div class="content">
+    <h2>Application Received</h2>
+    <p>Dear ${app.owner_name || 'Applicant'},</p>
+    <p>Your building plan application has been <strong>successfully received</strong>.</p>
+    <div class="status status-submitted">Reference: ${reference}</div>
+    <p>Track your application progress using the button below:</p>
+    <a href="${portalUrl}" class="btn">View Application</a>
+    <p style="margin-top:20px;font-size:14px;color:#666;">Or copy this link: ${portalUrl}</p>
+  </div>
+  <div class="footer"><p>Tshwane Municipality Building Control<br>Email: building@tshwane.gov.za | Tel: 012 358 0000</p></div>
+</div></body></html>`,
+      status_changed: `
+<!DOCTYPE html>
+<html><head><style>${styles}</style></head>
+<body><div class="container">
+  <div class="header"><h1>🏛️ Tshwane Municipality</h1><p>Building Control Division</p></div>
+  <div class="content">
+    <h2>Status Update</h2>
+    <p>Dear ${app.owner_name || 'Applicant'},</p>
+    <p>Your application <strong>${reference}</strong> status has been updated:</p>
+    <div class="status status-${status.toLowerCase()}">${status}</div>
+    <p>View full details and documents:</p>
+    <a href="${portalUrl}" class="btn">View Application</a>
+  </div>
+  <div class="footer"><p>Tshwane Municipality Building Control<br>Email: building@tshwane.gov.za | Tel: 012 358 0000</p></div>
+</div></body></html>`,
+      comment_added: `
+<!DOCTYPE html>
+<html><head><style>${styles}</style></head>
+<body><div class="container">
+  <div class="header"><h1>🏛️ Tshwane Municipality</h1><p>Building Control Division</p></div>
+  <div class="content">
+    <h2>New Comment Added</h2>
+    <p>Dear ${app.owner_name || 'Applicant'},</p>
+    <p>A new comment has been added to your application <strong>${reference}</strong>.</p>
+    <p>Please review the examiner's feedback:</p>
+    <a href="${portalUrl}" class="btn">View Comments</a>
+  </div>
+  <div class="footer"><p>Tshwane Municipality Building Control<br>Email: building@tshwane.gov.za | Tel: 012 358 0000</p></div>
+</div></body></html>`,
+      revision_submitted: `
+<!DOCTYPE html>
+<html><head><style>${styles}</style></head>
+<body><div class="container">
+  <div class="header"><h1>🏛️ Tshwane Municipality</h1><p>Building Control Division</p></div>
+  <div class="content">
+    <h2>Revision Required</h2>
+    <p>Dear ${app.owner_name || 'Applicant'},</p>
+    <p>Your application <strong>${reference}</strong> requires revisions.</p>
+    <p>Please review the comments and submit corrections:</p>
+    <a href="${portalUrl}" class="btn">View Revision Request</a>
+  </div>
+  <div class="footer"><p>Tshwane Municipality Building Control<br>Email: building@tshwane.gov.za | Tel: 012 358 0000</p></div>
+</div></body></html>`
     };
 
     const subject = subjects[type] || `Application ${reference} Update`;
-    const body = bodies[type] || `Update for application ${reference}`;
+    const html = templates[type] || `<p>Update for application ${reference}</p>`;
+    const text = templates[type] ? `Update for application ${reference}. View at: ${portalUrl}` : `Update for application ${reference}`;
 
     // Skip if no SMTP credentials
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
@@ -105,7 +165,8 @@ async function notifyApplicant(applicationId, type) {
       from: process.env.SMTP_FROM || '"Joe\'s Examiner" <noreply@tshwane.gov.za>',
       to: email,
       subject,
-      text: body
+      text: text,
+      html: html
     });
     // Email sent
   } catch (err) {
@@ -370,6 +431,156 @@ app.get('/api/auth/me', requireAuth, async (req, res) => {
 // ============ HEALTH CHECK ============
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// ============ EXAMINER ENDPOINTS ============
+app.post('/api/examiners/register', async (req, res) => {
+  try {
+    const { email, password, name, employee_number } = req.body;
+    if (!email || !password || !name) {
+      return res.status(400).json({ error: 'Email, password, and name required' });
+    }
+    const password_hash = await bcrypt.hash(password, 10);
+    const { data, error } = await supabase.from('examiners').insert({
+      email, password_hash, name, employee_number
+    }).select().single();
+    if (error) throw error;
+    const token = jwt.sign({ examiner_id: data.id, email: data.email }, JWT_SECRET, { expiresIn: '7d' });
+    res.json({ token, examiner: { id: data.id, email: data.email, name: data.name } });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.post('/api/examiners/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const { data: examiner, error } = await supabase.from('examiners').select('*').eq('email', email).single();
+    if (error || !examiner) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    const valid = await bcrypt.compare(password, examiner.password_hash);
+    if (!valid) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    const token = jwt.sign({ examiner_id: examiner.id, email: examiner.email }, JWT_SECRET, { expiresIn: '7d' });
+    res.json({ token, examiner: { id: examiner.id, email: examiner.email, name: examiner.name } });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+const requireExaminerAuth = (req, res, next) => {
+  const auth = req.headers.authorization;
+  if (!auth || !auth.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'No token' });
+  }
+  try {
+    const decoded = jwt.verify(auth.replace('Bearer ', ''), JWT_SECRET);
+    req.examiner = decoded;
+    next();
+  } catch (e) {
+    return res.status(401).json({ error: 'Invalid token' });
+  }
+};
+
+// Get examiner's assigned applications
+app.get('/api/examiners/queue', requireExaminerAuth, async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('applications').select('*').eq('assigned_to', req.examiner.examiner_id).order('created_at', { ascending: false });
+    if (error) throw error;
+    res.json(data);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Assign application to examiner (admin or examiner)
+app.put('/api/applications/:id/assign', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { examiner_id } = req.body;
+    let assignedTo = examiner_id;
+
+    // If 'self', try to get from auth (examiner) or use admin
+    if (examiner_id === 'self') {
+      if (req.examiner) {
+        assignedTo = req.examiner.examiner_id;
+      } else if (req.admin) {
+        // Admin can't assign to self this way - return error
+        return res.status(400).json({ error: 'Use examiner_id to assign to specific examiner' });
+      }
+    }
+
+    const { data, error } = await supabase.from('applications').update({ assigned_to: assignedTo }).eq('id', id).select().single();
+    if (error) throw error;
+    const examinerEmail = req.examiner?.email || req.admin?.email || 'admin';
+    await logAudit('ASSIGN', 'application', id, { assigned_to: assignedTo, examiner: examinerEmail });
+    res.json(data);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// List all examiners
+app.get('/api/examiners', requireAdminAuth, async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('examiners').select('id,email,name,employee_number,created_at');
+    if (error) throw error;
+    res.json(data);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Audit log endpoint for viewing history
+app.get('/api/audit', requireAdminAuth, async (req, res) => {
+  try {
+    const { target_id, target_type, limit = 50 } = req.query;
+    let query = supabase.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(parseInt(limit));
+    if (target_id) query = query.eq('target_id', target_id);
+    if (target_type) query = query.eq('target_type', target_type);
+    const { data, error } = await query;
+    if (error) throw error;
+    res.json(data);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Payment endpoint - generate payment reference
+app.post('/api/applications/:id/payment', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { amount } = req.body;
+    const paymentRef = 'SANS-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+    const { data, error } = await supabase.from('applications').update({
+      payment_reference: paymentRef,
+      payment_amount: amount || 2500,
+      payment_status: 'PENDING'
+    }).eq('id', id).select().single();
+    if (error) throw error;
+    res.json({ reference: paymentRef, amount: amount || 2500 });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Payment webhook (simulated)
+app.post('/api/payment/webhook', async (req, res) => {
+  try {
+    const { reference, status } = req.body;
+    const { data: app } = await supabase.from('applications').select('id').eq('payment_reference', reference).single();
+    if (app) {
+      await supabase.from('applications').update({
+        payment_status: status === 'PAID' ? 'PAID' : 'FAILED',
+        payment_date: status === 'PAID' ? new Date().toISOString() : null
+      }).eq('id', app.id);
+    }
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 // ============ APPLICATION ENDPOINTS ============
@@ -968,6 +1179,47 @@ app.post('/api/applications/:id/analyze', requireAdminAuth, async (req, res) => 
       extractedInfo: result.extractedInfo,
       violationsFound: result.results.filter(r => r.status === 'FAIL').length,
       mode: 'ai'
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Document Verification endpoint
+app.post('/api/applications/:id/verify-docs', requireAdminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Get all documents
+    const { data: documents } = await supabase
+      .from('application_documents')
+      .select('*')
+      .eq('application_id', id);
+
+    if (!documents || documents.length === 0) {
+      return res.status(400).json({ error: 'No documents to verify' });
+    }
+
+    // Download and prepare each document
+    const docBuffers = [];
+    for (const doc of documents) {
+      const { data: fileData } = await supabase.storage
+        .from('applications')
+        .download(doc.storage_path);
+
+      docBuffers.push({
+        doc_type: doc.doc_type,
+        mimeType: doc.file_name?.endsWith('.pdf') ? 'application/pdf' : 'application/image',
+        buffer: Buffer.from(await fileData.arrayBuffer())
+      });
+    }
+
+    // Run document verification
+    const verification = await DocumentVerifier.verifyApplication(docBuffers);
+
+    res.json({
+      success: true,
+      verification
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
