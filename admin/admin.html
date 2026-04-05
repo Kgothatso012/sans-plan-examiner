@@ -85,8 +85,8 @@
     .notification-item { font-size: 0.8rem; padding: var(--space-sm); background: var(--white); border-radius: 4px; margin-bottom: var(--space-xs); border-left: 3px solid var(--tshwane-blue); }
 
     /* === TOOLBAR === */
-    .toolbar { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-sm) var(--space-md); background: var(--white); border-bottom: 1px solid #ddd; }
-    .toolbar-group { display: flex; gap: var(--space-xs); }
+    .toolbar { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-sm) var(--space-md); background: var(--white); border-bottom: 1px solid #ddd; flex-wrap: wrap; }
+    .toolbar-group { display: flex; gap: var(--space-xs); align-items: center; }
     .toolbar-btn { padding: var(--space-sm) var(--space-md); background: transparent; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
     .toolbar-btn:hover { background: #f5f5f5; }
     .toolbar-btn.active { background: var(--tshwane-blue); color: white; border-color: var(--tshwane-blue); }
@@ -95,6 +95,38 @@
     .toolbar-btn.ai-analyze-btn:hover { background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); }
     .toolbar-btn.ai-analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .toolbar-btn.ai-analyze-btn.loading { animation: pulse 1.5s infinite; }
+
+    /* Zoom Controls */
+    .zoom-controls { display: flex; align-items: center; gap: 8px; background: #f5f5f5; padding: 4px 8px; border-radius: 4px; }
+    .zoom-btn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: none; background: white; border-radius: 4px; cursor: pointer; font-size: 14px; }
+    .zoom-btn:hover { background: #e0e0e0; }
+    .zoom-slider { width: 100px; height: 4px; -webkit-appearance: none; background: #ddd; border-radius: 2px; cursor: pointer; }
+    .zoom-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: var(--tshwane-blue); border-radius: 50%; cursor: pointer; }
+    .zoom-value { font-size: 0.8rem; font-weight: 600; min-width: 45px; text-align: center; }
+
+    /* Scale Ruler */
+    .scale-ruler { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 6px 12px; border-radius: 4px; font-size: 0.75rem; display: none; z-index: 100; }
+    .scale-ruler.visible { display: block; }
+    .scale-ruler span { font-weight: 700; }
+
+    /* Fullscreen */
+    .fullscreen-mode .sidebar, .fullscreen-mode .details-panel { display: none; }
+    .fullscreen-mode .viewer-area { width: 100%; }
+    .fullscreen-mode .toolbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+    .fullscreen-mode .pdf-container { padding-top: 60px; }
+
+    /* CAD Tools */
+    .cad-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 50; }
+    .cad-grid { background-image: linear-gradient(rgba(0,100,200,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,100,200,0.1) 1px, transparent 1px); background-size: 20px 20px; }
+    .cad-coords { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.8); color: #00ff00; font-family: var(--font-mono); font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; display: none; }
+    .cad-coords.visible { display: block; }
+    .cad-measure { position: absolute; background: rgba(255,0,0,0.8); height: 2px; transform-origin: left center; pointer-events: none; display: none; }
+    .cad-measure.visible { display: block; }
+    .cad-measure-label { position: absolute; background: white; color: black; padding: 2px 6px; border-radius: 3px; font-size: 0.7rem; font-weight: bold; white-space: nowrap; }
+
+    /* Toolbar CAD buttons */
+    .cad-btn.active { background: #00aaff; color: white; border-color: #00aaff; }
+    .cad-tool-group { display: flex; gap: 4px; margin-left: 8px; padding-left: 8px; border-left: 1px solid #ddd; }
 
     /* === PDF VIEWER === */
     .pdf-container { flex: 1; overflow: auto; background: #525659; display: flex; justify-content: center; padding: var(--space-lg); }
@@ -288,33 +320,54 @@
     <div class="main-content">
       <!-- TOOLBAR -->
       <div class="toolbar">
+        <!-- Zoom Controls -->
         <div class="toolbar-group">
-          <button class="toolbar-btn" onclick="zoomOut()">−</button>
-          <button class="toolbar-btn" onclick="zoomIn()">+</button>
-          <button class="toolbar-btn" onclick="fitToWidth()">Fit</button>
+          <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomOut()">−</button>
+            <input type="range" class="zoom-slider" id="zoomSlider" min="25" max="400" value="150" onchange="setZoom(this.value)">
+            <button class="zoom-btn" onclick="zoomIn()">+</button>
+            <span class="zoom-value" id="zoomValue">150%</span>
+          </div>
+          <button class="toolbar-btn fit-btn" onclick="fitToWidth()">Width</button>
+          <button class="toolbar-btn fit-btn" onclick="fitToPage()">Page</button>
         </div>
+
+        <!-- View Mode -->
         <div class="toolbar-group">
-          <button class="toolbar-btn" id="btnPan" onclick="togglePan()">Hand</button>
-          <button class="toolbar-btn primary" id="btnComment" onclick="enableCommentMode()">💬 Add Comment</button>
+          <button class="toolbar-btn" id="btnFullscreen" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+          <button class="toolbar-btn" id="btnPan" onclick="togglePan()">✋ Pan</button>
+          <button class="toolbar-btn primary" id="btnComment" onclick="enableCommentMode()">💬 Comment</button>
         </div>
+
+        <!-- AI & Export -->
         <div class="toolbar-group" id="aiButtonGroup">
-          <button class="toolbar-btn ai-analyze-btn" id="btnAIAnalyze" onclick="runAIAnalysis()">🤖 Run AI Analysis</button>
+          <button class="toolbar-btn ai-analyze-btn" id="btnAIAnalyze" onclick="runAIAnalysis()">🤖 Analyze</button>
         </div>
         <div class="toolbar-group">
-          <button class="toolbar-btn" onclick="exportCSV()">📊 Export CSV</button>
-          <button class="toolbar-btn" onclick="exportPDF()">📄 Export PDF</button>
+          <button class="toolbar-btn" onclick="exportCSV()">📊 CSV</button>
+          <button class="toolbar-btn" onclick="exportPDF()">📄 PDF</button>
         </div>
+
+        <!-- Document & Page -->
         <div class="toolbar-group" style="margin-left: auto;">
           <input type="file" id="uploadDocInput" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload(event)">
-          <button class="toolbar-btn" onclick="document.getElementById('uploadDocInput').click()">📤 Upload Doc</button>
+          <button class="toolbar-btn" onclick="document.getElementById('uploadDocInput').click()">📤 Upload</button>
           <button class="toolbar-btn" onclick="prevPage()">◀</button>
           <span id="pageInfo">1 / 1</span>
           <button class="toolbar-btn" onclick="nextPage()">▶</button>
         </div>
+
+        <!-- Scale Ruler & CAD Tools -->
+        <div class="toolbar-group">
+          <button class="toolbar-btn" id="btnScaleRuler" onclick="toggleScaleRuler()">📏 Scale</button>
+          <button class="toolbar-btn" id="btnGrid" onclick="toggleGrid()">Grid</button>
+          <button class="toolbar-btn" id="btnMeasure" onclick="toggleMeasure()">📐 Measure</button>
+          <button class="toolbar-btn" id="btnCoords" onclick="toggleCoords()">📍 Coords</button>
+        </div>
       </div>
 
       <!-- VIEWER AREA -->
-      <div class="viewer-area">
+      <div class="viewer-area" id="viewerArea">
         <div class="pdf-container" id="pdfContainer">
           <div class="no-selection" id="noSelection">
             <div class="no-selection-icon">📐</div>
@@ -324,6 +377,10 @@
           <div class="pdf-page hidden" id="pdfPage">
             <canvas class="pdf-canvas" id="pdfCanvas"></canvas>
             <div class="annotation-layer" id="annotationLayer"></div>
+            <div class="cad-overlay" id="cadOverlay">
+              <div class="cad-coords" id="cadCoords">X: 0 Y: 0</div>
+            </div>
+            <div class="scale-ruler" id="scaleRuler">Scale: <span>1cm = 10mm</span> @ <span id="currentScale">150%</span></div>
           </div>
         </div>
 
@@ -432,7 +489,7 @@
       <h3>Admin Login</h3>
       <p id="loginStatus" style="font-size:12px;color:#666;margin-bottom:8px;">Click login button below</p>
       <input type="text" id="adminKeyInput" value="test" style="width:100%;padding:12px;border:1px solid #ddd;margin-bottom:12px;">
-      <button onclick="console.log('Button clicked!'); window.submitLogin()" style="background:#2E7D32;color:white;padding:12px;border:none;width:100%;cursor:pointer;">Login</button>
+      <button onclick="window.submitLogin()" style="background:#2E7D32;color:white;padding:12px;border:none;width:100%;cursor:pointer;">Login</button>
     </div>
   </div>
 
@@ -452,9 +509,8 @@
   </div>
 
   <script>
-    console.log('Admin HTML loading...');
+    // Admin initialization
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    console.log('PDF.js worker set');
 
     // === CONFIG ===
     const CONFIG = {
@@ -480,8 +536,6 @@
         alert('Please enter API key');
         return;
       }
-      console.log('Login with key:', key);
-
       // Save to localStorage and config
       localStorage.setItem('adminApiKey', key);
       CONFIG.adminApiKey = key;
@@ -496,23 +550,22 @@
       if (window.SansCompanion) {
         window.SansCompanion.init('companionContainer', 'joe-examiner');
       }
-      console.log('Login complete');
     };
-    console.log('submitLogin defined');
+    // submitLogin defined
 
     // === INITIALIZATION ===
-    console.log('Script loaded, adding DOMContentLoaded listener');
+    // Script loaded
     window.addEventListener('DOMContentLoaded', init);
 
     async function init() {
-      console.log('init() running');
+      // init running
       const savedKey = localStorage.getItem('adminApiKey');
-      console.log('savedKey:', savedKey);
+      // savedKey found
       if (savedKey) {
         CONFIG.adminApiKey = savedKey;
       } else {
         // Show login modal instead of prompt
-        console.log('Showing login modal');
+        // Showing login modal
         document.getElementById('loginModal').classList.remove('hidden');
         return;
       }
@@ -527,9 +580,9 @@
 
     // DEBUG: Make submitLogin globally accessible
     window.submitLogin = async function() {
-      console.log('submitLogin() called directly');
+      // submitLogin() called directly
       const key = document.getElementById('adminKeyInput').value.trim();
-      console.log('Key:', key);
+      // Key validation
       if (!key) {
         alert('Please enter API key');
         return;
@@ -539,7 +592,7 @@
       CONFIG.adminApiKey = key;
       localStorage.setItem('adminApiKey', key);
       document.getElementById('loginModal').classList.add('hidden');
-      console.log('Modal hidden, loading queue...');
+      // Modal hidden, loading queue
       await loadQueue();
       loadNotifications();
       // Initialize companion after login
@@ -590,7 +643,7 @@
       try {
         const res = await adminFetch('/api/applications/all');
         if (!res.ok) {
-          console.error('Failed to load queue:', res.status, res.statusText);
+          // Failed to load queue
           return;
         }
         const apps = await res.json();
@@ -609,7 +662,7 @@
       if (autoRefreshInterval) return;
       autoRefreshInterval = setInterval(() => {
         loadQueue();
-        console.log('[Auto-refresh] Queue updated');
+        // Auto-refresh queue updated
       }, 30000); // Refresh every 30 seconds
     }
 
@@ -633,7 +686,7 @@
     // === SELECT APPLICATION ===
     async function selectApplication(id) {
       try {
-        console.log('Selecting app:', id);
+        // Selecting app
         const res = await adminFetch('/api/applications/' + id);
         if (!res.ok) {
           console.error('Failed to load application:', res.status);
@@ -645,7 +698,7 @@
           return;
         }
         currentApp = app;
-        console.log('App loaded:', app.reference);
+        // App loaded
 
         // Update UI
         const noSelection = document.getElementById('noSelection');
@@ -694,7 +747,7 @@
       }
     }
 
-    let pdfScale = 1.0;
+    // let pdfScale = 1.0;
 
     async function loadAppPDF(documents) {
       const container = document.getElementById('pdfContainer');
@@ -731,7 +784,7 @@
       if (!pdfDoc) return;
 
       const page = await pdfDoc.getPage(pageNum);
-      const viewport = page.getViewport({ scale: pdfScale });
+      const viewport = page.getViewport({ scale: scale });
 
       const canvas = document.getElementById('pdfCanvas');
       const ctx = canvas.getContext('2d');
@@ -746,6 +799,7 @@
 
       window.currentPdfPage = pageNum;
       window.currentPdfViewport = viewport;
+      updateScaleRuler();
     }
 
     function showPdfPlaceholder(container) {
@@ -1117,7 +1171,7 @@
     async function loadRevision(appId, revNum) {
       showToast('Loading revision...', 'info');
       // For now just switch to the revision tab - could load specific docs
-      console.log('Load revision:', appId, revNum);
+      // Load revision
     }
 
     // === TABS ===
@@ -1243,16 +1297,138 @@
 
     // === PDF CONTROLS ===
     function zoomIn() {
-      scale = Math.min(scale + 0.25, 3);
+      scale = Math.min(scale + 0.25, 4);
+      updateZoomUI();
       if (pdfDoc) renderPdfPage(currentPage);
     }
     function zoomOut() {
-      scale = Math.max(scale - 0.25, 0.5);
+      scale = Math.max(scale - 0.25, 0.25);
+      updateZoomUI();
       if (pdfDoc) renderPdfPage(currentPage);
     }
-    function fitToWidth() {
-      scale = 1.5;
+    function setZoom(val) {
+      scale = parseFloat(val) / 100;
+      updateZoomUI();
       if (pdfDoc) renderPdfPage(currentPage);
+    }
+    function updateZoomUI() {
+      const zoomSlider = document.getElementById('zoomSlider');
+      const zoomValue = document.getElementById('zoomValue');
+      if (zoomSlider) zoomSlider.value = scale * 100;
+      if (zoomValue) zoomValue.textContent = Math.round(scale * 100) + '%';
+    }
+    function fitToWidth() {
+      const container = document.getElementById('pdfContainer');
+      if (container && pdfDoc) {
+        const containerWidth = container.clientWidth - 80;
+        const viewport = pdfDoc.getPage(currentPage).then(page => {
+          return page.getViewport({ scale: 1 });
+        });
+        pdfDoc.getPage(currentPage).then(page => {
+          const viewport = page.getViewport({ scale: 1 });
+          scale = containerWidth / viewport.width;
+          updateZoomUI();
+          renderPdfPage(currentPage);
+        });
+      }
+    }
+    function fitToPage() {
+      const container = document.getElementById('pdfContainer');
+      if (container && pdfDoc) {
+        const containerWidth = container.clientWidth - 80;
+        const containerHeight = container.clientHeight - 80;
+        pdfDoc.getPage(currentPage).then(page => {
+          const viewport = page.getViewport({ scale: 1 });
+          const scaleX = containerWidth / viewport.width;
+          const scaleY = containerHeight / viewport.height;
+          scale = Math.min(scaleX, scaleY);
+          updateZoomUI();
+          renderPdfPage(currentPage);
+        });
+      }
+    }
+    function toggleFullscreen() {
+      const viewerArea = document.getElementById('viewerArea');
+      const btn = document.getElementById('btnFullscreen');
+      if (viewerArea.classList.contains('fullscreen-mode')) {
+        viewerArea.classList.remove('fullscreen-mode');
+        btn.textContent = '⛶ Fullscreen';
+      } else {
+        viewerArea.classList.add('fullscreen-mode');
+        btn.textContent = '✕ Exit';
+      }
+    }
+    let scaleRulerVisible = false;
+    function toggleScaleRuler() {
+      const ruler = document.getElementById('scaleRuler');
+      const btn = document.getElementById('btnScaleRuler');
+      scaleRulerVisible = !scaleRulerVisible;
+      if (scaleRulerVisible) {
+        ruler.classList.add('visible');
+        btn.classList.add('active');
+      } else {
+        ruler.classList.remove('visible');
+        btn.classList.remove('active');
+      }
+    }
+    function updateScaleRuler() {
+      const scaleLabel = document.getElementById('currentScale');
+      if (scaleLabel) scaleLabel.textContent = Math.round(scale * 100) + '%';
+    }
+
+    // CAD Functions
+    let gridVisible = false;
+    let coordsVisible = false;
+    let measureMode = false;
+    let measureStart = null;
+
+    function toggleGrid() {
+      const overlay = document.getElementById('cadOverlay');
+      const btn = document.getElementById('btnGrid');
+      gridVisible = !gridVisible;
+      if (gridVisible) {
+        overlay.classList.add('cad-grid');
+        btn.classList.add('active');
+      } else {
+        overlay.classList.remove('cad-grid');
+        btn.classList.remove('active');
+      }
+    }
+
+    function toggleCoords() {
+      const coords = document.getElementById('cadCoords');
+      const btn = document.getElementById('btnCoords');
+      coordsVisible = !coordsVisible;
+      if (coordsVisible) {
+        coords.classList.add('visible');
+        btn.classList.add('active');
+      } else {
+        coords.classList.remove('visible');
+        btn.classList.remove('active');
+      }
+    }
+
+    function toggleMeasure() {
+      const btn = document.getElementById('btnMeasure');
+      measureMode = !measureMode;
+      if (measureMode) {
+        btn.classList.add('active');
+        document.getElementById('annotationLayer').style.cursor = 'crosshair';
+      } else {
+        btn.classList.remove('active');
+        document.getElementById('annotationLayer').style.cursor = 'crosshair';
+      }
+    }
+
+    // Track mouse for coordinates
+    document.getElementById('pdfContainer').addEventListener('mousemove', function(e) {
+      if (!coordsVisible) return;
+      const canvas = document.getElementById('pdfCanvas');
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.round((e.clientX - rect.left) / scale);
+      const y = Math.round((e.clientY - rect.top) / scale);
+      document.getElementById('cadCoords').textContent = `X: ${x} Y: ${y}`;
+    });
     }
     function prevPage() {
       if (currentPage > 1) {

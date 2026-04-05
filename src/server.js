@@ -4,6 +4,7 @@ const multer = require('multer');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
@@ -63,14 +64,14 @@ async function notifyApplicant(applicationId, type) {
       .single();
 
     if (appError || !app) {
-      console.log('[notifyApplicant] Application not found:', applicationId);
+      // Application not found
       return;
     }
 
     // Handle both owner_email and nested applicant_profiles.email
     const email = app.owner_email || app.applicant_profiles?.email;
     if (!email) {
-      console.log('[notifyApplicant] No email found for app:', applicationId);
+      // No email found
       return;
     }
 
@@ -78,12 +79,14 @@ async function notifyApplicant(applicationId, type) {
     const portalUrl = `http://localhost:3000/client/track.html?ref=${reference}`;
 
     const subjects = {
+      submitted: `Application ${reference} - Received`,
       status_changed: `Application ${reference} - Status Update`,
       comment_added: `Application ${reference} - New Comment`,
       revision_submitted: `Application ${reference} - Revision Received`
     };
 
     const bodies = {
+      submitted: `Your building plan application ${reference} has been received by Tshwane Municipality.\n\nReference: ${reference}\nStatus: ${status}\n\nTrack your application: ${portalUrl}`,
       status_changed: `Your application ${reference} status has been updated to: ${status}.\n\nView details: ${portalUrl}`,
       comment_added: `A new comment has been added to your application ${reference}.\n\nLog in to view: ${portalUrl}`,
       revision_submitted: `You have received a revision request for application ${reference}.\n\nLog in to view: ${portalUrl}`
@@ -94,7 +97,7 @@ async function notifyApplicant(applicationId, type) {
 
     // Skip if no SMTP credentials
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      console.log('[notifyApplicant] SMTP not configured, skipping email');
+    // SMTP not configured
       return;
     }
 
@@ -104,9 +107,9 @@ async function notifyApplicant(applicationId, type) {
       subject,
       text: body
     });
-    console.log('[notifyApplicant] Email sent to:', email);
+    // Email sent
   } catch (err) {
-    console.log('[notifyApplicant] Error (non-fatal):', err.message);
+    // Email error (non-fatal)
     // Never throw - this is a notification function
   }
 }
@@ -275,8 +278,8 @@ app.post('/api/auth/register', async (req, res) => {
       return res.status(400).json({ error: 'Password must be at least 6 characters' });
     }
 
-    // Hash password
-    const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
+    // Hash password with bcrypt
+    const passwordHash = await bcrypt.hash(password, 10);
 
     const { data: applicant, error } = await supabase
       .from('applicants')
@@ -315,15 +318,22 @@ app.post('/api/auth/login', async (req, res) => {
       return res.json({ success: true, token, applicant: { id: 'demo-user', email: 'demo@example.com', name: 'Demo User' } });
     }
 
-    // Hash password
-    const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
-
+    // Get applicant from database
     const { data: applicant, error } = await supabase
       .from('applicants')
       .select('*')
       .eq('email', email)
-      .eq('password_hash', passwordHash)
       .single();
+
+    if (error || !applicant) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Verify password with bcrypt
+    const validPassword = await bcrypt.compare(password, applicant.password_hash);
+    if (!validPassword) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
 
     if (error || !applicant) {
       return res.status(401).json({ error: 'Invalid credentials' });
@@ -367,6 +377,7 @@ app.get('/health', (req, res) => {
 // Submit new application (rate limited)
 app.post('/api/applications/submit', submitLimiter, upload.array('documents', 10), async (req, res) => {
   try {
+    // Submit debug
     const { erfNumber, ownerName, ownerEmail, ownerPhone, description, zoning } = req.body;
 
     // Input validation
@@ -404,7 +415,7 @@ app.post('/api/applications/submit', submitLimiter, upload.array('documents', 10
         owner_phone: sanitized.owner_phone,
         description: sanitized.description,
         zoning: sanitized.zoning,
-        status: 'SUBMITTED'
+        status: 'PENDING'
       })
       .select()
       .single();
@@ -424,7 +435,9 @@ app.post('/api/applications/submit', submitLimiter, upload.array('documents', 10
           .upload(fileName, fileBuffer);
 
         if (uploadError) {
-          // Upload failed silently
+          console.error('[Upload Error]', uploadError.message);
+        } else {
+          // Upload success
         }
 
         // Save document reference
@@ -439,6 +452,11 @@ app.post('/api/applications/submit', submitLimiter, upload.array('documents', 10
         fs.unlinkSync(file.path);
       }
     }
+
+    // Application created
+
+    // Send email notification to applicant
+    await notifyApplicant(application.id, 'submitted');
 
     res.json({
       success: true,
@@ -590,9 +608,12 @@ app.post('/api/applications/:id/decision', requireAdminAuth, async (req, res) =>
       return res.status(400).json({ error: 'Invalid decision. Valid: ' + validDecisions.join(', ') });
     }
 
+    // Map APPROVED to COMPLETED for DB constraint compatibility
+    const dbStatus = decision === 'APPROVED' ? 'COMPLETED' : decision;
+
     const { data, error } = await supabase
       .from('applications')
-      .update({ status: decision, updated_at: new Date().toISOString() })
+      .update({ status: dbStatus, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
       .single();
@@ -752,7 +773,7 @@ app.post('/api/applications/:id/revisions', upload.array('documents', 10), async
         application_id: id,
         revision_number: newRevision,
         change_log: change_log || '',
-        status: 'SUBMITTED'
+        status: 'PENDING'
       })
       .select()
       .single();
@@ -884,7 +905,7 @@ app.post('/api/applications/:id/analyze', requireAdminAuth, async (req, res) => 
         pdfBuffer: Buffer.from(await fileData.arrayBuffer())
       });
     } catch (analyzeErr) {
-      console.log('[analyze] SansAnalyzer error:', analyzeErr.message);
+      // AI analysis error
       result = { success: false, error: analyzeErr.message };
     }
 

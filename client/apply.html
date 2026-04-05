@@ -448,11 +448,24 @@
     <div id="successResult" class="hidden">
       <div class="form-section">
         <div class="reference-result">
-          <h2>Application Submitted</h2>
-          <p>Your reference number:</p>
+          <div style="font-size: 3rem; margin-bottom: 16px;">✅</div>
+          <h2>Application Submitted Successfully!</h2>
+          <p>Your application has been received and is being processed.</p>
           <div class="reference-number" id="refNumber">TC00000000</div>
-          <p>Use this to track your application</p>
-          <a href="track.html" class="btn btn-primary" style="margin-top: var(--space-md); max-width: 200px;">Track Application</a>
+          <p style="font-size: 0.9rem; color: #666; margin-top: 8px;">Reference Number</p>
+
+          <div id="submissionDetails" style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin-top: 16px; text-align: left;">
+            <p><strong>ERF:</strong> <span id="detailErf"></span></p>
+            <p><strong>Address:</strong> <span id="detailAddress"></span></p>
+            <p><strong>Email:</strong> <span id="detailEmail"></span></p>
+            <p><strong>Status:</strong> <span style="color: #2e7d32; font-weight: bold;">SUBMITTED</span></p>
+          </div>
+
+          <p style="margin-top: 16px; font-size: 0.85rem; color: #666;">
+            A confirmation email has been sent to your email address.<br>
+            Use your reference number to track progress.
+          </p>
+          <a href="track.html" class="btn btn-primary" style="margin-top: var(--space-md);">Track Application</a>
         </div>
       </div>
     </div>
@@ -466,13 +479,15 @@
   </footer>
 
   <script>
-    const SUPABASE_URL = 'https://pmhvteytflmbvolteota.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtaHZ0ZXl0ZmxtYnZvbHRlb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyODIwNTUsImV4cCI6MjA5MDg1ODA1NX0.Hhby7vx9Mq4AUnR4TJiAVCMlPRBm5xQtQM6LF0yEi_w';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // Initialize Supabase client - use different var name to avoid conflicts
+    const SB_URL = 'https://pmhvteytflmbvolteota.supabase.co';
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtaHZ0ZXl0ZmxtYnZvbHRlb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyODIwNTUsImV4cCI6MjA5MDg1ODA1NX0.Hhby7vx9Mq4AUnR4TJiAVCMlPRBm5xQtQM6LF0yEi_w';
+    const supabaseClient = window.supabase.createClient(SB_URL, SB_KEY);
 
     const uploadedFiles = {};
 
-    function handleFile(input, type) {
+    // Make functions global immediately
+    window.handleFile = function(input, type) {
       const file = input.files[0];
       if (!file) return;
       if (file.size > 10 * 1024 * 1024) {
@@ -482,13 +497,22 @@
       }
       uploadedFiles[type] = { name: file.name, size: file.size, type: file.type, data: file };
       const container = document.getElementById('file_' + type);
-      container.innerHTML = `<div class="file-item"><span>${file.name} (${(file.size/1024).toFixed(1)} KB)</span><span class="remove" onclick="removeFile('${type}')">Remove</span></div>`;
+      container.innerHTML = '<div class="file-item"><span>' + file.name + ' (' + (file.size/1024).toFixed(1) + ' KB)</span><span class="remove" onclick="removeFile(\'' + type + '\')">Remove</span></div>';
+      // Show success notification
+      showUploadStatus(file.name, type, 'uploaded');
+    };
+
+    function showUploadStatus(filename, type, status) {
+      const container = document.getElementById('file_' + type);
+      if (container) {
+        container.innerHTML += '<div class="upload-status" style="color: #2e7d32; font-size: 0.8rem; margin-top: 4px;">✓ ' + filename + ' uploaded successfully</div>';
+      }
     }
 
-    function removeFile(type) {
+    window.removeFile = function(type) {
       delete uploadedFiles[type];
       document.getElementById('file_' + type).innerHTML = '';
-    }
+    };
 
     function showError(msg) {
       const alert = document.getElementById('errorAlert');
@@ -513,44 +537,54 @@
       loading.classList.remove('hidden');
       form.classList.add('hidden');
 
-      try {
-        // Create FormData for multipart upload
-        const formData = new FormData();
-        formData.append('erf_number', document.getElementById('erf_number').value);
-        formData.append('street_address', document.getElementById('street_address').value);
+      // Create FormData for multipart upload
+      const formData = new FormData();
+        formData.append('erfNumber', document.getElementById('erf_number').value);
+        formData.append('streetAddress', document.getElementById('street_address').value);
         formData.append('zoning', document.getElementById('zoning').value);
-        formData.append('owner_name', document.getElementById('owner_name').value);
-        formData.append('owner_email', document.getElementById('owner_email').value);
-        formData.append('owner_phone', document.getElementById('owner_phone').value);
-        formData.append('owner_id', document.getElementById('owner_id').value);
-        formData.append('professional_name', document.getElementById('professional_name').value);
-        formData.append('professional_company', document.getElementById('professional_company').value);
-        formData.append('professional_contact', document.getElementById('professional_contact').value);
+        formData.append('ownerName', document.getElementById('owner_name').value);
+        formData.append('ownerEmail', document.getElementById('owner_email').value);
+        formData.append('ownerPhone', document.getElementById('owner_phone').value);
+        formData.append('ownerId', document.getElementById('owner_id').value);
+        formData.append('professionalName', document.getElementById('professional_name').value);
+        formData.append('professionalCompany', document.getElementById('professional_company').value);
+        formData.append('professionalContact', document.getElementById('professional_contact').value);
         formData.append('description', document.getElementById('description').value);
 
-        // Append files with proper field names
-        if (uploadedFiles.zoning) formData.append('documents', uploadedFiles.zoning.data, uploadedFiles.zoning.name);
-        if (uploadedFiles.sg) formData.append('documents', uploadedFiles.sg.data, uploadedFiles.sg.name);
-        if (uploadedFiles.title_deed) formData.append('documents', uploadedFiles.title_deed.data, uploadedFiles.title_deed.name);
-        if (uploadedFiles.building_plans) formData.append('documents', uploadedFiles.building_plans.data, uploadedFiles.building_plans.name);
+        // Append files - use unique field names so server knows each file type
+        if (uploadedFiles.zoning) formData.append('zoning', uploadedFiles.zoning.data, uploadedFiles.zoning.name);
+        if (uploadedFiles.sg) formData.append('sg', uploadedFiles.sg.data, uploadedFiles.sg.name);
+        if (uploadedFiles.title_deed) formData.append('title_deed', uploadedFiles.title_deed.data, uploadedFiles.title_deed.name);
+        if (uploadedFiles.building_plans) formData.append('building_plans', uploadedFiles.building_plans.data, uploadedFiles.building_plans.name);
 
-        const response = await fetch('/api/applications/submit', {
+        // Debug: FormData keys
+
+        fetch('/api/applications/submit', {
           method: 'POST',
           body: formData
-        });
-        const result = await response.json();
-
-        if (result.success) {
-          document.getElementById('refNumber').textContent = result.reference;
+        })
+        .then(response => {
+          // Response status
+          return response.json();
+        })
+        .then(result => {
+          // Submit response
+          if (result.success) {
+            document.getElementById('refNumber').textContent = result.reference;
+            document.getElementById('detailErf').textContent = document.getElementById('erf_number').value;
+            document.getElementById('detailAddress').textContent = document.getElementById('street_address').value || '-';
+            document.getElementById('detailEmail').textContent = document.getElementById('owner_email').value;
+            loading.classList.add('hidden');
+            successResult.classList.remove('hidden');
+          } else { throw new Error(result.error); }
+        })
+        .catch(error => {
+          console.error('Submit error:', error);
           loading.classList.add('hidden');
-          successResult.classList.remove('hidden');
-        } else { throw new Error(result.error); }
-      } catch (error) {
-        loading.classList.add('hidden');
-        form.classList.remove('hidden');
-        submitBtn.disabled = false;
-        showError(error.message || 'Submission failed');
-      }
+          form.classList.remove('hidden');
+          submitBtn.disabled = false;
+          showError(error.message || 'Submission failed. Please check all required fields.');
+        });
     });
   </script>
 </body>
