@@ -39,9 +39,18 @@
 |------|--------|---------|
 | [[interpretations/stair-width]] | D1 | 900mm min, 850mm for single dwelling <100m² |
 | [[interpretations/ceiling-height]] | A2 | 2400mm habitable, 2100mm non-habitable |
-| [[interpretations/site-coverage]] | H2 | 60% max for residential |
+| [[interpretations/site-coverage]] | H2 | 60% max, includes all impervious surfaces |
 
 ## Precedents
 | Page | ERF | Decision | Date |
 |------|-----|----------|------|
-| [[precedents/erf-placeholder]] | - | Wiki initialized | 2026-04-04 |
+| [[precedents/erf-4521]] | 4521 Silverton | Approved w/ conditions | 2024-08-15 |
+| [[precedents/erf-7721]] | 7721 Garsfontein | Rejected (coverage 68%) | 2025-01-10 |
+| [[precedents/erf-8834]] | 8834 Moreleta | Rejected (coverage) | 2024-09-22 |
+| [[precedents/erf-2219]] | 2219 Centurion | Approved | 2024-11-05 |
+
+## Queries
+| Page | Question | Summary |
+|------|----------|---------|
+| [[queries/stair-width-duplex]] | Minimum stair width duplex | 900mm, exceptions |
+| [[queries/site-coverage-exceed]] | Can exceed 60%? | No, max 65% with motivation |

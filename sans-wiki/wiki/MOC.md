@@ -22,7 +22,11 @@
 - [[clauses/D3]] - Handrail Height
 - [[clauses/D4]] - Landings
 - [[clauses/D5]] - Ramp Gradient
-- [[interpretations/stair-width]]
+- [[interpretations/stair-width]] - Width exceptions for small dwellings
+
+### Site & Coverage
+- [[interpretations/site-coverage]] - Calculation method & what counts
+- [[interpretations/ceiling-height]] - Measurement rules
 
 ### Occupancy & Room Sizes
 - [[clauses/E1]] - Room Sizes
