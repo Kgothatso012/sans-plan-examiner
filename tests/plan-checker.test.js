@@ -8,8 +8,8 @@ const {
 describe('plan-checker.js', () => {
 
   describe('nbrRules', () => {
-    test('should have 14 rules defined', () => {
-      expect(nbrRules.length).toBe(14);
+    test('should have 24 rules defined', () => {
+      expect(nbrRules.length).toBe(24);
     });
 
     test('each rule should have required fields', () => {
@@ -193,6 +193,105 @@ describe('plan-checker.js', () => {
     });
   });
 
+  describe('Dimension Rules (New)', () => {
+    test('CEIL-001: Habitable ceiling height >= 2.4m passes', () => {
+      const rule = nbrRules.find(r => r.id === 'CEIL-001');
+      expect(rule.check({ ceilingHeight: 2.4 })).toBe(true);
+      expect(rule.check({ ceilingHeight: 2.5 })).toBe(true);
+    });
+
+    test('CEIL-001: Ceiling height < 2.4m fails', () => {
+      const rule = nbrRules.find(r => r.id === 'CEIL-001');
+      expect(rule.check({ ceilingHeight: 2.3 })).toBe(false);
+    });
+
+    test('CEIL-002: Non-habitable ceiling height >= 2.1m passes', () => {
+      const rule = nbrRules.find(r => r.id === 'CEIL-002');
+      expect(rule.check({ ceilingHeightNonHab: 2.1 })).toBe(true);
+    });
+
+    test('ROOM-001: Habitable room >= 8m² passes', () => {
+      const rule = nbrRules.find(r => r.id === 'ROOM-001');
+      expect(rule.check({ habitableRoomArea: 8 })).toBe(true);
+    });
+
+    test('ROOM-001: Habitable room < 8m² fails', () => {
+      const rule = nbrRules.find(r => r.id === 'ROOM-001');
+      expect(rule.check({ habitableRoomArea: 7.9 })).toBe(false);
+    });
+
+    test('ROOM-002: Bedroom >= 7m² passes', () => {
+      const rule = nbrRules.find(r => r.id === 'ROOM-002');
+      expect(rule.check({ bedroomArea: 7 })).toBe(true);
+    });
+  });
+
+  describe('Stair Rules (New)', () => {
+    test('STIR-001: Stair width >= 900mm passes', () => {
+      const rule = nbrRules.find(r => r.id === 'STIR-001');
+      expect(rule.check({ stairWidth: 900 })).toBe(true);
+    });
+
+    test('STIR-001: Stair width < 900mm fails', () => {
+      const rule = nbrRules.find(r => r.id === 'STIR-001');
+      expect(rule.check({ stairWidth: 899 })).toBe(false);
+    });
+
+    test('STIR-002: Riser height <= 180mm passes', () => {
+      const rule = nbrRules.find(r => r.id === 'STIR-002');
+      expect(rule.check({ riserHeight: 180 })).toBe(true);
+    });
+
+    test('STIR-002: Riser height > 180mm fails', () => {
+      const rule = nbrRules.find(r => r.id === 'STIR-002');
+      expect(rule.check({ riserHeight: 181 })).toBe(false);
+    });
+
+    test('STIR-003: Tread depth >= 250mm passes', () => {
+      const rule = nbrRules.find(r => r.id === 'STIR-003');
+      expect(rule.check({ treadDepth: 250 })).toBe(true);
+    });
+
+    test('STIR-003: Tread depth < 250mm fails', () => {
+      const rule = nbrRules.find(r => r.id === 'STIR-003');
+      expect(rule.check({ treadDepth: 249 })).toBe(false);
+    });
+  });
+
+  describe('Ventilation Rules (New)', () => {
+    test('VENT-001: Window area >= 10% passes', () => {
+      const rule = nbrRules.find(r => r.id === 'VENT-001');
+      expect(rule.check({ windowAreaPct: 10 })).toBe(true);
+    });
+
+    test('VENT-001: Window area < 10% fails', () => {
+      const rule = nbrRules.find(r => r.id === 'VENT-001');
+      expect(rule.check({ windowAreaPct: 9 })).toBe(false);
+    });
+
+    test('VENT-002: Openable area >= 5% passes', () => {
+      const rule = nbrRules.find(r => r.id === 'VENT-002');
+      expect(rule.check({ openableAreaPct: 5 })).toBe(true);
+    });
+
+    test('VENT-002: Openable area < 5% fails', () => {
+      const rule = nbrRules.find(r => r.id === 'VENT-002');
+      expect(rule.check({ openableAreaPct: 4 })).toBe(false);
+    });
+  });
+
+  describe('Glazing Rules (New)', () => {
+    test('GLAZ-001: Safety glass required = true passes', () => {
+      const rule = nbrRules.find(r => r.id === 'GLAZ-001');
+      expect(rule.check({ safetyGlassRequired: true })).toBe(true);
+    });
+
+    test('GLAZ-001: Safety glass required = false fails', () => {
+      const rule = nbrRules.find(r => r.id === 'GLAZ-001');
+      expect(rule.check({ safetyGlassRequired: false })).toBe(false);
+    });
+  });
+
   describe('getAllCategories', () => {
     test('should return array of categories', () => {
       const categories = getAllCategories();
@@ -223,7 +322,7 @@ describe('plan-checker.js', () => {
       expect(result).toHaveProperty('documentName', 'test.pdf');
       expect(result).toHaveProperty('pageCount', 1);
       expect(result).toHaveProperty('overallScore');
-      expect(result).toHaveProperty('totalRules', 14);
+      expect(result).toHaveProperty('totalRules', 24);
       expect(result).toHaveProperty('passedRules');
       expect(result).toHaveProperty('failedRules');
       expect(result).toHaveProperty('missingInfo');
@@ -246,7 +345,7 @@ describe('plan-checker.js', () => {
     test('should handle empty text gracefully', () => {
       const result = analyzeDocument('', 'empty.pdf', 1);
       expect(result.documentName).toBe('empty.pdf');
-      expect(result.totalRules).toBe(14);
+      expect(result.totalRules).toBe(24);
     });
 
     test('should calculate overall score correctly', () => {

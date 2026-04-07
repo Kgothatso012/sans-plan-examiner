@@ -78,7 +78,7 @@ describe('Server API Endpoints', () => {
       const res = await request(app).get('/api/rules');
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('rules');
-      expect(res.body.rules).toHaveLength(14);
+      expect(res.body.rules).toHaveLength(24);
       expect(res.body).toHaveProperty('categories');
       expect(Array.isArray(res.body.categories)).toBe(true);
     });
@@ -191,7 +191,7 @@ describe('Server API Endpoints', () => {
       expect(result).toEqual(expect.objectContaining({
         documentName: 'test.pdf',
         pageCount: 1,
-        totalRules: 14,
+        totalRules: 24,
         passedRules: expect.any(Array),
         failedRules: expect.any(Array),
         missingInfo: expect.any(Array),

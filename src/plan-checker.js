@@ -1,29 +1,31 @@
 /**
- * SANS Plan Checker - Basic Rule Analysis
- * Provides building compliance checking based on SANS 10400 rules
+ * SANS Plan Checker - Comprehensive Rule Analysis
+ * Provides building compliance checking based on SANS 10400 regulations
+ *
+ * Coverage: 14 base rules + 8 additional rules = 22 total rules
  */
 
 const nbrRules = [
-  // === SANS 10400 BUILDING RULES ===
-  
-  // Coverage Rules (SANS 10400-B)
-  { id: 'CVRG-001', category: 'Coverage', title: 'Max Building Coverage R1', description: 'Building coverage must not exceed 60% in R1 zone', 
+  // === SANS 10400-B / TSHWANE SCHEME - COVERAGE & ZONING ===
+
+  // Coverage Rules
+  { id: 'CVRG-001', category: 'Coverage', title: 'Max Building Coverage R1', description: 'Building coverage must not exceed 60% in R1 zone',
     check: (data) => data.coverage <= 60, getValue: (data) => data.coverage, required: '≤60%' },
-  { id: 'CVRG-002', category: 'Coverage', title: 'Max Building Coverage R2', description: 'Building coverage must not exceed 50% in R2 zone', 
+  { id: 'CVRG-002', category: 'Coverage', title: 'Max Building Coverage R2', description: 'Building coverage must not exceed 50% in R2 zone',
     check: (data) => data.coverage <= 50, getValue: (data) => data.coverage, required: '≤50%' },
-  { id: 'CVRG-003', category: 'Coverage', title: 'Impermeable Surfaces', description: 'Impermeable surfaces must not exceed 70%', 
+  { id: 'CVRG-003', category: 'Coverage', title: 'Impermeable Surfaces', description: 'Impermeable surfaces must not exceed 70%',
     check: (data) => data.impermeable <= 70, getValue: (data) => data.impermeable, required: '≤70%' },
-  
-  // Height Rules (SANS 10400-A)
+
+  // Height Rules (SANS 10400-H)
   { id: 'HEIT-001', category: 'Height', title: 'Max Height R1 Zone', description: 'Maximum 3 storeys (9m) in R1 residential zone',
     check: (data) => data.storeys <= 3, getValue: (data) => data.storeys, required: '≤3 storeys' },
   { id: 'HEIT-002', category: 'Height', title: 'Max Height R2 Zone', description: 'Maximum 2 storeys (6m) in R2 residential zone',
     check: (data) => data.storeys <= 2, getValue: (data) => data.storeys, required: '≤2 storeys' },
-  
-  // Setback Rules (SANS 10400-B)
+
+  // Setback Rules (SANS 10400-B / Tshwane Scheme Clause 20)
   { id: 'SETB-001', category: 'Setbacks', title: 'Front Setback', description: 'Minimum 3m front street setback',
     check: (data) => data.setbackFront >= 3, getValue: (data) => data.setbackFront, required: '≥3m' },
-  { id: 'SETB-002', category: 'Setbacks', title: 'Side Setback', description: 'Minimum 1m side boundary setback',  
+  { id: 'SETB-002', category: 'Setbacks', title: 'Side Setback', description: 'Minimum 1m side boundary setback',
     check: (data) => data.setbackSide >= 1, getValue: (data) => data.setbackSide, required: '≥1m' },
   { id: 'SETB-003', category: 'Setbacks', title: 'Rear Setback', description: 'Minimum 3m rear boundary setback',
     check: (data) => data.setbackRear >= 3, getValue: (data) => data.setbackRear, required: '≥3m' },
@@ -37,22 +39,58 @@ const nbrRules = [
   // Building Lines
   { id: 'BL-001', category: 'Building Lines', title: 'Street Boundary Line', description: 'Building must be 3m from street boundary',
     check: (data) => data.streetLine >= 3, getValue: (data) => data.streetLine, required: '≥3m' },
-  
-  // Floor Area Ratio
+
+  // Floor Area Ratio (Tshwane Scheme Clause 20)
   { id: 'FAR-001', category: 'FAR', title: 'Floor Area Ratio', description: 'FAR must not exceed 0.6 in R1 zone',
     check: (data) => data.far <= 0.6, getValue: (data) => data.far, required: '≤0.6' },
-  
-  // Boundary Walls
+
+  // Boundary Walls (Tshwane Scheme)
   { id: 'WALL-001', category: 'Walls', title: 'Max Wall Height', description: 'Boundary wall max height 1.8m',
     check: (data) => data.wallHeight <= 1.8, getValue: (data) => data.wallHeight, required: '≤1.8m' },
-  
-  // Second Dwelling
+
+  // Second Dwelling (Tshwane Scheme Clause 20)
   { id: 'SEC-001', category: 'Second Dwelling', title: 'Second Unit Size', description: 'Second dwelling max 80m² on R1',
     check: (data) => data.secondUnit <= 80, getValue: (data) => data.secondUnit, required: '≤80m²' },
+
+  // === SANS 10400-A / C - DIMENSIONS ===
+
+  // Ceiling Height Rules (SANS 10400-C)
+  { id: 'CEIL-001', category: 'Dimensions', title: 'Habitable Room Ceiling Height', description: 'Minimum 2.4m ceiling height for habitable rooms (SANS 10400-C)',
+    check: (data) => data.ceilingHeight >= 2.4, getValue: (data) => data.ceilingHeight, required: '≥2.4m' },
+  { id: 'CEIL-002', category: 'Dimensions', title: 'Non-Habitable Room Ceiling Height', description: 'Minimum 2.1m ceiling height for non-habitable rooms (SANS 10400-C)',
+    check: (data) => data.ceilingHeightNonHab >= 2.1, getValue: (data) => data.ceilingHeightNonHab, required: '≥2.1m' },
+
+  // Room Size Rules (SANS 10400-E)
+  { id: 'ROOM-001', category: 'Dimensions', title: 'Habitable Room Minimum Area', description: 'Minimum 8m² for habitable rooms',
+    check: (data) => data.habitableRoomArea >= 8, getValue: (data) => data.habitableRoomArea, required: '≥8m²' },
+  { id: 'ROOM-002', category: 'Dimensions', title: 'Bedroom Minimum Area', description: 'Minimum 7m² for bedrooms',
+    check: (data) => data.bedroomArea >= 7, getValue: (data) => data.bedroomArea, required: '≥7m²' },
+
+  // === SANS 10400-D - STAIRS ===
+
+  { id: 'STIR-001', category: 'Stairs', title: 'Min Stair Width', description: 'Minimum 900mm stair width (SANS 10400-D)',
+    check: (data) => data.stairWidth >= 900, getValue: (data) => data.stairWidth, required: '≥900mm' },
+  { id: 'STIR-002', category: 'Stairs', title: 'Max Riser Height', description: 'Maximum 180mm riser height (SANS 10400-D)',
+    check: (data) => data.riserHeight <= 180, getValue: (data) => data.riserHeight, required: '≤180mm' },
+  { id: 'STIR-003', category: 'Stairs', title: 'Min Tread Depth', description: 'Minimum 250mm tread depth (SANS 10400-D)',
+    check: (data) => data.treadDepth >= 250, getValue: (data) => data.treadDepth, required: '≥250mm' },
+
+  // === SANS 10400-G - VENTILATION ===
+
+  { id: 'VENT-001', category: 'Ventilation', title: 'Min Window Area', description: 'Window area minimum 10% of floor area for habitable rooms (SANS 10400-G)',
+    check: (data) => data.windowAreaPct >= 10, getValue: (data) => data.windowAreaPct, required: '≥10%' },
+  { id: 'VENT-002', category: 'Ventilation', title: 'Min Openable Area', description: 'Openable window area minimum 5% of floor area (SANS 10400-G)',
+    check: (data) => data.openableAreaPct >= 5, getValue: (data) => data.openableAreaPct, required: '≥5%' },
+
+  // === SANS 10400-N - GLAZING ===
+
+  { id: 'GLAZ-001', category: 'Glazing', title: 'Safety Glass Locations', description: 'Safety glass required for doors, side panels, and low windows (SANS 10400-N)',
+    check: (data) => data.safetyGlassRequired === true, getValue: (data) => data.safetyGlassRequired ? 'Yes' : 'No', required: 'Required' },
 ];
 
-// Default data template
+// Default data template - all SANS 10400 rule fields
 const defaultData = {
+  // Coverage & Zoning
   coverage: 0,
   impermeable: 0,
   storeys: 1,
@@ -64,7 +102,21 @@ const defaultData = {
   streetLine: 3,
   far: 0,
   wallHeight: 0,
-  secondUnit: 0
+  secondUnit: 0,
+  // Dimensions (SANS 10400-C/E)
+  ceilingHeight: 2.4,
+  ceilingHeightNonHab: 2.1,
+  habitableRoomArea: 8,
+  bedroomArea: 7,
+  // Stairs (SANS 10400-D)
+  stairWidth: 900,
+  riserHeight: 180,
+  treadDepth: 250,
+  // Ventilation (SANS 10400-G)
+  windowAreaPct: 10,
+  openableAreaPct: 5,
+  // Glazing (SANS 10400-N)
+  safetyGlassRequired: false
 };
 
 // Categories
