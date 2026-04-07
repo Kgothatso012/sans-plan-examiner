@@ -8,8 +8,8 @@ const {
 describe('plan-checker.js', () => {
 
   describe('nbrRules', () => {
-    test('should have 24 rules defined', () => {
-      expect(nbrRules.length).toBe(24);
+    test('should have 34 rules defined', () => {
+      expect(nbrRules.length).toBe(34);
     });
 
     test('each rule should have required fields', () => {
@@ -322,7 +322,7 @@ describe('plan-checker.js', () => {
       expect(result).toHaveProperty('documentName', 'test.pdf');
       expect(result).toHaveProperty('pageCount', 1);
       expect(result).toHaveProperty('overallScore');
-      expect(result).toHaveProperty('totalRules', 24);
+      expect(result).toHaveProperty('totalRules', 34);
       expect(result).toHaveProperty('passedRules');
       expect(result).toHaveProperty('failedRules');
       expect(result).toHaveProperty('missingInfo');
@@ -345,7 +345,7 @@ describe('plan-checker.js', () => {
     test('should handle empty text gracefully', () => {
       const result = analyzeDocument('', 'empty.pdf', 1);
       expect(result.documentName).toBe('empty.pdf');
-      expect(result.totalRules).toBe(24);
+      expect(result.totalRules).toBe(34);
     });
 
     test('should calculate overall score correctly', () => {

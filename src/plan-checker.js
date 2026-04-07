@@ -86,6 +86,39 @@ const nbrRules = [
 
   { id: 'GLAZ-001', category: 'Glazing', title: 'Safety Glass Locations', description: 'Safety glass required for doors, side panels, and low windows (SANS 10400-N)',
     check: (data) => data.safetyGlassRequired === true, getValue: (data) => data.safetyGlassRequired ? 'Yes' : 'No', required: 'Required' },
+
+  // === SANS 10400-B - FIRE SAFETY ===
+
+  { id: 'FIRE-001', category: 'Fire Safety', title: 'Occupancy Classification', description: 'Building must have proper occupancy classification (SANS 10400-B)',
+    check: (data) => data.occupancyClass !== null && data.occupancyClass !== undefined,
+    getValue: (data) => data.occupancyClass || 'Not specified', required: 'Required' },
+  { id: 'FIRE-002', category: 'Fire Safety', title: 'Fire Detector Present', description: 'Smoke detectors required for residential (SANS 10400-B)',
+    check: (data) => data.fireDetector === true, getValue: (data) => data.fireDetector ? 'Yes' : 'No', required: 'Required' },
+  { id: 'FIRE-003', category: 'Fire Safety', title: 'Fire Extinguisher', description: 'Fire extinguisher required per 100m² (SANS 10400-B)',
+    check: (data) => data.fireExtinguisherCount >= 1, getValue: (data) => data.fireExtinguisherCount, required: '≥1' },
+
+  // === SANS 10400-E - ACCESS FOR DISABLED ===
+
+  { id: 'DIS-001', category: 'Disabled Access', title: 'Disabled Parking Bays', description: 'Minimum 1 disabled parking bay per 50 (SANS 10400-E)',
+    check: (data) => data.disabledParking >= 1, getValue: (data) => data.disabledParking, required: '≥1' },
+  { id: 'DIS-002', category: 'Disabled Access', title: 'Disabled Toilet', description: 'Disabled accessible toilet required (SANS 10400-E)',
+    check: (data) => data.disabledToilet === true, getValue: (data) => data.disabledToilet ? 'Yes' : 'No', required: 'Required' },
+  { id: 'DIS-003', category: 'Disabled Access', title: 'Ramp Gradient', description: 'Ramp gradient max 1:12 for disabled (SANS 10400-E)',
+    check: (data) => data.rampGradient <= 8.33, getValue: (data) => data.rampGradient, required: '≤8.33%' },
+
+  // === SANS 10400-J - STRUCTURAL ===
+
+  { id: 'STR-001', category: 'Structural', title: 'DPC Required', description: 'Damp proof course required at ground level (SANS 10400-J)',
+    check: (data) => data.dpcRequired === true, getValue: (data) => data.dpcRequired ? 'Yes' : 'No', required: 'Required' },
+  { id: 'STR-002', category: 'Structural', title: 'Foundation Depth', description: 'Foundation depth min 600mm for residential (SANS 10400-J)',
+    check: (data) => data.foundationDepth >= 600, getValue: (data) => data.foundationDepth, required: '≥600mm' },
+
+  // === TSHWANE SCHEME - ADDITIONAL RULES ===
+
+  { id: 'TSH-001', category: 'Tshwane', title: 'Refuse Room', description: 'Refuse storage room required per 10 dwellings (Tshwane Scheme)',
+    check: (data) => data.refuseRoom >= 4, getValue: (data) => data.refuseRoom, required: '≥4m²' },
+  { id: 'TSH-002', category: 'Tshwane', title: 'Stormwater Disposal', description: 'Stormwater must be disposed to municipal connection (Tshwane Scheme)',
+    check: (data) => data.stormwaterConnected === true, getValue: (data) => data.stormwaterConnected ? 'Yes' : 'No', required: 'Required' },
 ];
 
 // Default data template - all SANS 10400 rule fields
@@ -116,7 +149,21 @@ const defaultData = {
   windowAreaPct: 10,
   openableAreaPct: 5,
   // Glazing (SANS 10400-N)
-  safetyGlassRequired: false
+  safetyGlassRequired: false,
+  // Fire Safety (SANS 10400-B)
+  occupancyClass: null,
+  fireDetector: false,
+  fireExtinguisherCount: 0,
+  // Disabled Access (SANS 10400-E)
+  disabledParking: 0,
+  disabledToilet: false,
+  rampGradient: 0,
+  // Structural (SANS 10400-J)
+  dpcRequired: true,
+  foundationDepth: 0,
+  // Tshwane Scheme
+  refuseRoom: 0,
+  stormwaterConnected: false
 };
 
 // Categories
