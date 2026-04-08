@@ -260,6 +260,82 @@
     .details-header h2 { font-family: var(--font-display); font-size: 1.1rem; color: var(--tshwane-dark); }
     .details-header .ref { font-family: var(--font-mono); color: var(--tshwane-blue); }
 
+    /* Workflow Stage Progress */
+    .workflow-stage-bar {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 10px var(--space-md);
+      background: #f8f9fa;
+      border-bottom: 1px solid #eee;
+    }
+    .stage-step {
+      flex: 1;
+      text-align: center;
+      position: relative;
+    }
+    .stage-step::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      right: -50%;
+      width: 100%;
+      height: 2px;
+      background: #ddd;
+      z-index: 0;
+    }
+    .stage-step:last-child::after { display: none; }
+    .stage-step.completed::after { background: var(--tshwane-blue); }
+    .stage-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #ddd;
+      margin: 0 auto 4px;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      color: white;
+    }
+    .stage-step.completed .stage-dot { background: var(--tshwane-blue); }
+    .stage-step.active .stage-dot { background: var(--tshwane-blue); box-shadow: 0 0 0 3px rgba(73, 170, 67, 0.3); }
+    .stage-step.current .stage-dot { background: #f57c00; }
+    .stage-label {
+      font-size: 9px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stage-step.active .stage-label { color: var(--tshwane-blue); font-weight: 600; }
+    .stage-step.current .stage-label { color: #f57c00; font-weight: 600; }
+    .stage-step.completed .stage-label { color: var(--tshwane-dark); }
+
+    .stage-actions {
+      display: flex;
+      gap: 6px;
+      padding: 8px var(--space-md);
+      background: #f8f9fa;
+      border-bottom: 1px solid #eee;
+    }
+    .stage-btn {
+      flex: 1;
+      padding: 6px 12px;
+      font-size: 11px;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #666;
+      transition: all 0.2s;
+    }
+    .stage-btn:hover { background: var(--tshwane-blue); color: white; border-color: var(--tshwane-blue); }
+    .stage-btn.primary { background: var(--tshwane-blue); color: white; border-color: var(--tshwane-blue); }
+    .stage-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .stage-btn:disabled:hover { background: white; color: #666; border-color: #ddd; }
+
     .details-tabs { display: flex; border-bottom: 1px solid #eee; }
     .details-tab { flex: 1; padding: var(--space-sm) var(--space-md); text-align: center; cursor: pointer; font-size: 0.85rem; border-bottom: 2px solid transparent; }
     .details-tab:hover { background: #f5f5f5; }
@@ -573,13 +649,40 @@
             <span class="ref" id="detailErf"></span>
             <span id="detailPayment" style="font-size:0.75rem;margin-top:4px;"></span>
           </div>
-          <div class="quick-actions" style="display:flex;gap:8px;padding:12px;border-bottom:1px solid #eee;flex-wrap:wrap;">
-            <button class="quick-btn approved" onclick="quickStatus('APPROVED')" style="flex:1;min-width:80px;padding:10px;background:#2e7d32;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:600;">✓ Approve</button>
-            <button class="quick-btn rejected" onclick="quickStatus('REJECTED')" style="flex:1;min-width:80px;padding:10px;background:#ef3636;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:600;">✕ Reject</button>
-            <button class="quick-btn revision" onclick="quickStatus('REVISION')" style="flex:1;min-width:80px;padding:10px;background:#f57c00;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:600;">⚠ Revise</button>
-            <button class="toolbar-btn" onclick="requestPayment()" style="flex:1;min-width:80px;padding:10px;background:#1565c0;color:white;border:none;border-radius:4px;cursor:pointer;font-size:0.85rem;">💳 Payment</button>
-            <button class="toolbar-btn" onclick="assignToMe()" style="flex:1;min-width:80px;padding:10px;background:#666;color:white;border:none;border-radius:4px;cursor:pointer;font-size:0.85rem;">👤 Assign</button>
+
+          <!-- 5-STAGE WORKFLOW PROGRESS -->
+          <div class="workflow-stage-bar" id="workflowStageBar">
+            <div class="stage-step" id="stage-RECEIVED">
+              <div class="stage-dot">1</div>
+              <div class="stage-label">Received</div>
+            </div>
+            <div class="stage-step" id="stage-ACKNOWLEDGED">
+              <div class="stage-dot">2</div>
+              <div class="stage-label">Acknowledged</div>
+            </div>
+            <div class="stage-step" id="stage-UNDER_REVIEW">
+              <div class="stage-dot">3</div>
+              <div class="stage-label">Review</div>
+            </div>
+            <div class="stage-step" id="stage-DECISION">
+              <div class="stage-dot">4</div>
+              <div class="stage-label">Decision</div>
+            </div>
+            <div class="stage-step" id="stage-COLLECTION">
+              <div class="stage-dot">5</div>
+              <div class="stage-label">Collection</div>
+            </div>
           </div>
+
+          <!-- STAGE ACTIONS -->
+          <div class="stage-actions" id="stageActions">
+            <button class="stage-btn" id="btnAcknowledge" onclick="advanceStage('ACKNOWLEDGED')">Acknowledge</button>
+            <button class="stage-btn" id="btnStartReview" onclick="advanceStage('UNDER_REVIEW')">Start Review</button>
+            <button class="stage-btn primary" id="btnMakeDecision" onclick="advanceStage('DECISION')">Make Decision</button>
+            <button class="stage-btn" id="btnComplete" onclick="advanceStage('COLLECTION')">Mark Complete</button>
+          </div>
+
+          <div class="quick-actions" style="display:flex;gap:8px;padding:12px;border-bottom:1px solid #eee;flex-wrap:wrap;">
 
           <div class="details-tabs">
             <div class="details-tab active" onclick="switchTab('info')">Info</div>
@@ -871,6 +974,92 @@
       renderQueue(allQueueApps);
     }
 
+    // === WORKFLOW STAGE ===
+    const WORKFLOW_STAGES = ['RECEIVED', 'ACKNOWLEDGED', 'UNDER_REVIEW', 'DECISION', 'COLLECTION'];
+
+    function updateWorkflowUI(stage) {
+      WORKFLOW_STAGES.forEach((s, i) => {
+        const el = document.getElementById('stage-' + s);
+        if (!el) return;
+        el.classList.remove('active', 'current', 'completed');
+        const stepIndex = WORKFLOW_STAGES.indexOf(stage);
+        if (i < stepIndex) {
+          el.classList.add('completed');
+        } else if (s === stage) {
+          el.classList.add('current');
+        }
+      });
+
+      // Update stage buttons based on current stage
+      const btnAck = document.getElementById('btnAcknowledge');
+      const btnReview = document.getElementById('btnStartReview');
+      const btnDecision = document.getElementById('btnMakeDecision');
+      const btnComplete = document.getElementById('btnComplete');
+
+      btnAck.disabled = false;
+      btnReview.disabled = false;
+      btnDecision.disabled = false;
+      btnComplete.disabled = false;
+
+      if (stage === 'RECEIVED') {
+        btnAck.disabled = false;
+        btnReview.disabled = true;
+        btnDecision.disabled = true;
+        btnComplete.disabled = true;
+      } else if (stage === 'ACKNOWLEDGED') {
+        btnAck.disabled = true;
+        btnReview.disabled = false;
+        btnDecision.disabled = true;
+        btnComplete.disabled = true;
+      } else if (stage === 'UNDER_REVIEW') {
+        btnAck.disabled = true;
+        btnReview.disabled = true;
+        btnDecision.disabled = false;
+        btnComplete.disabled = true;
+      } else if (stage === 'DECISION') {
+        btnAck.disabled = true;
+        btnReview.disabled = true;
+        btnDecision.disabled = true;
+        btnComplete.disabled = false;
+      } else if (stage === 'COLLECTION') {
+        btnAck.disabled = true;
+        btnReview.disabled = true;
+        btnDecision.disabled = true;
+        btnComplete.disabled = true;
+      }
+    }
+
+    async function advanceStage(targetStage) {
+      if (!currentApp) return;
+      const stageOrder = WORKFLOW_STAGES;
+      const currentIndex = stageOrder.indexOf(currentApp.workflow_stage || 'RECEIVED');
+      const targetIndex = stageOrder.indexOf(targetStage);
+
+      // Can only advance one step at a time
+      if (targetIndex !== currentIndex + 1) {
+        showToast('Must advance stages in order', 'error');
+        return;
+      }
+
+      try {
+        const res = await adminFetch('/api/applications/' + currentApp.id + '/stage', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stage: targetStage })
+        });
+
+        if (!res.ok) throw new Error('Failed to update stage');
+
+        currentApp.workflow_stage = targetStage;
+        updateWorkflowUI(targetStage);
+        showToast('Stage updated to ' + targetStage.replace('_', ' '), 'success');
+        loadQueue(); // Refresh queue
+      } catch (e) {
+        console.error('Stage advance error:', e);
+        showToast('Failed to update stage', 'error');
+      }
+    }
+
     // === SELECT APPLICATION ===
     async function selectApplication(id) {
       try {
@@ -938,6 +1127,7 @@
         renderAIAnalysis(app.application_analysis || []);
         renderRevisions(app);
         loadAppPDF(app.application_documents);
+        updateWorkflowUI(app.workflow_stage || 'RECEIVED');
 
       } catch (e) {
         console.error('Select error:', e);
