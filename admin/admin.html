@@ -427,63 +427,59 @@
       <!-- TOOLBAR -->
       <div class="toolbar">
         <!-- Zoom Controls -->
+        <!-- ZOOM -->
         <div class="toolbar-group">
-          <div class="zoom-controls">
-            <button class="zoom-btn" onclick="zoomOut()">−</button>
-            <input type="range" class="zoom-slider" id="zoomSlider" min="25" max="400" value="150" onchange="setZoom(this.value)">
-            <button class="zoom-btn" onclick="zoomIn()">+</button>
-            <span class="zoom-value" id="zoomValue">150%</span>
-          </div>
-          <button class="toolbar-btn fit-btn" onclick="fitToWidth()">Width</button>
-          <button class="toolbar-btn fit-btn" onclick="fitToPage()">Page</button>
+          <button class="zoom-btn" onclick="zoomOut()">−</button>
+          <input type="range" class="zoom-slider" id="zoomSlider" min="25" max="400" value="150" onchange="setZoom(this.value)">
+          <button class="zoom-btn" onclick="zoomIn()">+</button>
+          <span class="zoom-value" id="zoomValue">150%</span>
+          <button class="toolbar-btn" onclick="fitToWidth()">W</button>
+          <button class="toolbar-btn" onclick="fitToPage()">P</button>
         </div>
 
-        <!-- View Mode -->
+        <!-- VIEW MODE -->
         <div class="toolbar-group">
-          <button class="toolbar-btn" id="btnFullscreen" onclick="toggleFullscreen()">⛶ Fullscreen</button>
-          <button class="toolbar-btn" id="btnDarkMode" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
-          <button class="toolbar-btn" id="btnCompare" onclick="toggleCompareMode()" title="Compare Documents">⚖️</button>
-          <button class="toolbar-btn" id="btnPan" onclick="togglePan()">✋ Pan</button>
-          <button class="toolbar-btn primary" id="btnComment" onclick="enableCommentMode()">💬 Comment</button>
+          <button class="toolbar-btn" id="btnFullscreen" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
+          <button class="toolbar-btn" id="btnDarkMode" onclick="toggleDarkMode()" title="Dark">🌙</button>
+          <button class="toolbar-btn" id="btnCompare" onclick="toggleCompareMode()" title="Compare">⚖</button>
+          <button class="toolbar-btn" id="btnPan" onclick="togglePan()" title="Pan">✋</button>
+          <button class="toolbar-btn primary" id="btnComment" onclick="enableCommentMode()">💬</button>
         </div>
 
-        <!-- AI & Verification -->
-        <div class="toolbar-group" id="aiButtonGroup">
-          <button class="toolbar-btn ai-analyze-btn" id="btnAIAnalyze" onclick="runAIAnalysis()">🤖 Analyze</button>
-          <button class="toolbar-btn" id="btnVerifyDocs" onclick="runDocVerification()" style="background:#059669;color:white;border:none;">📋 Verify Docs</button>
-        </div>
+        <!-- AI & EXPORT -->
         <div class="toolbar-group">
-          <button class="toolbar-btn" onclick="exportCSV()">📊 CSV</button>
-          <button class="toolbar-btn" onclick="exportPDF()">📄 PDF</button>
-          <button class="toolbar-btn" onclick="saveAnnotatedPDF()" title="Save with stamps">💾 Save</button>
+          <button class="toolbar-btn ai-analyze-btn" id="btnAIAnalyze" onclick="runAIAnalysis()" title="AI Analyze">🤖</button>
+          <button class="toolbar-btn" id="btnVerifyDocs" onclick="runDocVerification()" style="background:#059669;color:white;border:none;" title="Verify">📋</button>
+          <button class="toolbar-btn" onclick="exportCSV()">📊</button>
+          <button class="toolbar-btn" onclick="exportPDF()">📄</button>
+          <button class="toolbar-btn" onclick="saveAnnotatedPDF()" title="Save">💾</button>
         </div>
 
-        <!-- Document & Page -->
+        <!-- DOCUMENT -->
         <div class="toolbar-group" style="margin-left: auto;">
           <input type="file" id="uploadDocInput" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload(event)">
-          <button class="toolbar-btn" onclick="document.getElementById('uploadDocInput').click()">📤 Upload</button>
-          <input type="text" id="pdfSearch" placeholder="Search..." style="width:80px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;font-size:0.8rem;" onkeyup="if(event.key==='Enter')searchPDF()">
-          <button class="toolbar-btn" id="btnSearchPDF" onclick="searchPDF()" title="Search PDF">🔍</button>
-          <button class="toolbar-btn" onclick="prevMatch()" title="Previous match">◀</button>
-          <button class="toolbar-btn" onclick="nextMatch()" title="Next match">▶</button>
-          <span id="pageInfo">1 / 1</span>
+          <button class="toolbar-btn" onclick="document.getElementById('uploadDocInput').click()" title="Upload">📤</button>
+          <input type="text" id="pdfSearch" placeholder="Search..." style="width:70px;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:0.8rem;" onkeyup="if(event.key==='Enter')searchPDF()">
+          <button class="toolbar-btn" onclick="searchPDF()" title="Search">🔍</button>
+          <span id="pageInfo">1/1</span>
+          <button class="toolbar-btn" onclick="prevPage()">◀</button>
           <button class="toolbar-btn" onclick="nextPage()">▶</button>
         </div>
 
-        <!-- Scale Ruler & CAD Tools -->
+        <!-- ANNOTATION -->
         <div class="toolbar-group">
-          <button class="toolbar-btn" id="btnScaleRuler" onclick="toggleScaleRuler()">📏 Scale</button>
-          <button class="toolbar-btn" id="btnGrid" onclick="toggleGrid()">Grid</button>
-          <button class="toolbar-btn" id="btnMeasure" onclick="toggleMeasure()">📐 Measure</button>
-          <button class="toolbar-btn" id="btnCoords" onclick="toggleCoords()">📍 Coords</button>
+          <button class="toolbar-btn" id="btnLine" onclick="toggleLineTool()" title="Line">📏</button>
+          <button class="toolbar-btn" id="btnRect" onclick="toggleRectTool()" title="Rect">⬜</button>
+          <button class="toolbar-btn" id="btnArrow" onclick="toggleArrowTool()" title="Arrow">➡</button>
+          <button class="toolbar-btn" id="btnStamp" onclick="showStampMenu()" title="Stamp">🖊</button>
         </div>
 
-        <!-- Examine Tools -->
+        <!-- MEASUREMENT -->
         <div class="toolbar-group">
-          <button class="toolbar-btn" id="btnLine" onclick="toggleLineTool()" title="Draw Line">📏 Line</button>
-          <button class="toolbar-btn" id="btnRect" onclick="toggleRectTool()" title="Draw Rectangle">⬜ Rect</button>
-          <button class="toolbar-btn" id="btnArrow" onclick="toggleArrowTool()" title="Draw Arrow">➡ Arrow</button>
-          <button class="toolbar-btn" id="btnStamp" onclick="showStampMenu()">🖊 Stamp</button>
+          <button class="toolbar-btn" id="btnScaleRuler" onclick="toggleScaleRuler()" title="Scale">📏</button>
+          <button class="toolbar-btn" id="btnGrid" onclick="toggleGrid()" title="Grid">⊞</button>
+          <button class="toolbar-btn" id="btnMeasure" onclick="toggleMeasure()" title="Measure">📐</button>
+          <button class="toolbar-btn" id="btnCoords" onclick="toggleCoords()" title="Coords">📍</button>
         </div>
       </div>
 
