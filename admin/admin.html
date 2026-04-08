@@ -65,11 +65,19 @@
     .details-panel { width: 380px; background: var(--white); border-left: 1px solid #ddd; display: flex; flex-direction: column; overflow: hidden; }
 
     /* === SIDEBAR === */
-    .sidebar-header { padding: var(--space-lg); background: linear-gradient(135deg, var(--tshwane-blue) 0%, var(--tshwane-dark) 100%); color: white; }
+    .sidebar-header { padding: var(--space-lg); background: linear-gradient(135deg, #1a4b8c 0%, #2d7d46 100%); color: white; }
     .sidebar-header h1 { font-family: var(--font-display); font-size: 1.3rem; text-transform: uppercase; }
     .sidebar-header p { font-size: 0.75rem; opacity: 0.8; letter-spacing: 0.1em; }
     .back-link { color: white; opacity: 0.7; font-size: 0.85rem; text-decoration: none; }
     .back-link:hover { opacity: 1; }
+
+    /* === DEPARTMENT TABS === */
+    .dept-tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px; background: #f8f8f8; border-bottom: 1px solid #ddd; }
+    .dept-tab { padding: 6px 10px; font-size: 0.7rem; border: none; background: white; color: #666; cursor: pointer; border-radius: 4px; transition: all 0.2s; border: 1px solid #ddd; }
+    .dept-tab:hover { background: #e8f4e8; border-color: var(--tshwane-blue); }
+    .dept-tab.active { background: var(--tshwane-blue); color: white; border-color: var(--tshwane-blue); }
+    .dept-tab .dept-count { display: inline-block; padding: 1px 5px; border-radius: 8px; font-size: 0.65rem; margin-left: 4px; background: rgba(0,0,0,0.15); }
+    .dept-tab.active .dept-count { background: rgba(255,255,255,0.3); }
 
     /* === SEARCH === */
     .search-section { padding: var(--space-md); border-bottom: 1px solid #eee; }
@@ -325,9 +333,26 @@
     <div class="sidebar">
       <div class="sidebar-header">
         <a href="../../index.html" class="back-link">← Back</a>
-        <h1 style="margin-top: 8px;">Joe's Examiner</h1>
-        <p>Building Control</p>
+        <h1 style="margin-top: 8px;">Tshwane Examiner</h1>
+        <p>Building Control Division</p>
         <button onclick="showExaminersPanel()" style="margin-top:8px;padding:4px 12px;background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.3);border-radius:4px;cursor:pointer;font-size:0.75rem;">👥 Examiners</button>
+      </div>
+
+      <!-- DEPARTMENT TABS -->
+      <div class="dept-tabs" id="deptTabs">
+        <button class="dept-tab active" onclick="switchDept('ALL')">ALL<span class="dept-count" id="count-ALL">0</span></button>
+        <button class="dept-tab" onclick="switchDept('BC')">BC<span class="dept-count" id="count-BC">0</span></button>
+        <button class="dept-tab" onclick="switchDept('RSP')">RSP<span class="dept-count" id="count-RSP">0</span></button>
+        <button class="dept-tab" onclick="switchDept('FS')">FS<span class="dept-count" id="count-FS">0</span></button>
+        <button class="dept-tab" onclick="switchDept('GEO')">GEO<span class="dept-count" id="count-GEO">0</span></button>
+        <button class="dept-tab" onclick="switchDept('MH')">MH<span class="dept-count" id="count-MH">0</span></button>
+        <button class="dept-tab" onclick="switchDept('TI')">TI<span class="dept-count" id="count-TI">0</span></button>
+        <button class="dept-tab" onclick="switchDept('RSW')">RSW<span class="dept-count" id="count-RSW">0</span></button>
+        <button class="dept-tab" onclick="switchDept('WS')">WS<span class="dept-count" id="count-WS">0</span></button>
+        <button class="dept-tab" onclick="switchDept('WM')">WM<span class="dept-count" id="count-WM">0</span></button>
+        <button class="dept-tab" onclick="switchDept('EPO')">EPO<span class="dept-count" id="count-EPO">0</span></button>
+        <button class="dept-tab" onclick="switchDept('WP')">WP<span class="dept-count" id="count-WP">0</span></button>
+        <button class="dept-tab" onclick="switchDept('TRES')">TRES<span class="dept-count" id="count-TRES">0</span></button>
       </div>
 
       <div class="search-section">
@@ -812,7 +837,39 @@
     }
 
     let currentQueueFilter = 'all';
+    let currentDeptFilter = 'ALL';
     let allQueueApps = [];
+
+    // Department filter
+    function switchDept(dept) {
+      currentDeptFilter = dept;
+      document.querySelectorAll('.dept-tab').forEach(tab => tab.classList.remove('active'));
+      event.target.closest('.dept-tab').classList.add('active');
+      renderQueue(allQueueApps);
+      updateDeptCounts(allQueueApps);
+    }
+
+    function updateDeptCounts(apps) {
+      const counts = { ALL: apps.length };
+      const deptCodes = ['BC', 'RSP', 'FS', 'GEO', 'MH', 'TI', 'RSW', 'WS', 'WM', 'EPO', 'WP', 'TRES'];
+      deptCodes.forEach(d => counts[d] = 0);
+
+      apps.forEach(app => {
+        const depts = app.departments || [];
+        deptCodes.forEach(d => {
+          if (depts.some(dept => dept.code === d)) {
+            counts[d]++;
+          }
+        });
+      });
+
+      deptCodes.forEach(d => {
+        const el = document.getElementById('count-' + d);
+        if (el) el.textContent = counts[d];
+      });
+      const allEl = document.getElementById('count-ALL');
+      if (allEl) allEl.textContent = counts.ALL;
+    }
 
     function filterQueue(status) {
       currentQueueFilter = status;
@@ -2410,10 +2467,21 @@
       document.getElementById('chartApproved').style.height = (approved / maxVal * 100) + '%';
       document.getElementById('chartRejected').style.height = (rejected / maxVal * 100) + '%';
 
+      // Update department counts
+      updateDeptCounts(apps);
+
       const container = document.getElementById('queueList');
 
       // Filter by status
       let filtered = currentQueueFilter === 'all' ? apps : apps.filter(a => a.status === currentQueueFilter);
+
+      // Filter by department
+      if (currentDeptFilter !== 'ALL') {
+        filtered = filtered.filter(a => {
+          const depts = a.departments || [];
+          return depts.some(d => d.code === currentDeptFilter);
+        });
+      }
 
       // Filter by search query
       if (searchQuery) {
