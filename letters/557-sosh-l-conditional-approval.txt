@@ -1,0 +1,98 @@
+TSHWANE MUNICIPALITY
+BUILDING CONTROL DIVISION
+APPLICATION FOR BUILDING PLAN APPROVAL
+
+Reference: TLB/2026/04/557-SOSH-L
+Date: 06 April 2026
+
+Maleho Grace Mogane
+557 Soshanguve L
+Pretoria
+
+RE: BUILDING PLAN APPROVAL - ERF 557 SOSHANGUVE L
+
+Dear Applicant,
+
+RE: APPLICATION FOR APPROVAL OF BUILDING PLANS - CONDITIONAL APPROVAL
+
+Your application for additions/alterations to existing dwelling dated 14 January 2026 has been reviewed.
+
+PROPERTY DETAILS:
+- ERF: 557 Soshanguve L
+- ERF Size: 684m² (from Surveyor General Diagram)
+- Proposed Work: Additions/Extensions to existing dwelling
+- Owner: Maleho Grace Mogane
+- Architect: Kgothatso Makena (MAKENA BUILDING GROUP)
+
+AREA SCHEDULE:
+- Existing Ground Floor: 133.5m²
+- Additional Floor Area: 195.5m²
+- Total Floor Area: 329m²
+- Site Coverage: 57.8% (within 60% limit)
+
+DECISION: CONDITIONAL APPROVAL
+
+The proposed building plans are APPROVED subject to the following conditions:
+
+CONDITIONS OF APPROVAL:
+
+1. NORTH ORIENTATION
+   Submit a revised plan showing north arrow clearly indicated. SANS 10400-A requires all building plans to indicate north orientation.
+
+2. PARKING PROVISION
+   Indicate on the site plan the location of at least one (1) parking bay. Single dwellings require minimum one parking space per dwelling.
+
+3. BOUNDARY WALLS
+   Submit detail drawing showing boundary wall heights: maximum 1.8m at front, maximum 2.1m at sides and rear.
+
+4. ON-SITE VERIFICATION
+   The calculated site coverage of 57.8% is close to the maximum 60% limit. The applicant must ensure actual construction matches the approved plans. Any deviation resulting in coverage exceeding 60% will require a new application.
+
+---
+
+COMPLIANCE CONFIRMED:
+- Site Coverage: 57.8% (60% max) ✅
+- Ceiling Heights: 2.4m habitable, 2.1m non-habitable ✅
+- Room Sizes: All above minimum requirements ✅
+- Energy Compliance: Full SANS10400-XA calculations provided ✅
+- Structural: Engineer details specified ✅
+- Fire Safety: SANS10400-T requirements noted ✅
+- Plumbing/Drainage: Plan provided ✅
+
+ENERGY EFFICIENCY FEATURES:
+- Solar hot water system (50% requirement met)
+- Lighting: 626W total (within 5W/m² limit)
+- Wall R-values: Compliant with SANS10400-XA
+- Roof R-value: 3.7 m².W/k (compliant)
+- Glazing: 22.83m² (15% of floor area)
+
+---
+
+GENERAL NOTES:
+
+- This approval is valid for 12 months from date of issue. If construction has not commenced within this period, a new application must be submitted.
+
+- All construction must comply with National Building Regulations and SANS 10400 standards.
+
+- Building will be subject to mandatory inspections during construction.
+
+- Any deviation from approved plans requires separate application for amendment.
+
+- The structural and energy designs have been provided by registered professionals. The municipality relies on the professional certifications submitted.
+
+---
+
+Please submit revised documentation addressing the above conditions to this office for final approval.
+
+For queries, contact the Building Control Office.
+
+Yours faithfully,
+
+Joe Examiner
+Building Control Officer
+Tshwane Municipality
+
+---
+
+cc: File
+    Architect: Kgothatso Makena

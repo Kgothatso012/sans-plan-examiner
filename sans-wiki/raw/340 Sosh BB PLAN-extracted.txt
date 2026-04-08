@@ -1,0 +1,888 @@
+
+
+GSPublisherVersion 0.0.100.100
+PT
+615
+PT
+615
+PTT2215PT156
+PT99
+Slidding Door
+2 400 by2 100
+PTT2215
+Slidding 
+Door
+1
+ 
+500
+ by
+2
+ 
+100
+PTT1515PT99
+PTT
+2215
+Garage 
+Door
+4
+ 
+800
+ by
+2
+ 
+160
+PTT
+2215
+PTT
+2215
+Slidding Door
+2 400 by2 100
+PT
+99
+PT
+69
+631
+1 0304 4204 1102 0003 4401 5302204 1102204 450
+25 530
+220
+2 960
+220
+220
+1 200
+2 096
+1 823
+300
+2 950
+220
+1 566
+216
+2 960
+220
+1 420
+2 096
+1 823
+300
+3 170
+1 566
+216
+13 556
+631
+631400
+25 530
+220
+6 280
+220
+1 190
+220
+1 760
+220
+3 890
+6 720
+3 150
+4 130
+14 000
+4 2902201 530
+150
+2 3502206 060220
+6 280
+2203 9452204 595405
+150
+704 2201 530
+150
+2 3506 500
+4004 309110
+110
+1 523
+220
+2 852405
+2204 2001103 780110
+110
+2 0001103 1102201 5302204 1102204 230220
+2 0604403 0302 650
+440
+3 170
+A-AA-A
+B
+-
+B
+B
+-
+B
+GSPublisherVersion 0.0.100.100
+GSPublisherVersion0.0.100.100
+GSPublisherVersion0.0.100.100
+GSPublisherVersion0.0.100.100
+HOT WATER OUT
+SOLAR 
+PANELS
+JACKET
+RELIEFVALVE.
+.
+EXPANSION RELIEFVALVE
+STOPVALVE
+COLD WATER IN
+GENERAL NOTES:
+All work to be in accordance with the national building regulations SANS10400-2011.
+All levels and dimensions to be checked and veri edonsitepriortocommentofwork
+any discrepancies to be reported to the architect immediatly.
+FOUNDATION NOTES:
+All foundations,foundation walls,retaining walls,sub soil stormwater
+drainage and soil compaction to Eng's spec&approval.
+230mm walls on min600(w)x300(h)&115mm walls on min450(w)x300(h)
+strip foundations with20mpa concrete.
+SURFACE BED NOTES:
+Internal surface bed100mm20mpa concrete on dpc&well compacted llat
+150mm layers.
+Slabs are not to be cast on in-situ materialallow to remove min.300mm
+and re-compact in150mm layers external surface bed85mm20mpa
+concrete as above.
+WALL NOTES:
+Brickwork:Clay stock keyed to receive plaster nish
+230mm brick walls with brickforce every4courses and every course for6
+courses over openings or to Eng's spec.&approval
+All brickwork min7mpa with Class II mortar.
+ROOF NOTES:
+Refer to roof notes.
+GLAZING NOTES:
+All glazing to comply with part"N OF SANS10400-2011."
+PLUMBING&DRAINAGE:
+All plumbing to comply with  P of the SANS10400:2011
+All waste pipes and drains to be accessible along their entire length.
+ Provide inspection eyes at all drain bends and juctions and at a mix.
+Cleaning eyes to be provided at all bends and juctions of waste pipes.
+Waste ppipes to be ttedwith:
+mm reseal traps
+Water connections to be ttedwith:
+mm dia to WHB,WCand Showers
+mm dia to Geyser
+mm dia to FHR
+All vent pipes to discharge to external air.
+mm dia waste pipes require to75mm dia sleeve.
+110mm dia waste pipes require a150mm dia sleeve.
+For plumbing and drainage layout plans and cross sections refer to registed wet
+services
+engineer'sdrawings for rational design drawings
+.
+All sorm water to be collected and drained to comply with part P of the SANS
+10400,
+drain municipal storm water drainage system
+.
+STRUCTURAL:
+All reinforced concrete work and retainind walls to be strictly in accordance
+with registered
+sructural engineer
+'
+s details and speci fications
+.
+MECHANICAL VENTILATION&LIGHTING:
+All lighting and ventilation(fresh air and extrct)to comply with part"O SANS10400
+accordance with registered mechanical engineer's drawings and registerd electrical
+engineer drawings
+All arti ciallightingtocomplywithSANS10400XA
+SANS10400XA(WALLS:)
+Non masonary walls will haveR"values as provided(SANS10400XA4.4.3.1)
+Double sking masonary with plaster inside or render outside to complies.
+Single leafe min
+,of
+150mm with plaster inside or render outside to complies(SANS10400XA4.4.3.2)
+Other masonary walls will haveR'value of0.35(SANS10400XA4.4.3.3)
+REV
+DATEDETAILSBY
+A
+Job No.Drawing No.Rev.No.
+ISSUED FOR
+OWNER:
+ISSUED FOR
+CONSTRUCTION:
+Sheet Size:A1
+2024-05
+Issue Date:__________________________________
+ISSUED FOR
+TENDER:
+Contact:
+General Manager
+Cell: (069)5337778
+MAKENA BUILDING GROUP
+4/1619Soshanguve A
+Soshanguve,0152
+-A-01###/##/##
+REVISIONS
+AREA SCHEDULE
+SITE AREA(erf)
+:
+:
+PERMISSIBLE  COVERAGE
+:
+ACTUAL  COVERAGE
+:
+Engineer Sig:
+Architect Sig:
+Owner/Client Sig:
+PROJECT 
+TITLE
+ADDITIONAL FLOOR AREA
+:
+:
+PROPOSED ADDITIONS
+ERF
+For
+REV:DESCRIPTION:DATE:
+ROOF ASSEMBLIES(R
+_
+VALUE):
+R
+_
+value=3.7m².W/k
+Direction of Heat ow
+_
+UP
+Basic roof assembliesClay roman tiles
+R_Value for roof covering0.35m²K/
+R_Value for ceiling ins,0.05m²K/
+Required added R
+_
+Value inst,3.3Km
+2
+/W
+ROOF UNVENTIALATED.
+Out door air lm(7m/s)0.03
+Roof clay tiles(1922kg/m
+3
+)0.02
+Roof air space(non
+_
+re ective)0.18
+Plasterboard gypsum(10mm,880kg/m
+3
+)0.06
+Indoor air(stil air)0.11
+Generic Insulation Product added(Flexible breglass
+blankek)
+Required added R
+_
+value inst,0.4
+Total R
+_
+value(3.3 +0.4)3.1
+Climantic zone1
+ENERGY CONSUMPTION LIGHTING
+Legend/Types
+Amound
+Calculations
+Total watts
+Ceiling Lights
+Ceiling Lights
+Down Lights
+(LDL005)
+Fluorescent
+Lights
+(KB22GE)
+Total Lights
+06
+02
+80
+02
+06x11w
+02x22w
+80x6w
+02x18w
+66watts
+44watts
+480watts
+36watts
+626watts
+INTERNAL ACTUAL:
+Permissible:5w/m
+2
+or5Kwh.a[a=year]assume lights
+are  on from17:00to22:00each day.
+5h/day=52(weeks)x7(days)=1820h.a
+BULDING CLASSIFICATIONS
+_
+H4
+ENERGY CONSUPTION:
+Allowed5kWh/sqm per year
+5Wh x329.52sqm=1,647.6m
+2
+.a
+Total Residence
+House area
+626
+329
+TOTALINTERNAL AND EXTERNAL ACTUAL:
+1,139.32kw<1,647.6Kwh.a(per year)
+Consumption:The design complies with the
+requirement of SANS10400_XA:2011for energy
+consumption
+Max.Demand as per SANS10142=5W per sqm.
+Actual: (626w/329.52sqm=1.9w/m
+2
+FENESTRATION:
+FENESTRATION CALCULATIONS AND NATURAL
+ENVIRONMENTAL CONTROL(SANS10400XA)
+Total of Floor Area
+147.96
+m
+2
+Total of Glazing Area22.83m
+2
+Total15% of floorArea21.05m
+2
+Therefore glazing area is more than15%of the
+area
+ orof proposal therefore calculations.t..
+i.t.o SANS204is
+required.
+HOT WATER CALCULATIONS:
+Volume of annual hot water heating requirements:
+Population calculations
+Bed roomsPeople per bed rmTotal
+3
+2
+9
+Volume of annual hot water heating requirements:
+Population calculations
+DEMAND:1150L/UNIT
+HEATER POWER
+80L/Person/day1150L_960=1.19793kWunits(3X9
+72kW/day
+Thus:38400kw/Year but use of solar panel=50%saving
+Thus:19200kw/Year hot water heating requirement>
+±0.000
+±
+0
+.
+000
+±0.000
+0.000
+±
+Electrical Legend
+Distribution board
+Down lights
+Ceiling lights
+Double wall plugs
+Doublelights switch
+Single lights switch
+Stove  point
+Flourescent Lights
+300LGeyser in roof spec
+GRANTTOTAL  FLOOR AREA
+:
+m
+²
+Designed by:
+Kgothatso Makena
+Checked by:
+SACAP:
+signature:
+150mm STRIP
+150
+mm Internal brick wall plastered
+&painted to client's choice
+10mmSand,Cement plaster
+25mmSand
+Cement screed
+400
+200
+10mm thick
+internal plaster
+Skirting to match
+floorfinish
+NATURAL GROUND
+110mm STRIP FOUNDATION DETAIL
+Scale1:100
+BOOT LEG FOUNDATION DETAILS
+01
+_
+76mm Meranti skirting with19mm quadrant.
+02
+_
+Finishedfloorlevel.
+03
+_
+125mm Conrete surface bed
+04
+_
+250mm Micro black DPC
+05
+_
+3x150mm Hardcorefilling(G7)compacted to93%mod AASHTO density
+06
+_
+Compact in sut_meterial  to93%mod AASHTO density for cut/fill
+       compact in150mm layers to93%mod AASHTO density
+07
+_
+60mm x250mm Thick strip concrete footing
+09
+_
+250mm Micro black DPC
+10
+_
+1m Apron with Ref193and expension joint for every2m or less
+New Wall
+Existing Wall
+Demolishing  Wall
+WALLLEGEND
+scale1:100
+SANS10400XA
+WALLS:
+Non-masonry wall will have'R'values as provided. (SANS10400-XA-4.4.3.1)
+Double sking masonry with plaster inside or render
+outsidecomplies.Single leave,in.140mm with plaster inside and
+render outsidecomplies. (SANS10400-XA-4.4.3.2)
+Other masonry walls will have'R'value of O.35. (SANS10400-XA-4.4.3.3)
+HEALTH:
+Ceiling level to be at least
+2
+.4m  in habitable rooms or
+comply with C3of the NBR
+Window to be at least10%and opening section5%of thefloorareaofthehabitablearea.
+Water hating and cooking apparatus in house and out building to be smoke free.
+m
+²
+EXISTING GROUND FLOOR AREA
+:
+Scale1:00
+Ground Floor Plan
+340 Soshanguve B-B
+Pretoria
+Matlakala Jane Moela
+North 
+Elevation
+Scale1:100
+138
+IBR Sheets at 8 degrees on38mm x38mm Battens SABS aproval Grade
+S5@320mm c/c with plastic underlay.
+152mm x38mm Rafters SABS aproved Grade S5@760mm c/c tied with
+114mm x38mm Web members SABS aproved Grade S5@760mm c/c.
+Tied beam152mm x38mm SABS aproved Grade S5and76mm Wall plate
+Grade S5and ceiling to be nailed on38mm Brendering@450mm c
+ROOF NOTES
+FIRE 
+NOTES
+SANS10400-T-2011EDITION4.9.2
+any door 
+between 
+such 
+garage
+&any such 
+room 
+shall 
+have 
+a fire
+resistance 
+of not that
+30mm&such 
+doorway 
+shall 
+require 
+threshold
+of not les than10mm
+no combustable 
+roof 
+shall  
+penetrate 
+the separating 
+element 
+diving
+the space 
+between 
+the garage
+&habitable 
+room
+FFL
+NGL mm681
+gulley
+r.e
+Main
+Municipal
+Sewer
+line
+6645 
+NOXOLO 
+CRESCENT
+Kitchen
+C/Tiles
+Bedroom03
+C/Tiles
+Bathrm
+C/Tiles
+Step Down
+fire door
+10mm Threshold
+fire
+wall
+Geyser
+ERF
+340 Sosh
+B-B
+2 100
+Chimneys to SANS
+10400-2011
+Element IDCWD - 022CWD - 022PT69PT99PT99PT156PT615PTT1515PTT1518PTT1518PTT2215PTT2215
+Quantity111121211114
+W x H Size1 448×1 500900×1 500600×900600×900900×9001 500×900600×1 5001 500×1 5003 273×3125 559×6002 200×4502 200×1 500
+2D Symbol
+View from Side
+Opposite to Opening
+Side
+ Window Schedule
+Element IDDOO - 023Garage DoorNew Miranthi DoorSlidding DoorSlidding Door
+Quantity11812
+W x H Size2 800×2 1004 800×2 160880×2 1001 500×2 1002 400×2 100
+2D Symbol
+View from Side
+Opposite to Opening
+Side
+ Door Schedule
+Floor covering as per schedule.30mm cement screed on85mm concrete surface
+mmThick layer of G5material or better compacted to95%mod AASHTO
+density.250mm micron polyonlefin sheeting under floor slab on well compacted
+filling in layers not exceeding150mm treated with SABS approved,poisoned weed
+acc to SABS0124.
+We
+st
+ Elevation
+Scale1:100
+Section
+Scale1:100
+B
+-
+ B
+245
+1
+Scale1:00
+Site Plan
+2
+m
+²
+115
+6 060
+2 656
+1 745
+3 975
+4 656
+8°
+6 500
+3 150
+3 687
+8°
+000mNgl
++0,680mSlab
++ Wall Plate
++2730mLintol Level
++
+3250
+100Øpvcsewerpipelinetofallat1:60mmtoconnect
+tomunicipalsewerconnection
+All sewer pipes line runinng under the building must be
+ENCASED
+Scale1:00
+Roof Plan
+2
+gulley
+i.e
+i.e
+r.e
+CarGarage
+Grano
++Roof Height
+0152
+m
+²
+450
+Floor covering as per schedule.30mm cement screed on85mm concrete surface
+mmThick layer of G5material or better compacted to95%mod AASHTO
+density.250mm micron polyonlefin sheeting under floor slab on well compacted
+filling in layers not exceeding150mm treated with SABS approved,poisoned weed
+acc to SABS0124.
+100Øpvcsewerpipelinetofallat1:60mmtoconnect
+tomunicipalsewerconnection
+All sewer pipes line runinng under the building must be
+ENCASED
+i.e
+Concrete
+foundation
+According
+to Engineer
+Concrete
+foundation
+According
+to Engineer
+FFL
+NGL mm340
+r.e
+Sou
+th Elevation
+Scale1:100
+East
+ Elevation
+Scale1:100
+60%
+56%
+Concrete
+foundation
+According
+to Engineer
+Concrete
+foundation
+According
+to Engineer
+Section
+Scale1:100
+A
+-
+ 
+A
+C/Tiles
+C/Tiles
+FireWall
+Concrete
+foundation
+According
+to Engineer
+Dining Area
+C/Tiles
+C/Tiles
+FFL
+NGL mm681
+FFL
+NGL mm340
+FFL
+NGL mm340
+FFL
+NGL mm681
+FFL
+NGL mm681
+FFL
+NGL mm681
+FFL
+NGL mm340
+FFL
+NGL mm681
+FFL
+NGL mm681
+100Øpvcsewerpipelinetofallat1:60mmtoconnect
+tomunicipalsewerconnection
+All sewer pipes line runinng under the building must be
+ENCASED
+FFL
+NGL mm340
+Concrete
+foundation
+According
+to Engineer
+New Bedroom 01
+C/Tiles
+3 470
+3 969
+20 400
+2 790
+1 000
+2 100
+3
+m 
+Access
+point
+No
+obstruction
+on vehicle
+2m BL/ 2m Servitude
+15
+m boundary 
+wall
+30m boundary 
+wall
+2
+m 
+BL
+/ 
+2
+m Servitude
+1m BL/ 1m Servitude
+erf 341
+erf 339
+1
+m BL
+/ 
+2
+m Servitude
+additions
+additions
+30m boundary 
+wall
+15
+m boundary 
+wall
+erf 301
+1 000
+r.er.e
+r.e
+r.e
+r.e
+100Øpvcsewerpipelinetofallat1:60mmtoconnect
+tomunicipalsewerconnection
+All sewer pipes line runinng under the building must be
+ENCASED
+100Øpvcsewerpipelinetofallat1:60mmtoconnect
+tomunicipalsewerconnection
+All sewer pipes line runinng under the building must be
+ENCASED
+100Øpvcsewerpipelinetofallat1:60mmtoconnect
+tomunicipalsewerconnection
+All sewer pipes line runinng under the building must be
+ENCASED
+i.e
+FireWall
+gulley
+100Øpvcsewerpipelinetofallat1:60mmtoconnect
+tomunicipalsewerconnection
+All sewer pipes line runinng under the building must be
+ENCASED
+PTT
+1518
+A-A
+ERF 340
+Soshanguve B-B
+Geyser
+IBR Sheets at 8 degrees on38mm x38mm Battens SABS aproval Grade
+S5@320mm c/c with plastic underlay.
+152mm x38mm Rafters SABS aproved Grade S5@760mm c/c tied with
+114mm x38mm Web members SABS aproved Grade S5@760mm c/c.
+Tied beam152mm x38mm SABS aproved Grade S5and76mm Wall plate
+Grade S5and ceiling to be nailed on38mm Brendering@450mm c
+ROOF NOTES
+IBR Sheets at 8 degrees on38mm x38mm Battens SABS aproval Grade
+S5@320mm c/c with plastic underlay.
+152mm x38mm Rafters SABS aproved Grade S5@760mm c/c tied with
+114mm x38mm Web members SABS aproved Grade S5@760mm c/c.
+Tied beam152mm x38mm SABS aproved Grade S5and76mm Wall plate
+Grade S5and ceiling to be nailed on38mm Brendering@450mm c
+ROOF NOTES
+000mNgl
++0,680mSlab
++ Wall Plate
++2730mLintol Level
++
+3250
++Roof Height
+r.e
+i.e
+i.e
+i.e
+i.e
+i.e
+i.e
+i.ei.e
+r.e
+i.e
+r.e
+i.e
+i.e
+r.e
+New Bedroom 02
+C/Tiles
+Concrete
+foundation
+According
+to Engineer
+Bedroom 02
+C/Tiles
+Main Bedroom
+C/Tiles
+Ensuite
+C
+/
+Tiles
+Lounge
+C/Tiles
+New Bedroom 01Car Garage
+Car Garage
+Hall
+Patio
+Patio
+300
+350 
+min
+150
+800
+Fall
+Fall
+Fall
+Fall
+INVERT LEVEL=+450 mm.
+IF LESS ENCASE IN CONC
+new 
+drainage 
+Ø
+100
+mm  
+pvc 
+soil
+pipe 
+laid 
+to 
+min  
+1
+:
+40 
+fall
+GLAZED EARTHENWARE
+DISHED GULLEY CAST
+IN CONCRETE
+CLEANING EYE
+DETAIL SECTION OF GULLEY
+NGLNGL
+dpcdpc
+dpc
+IBR Roof 
+Sheets
+WATER METER
+IBR Roof 
+Sheets
+IBR Roof 
+Sheets
+shw
+dpcdpc
+IBR Roof 
+Sheets
+IBR Roof 
+Sheets
+IBR Roof 
+Sheets
+IBR Roof 
+Sheets
+Conrete 
+Roof
+IBR Sheeting Laid to Specification
+IBR Sheeting Laid to Specification
+IBR Sheeting Laid to Specification
+ExistingHouse
+dpc
+Concrete Beam
+VP
+whb
+wc
+b
+Plaster & Paint
+Concrete Beam
+Concrete Beam
+Smart Caddling
+Stone
+VP
+whb
+wc
+Plaster & Paint
+Plaster & Paint
+Maintanance Free
+Facebrick
+Plaster & Paint
+VP
+s
+Plaster & PaintPlaster & Paint
+VP
+whb
+wc
+b
+shw

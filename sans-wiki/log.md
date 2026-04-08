@@ -40,3 +40,13 @@
 ## [2026-04-06] precedent | ERF-2219 Centurion (approved)
 ## [2026-04-06] query | stair-width-duplex
 ## [2026-04-06] query | site-coverage-exceed
+## [2026-04-06] ingest | SANS 10400-A.pdf (raw source)
+## [2026-04-06] ingest | SANS10400-A FORM 1 (2022-2).pdf (application form)
+## [2026-04-06] extract | Updated 6 clauses with official SANS requirements (A2, D1-D3, H2, G1-G2)
+## [2026-04-06] ingest | 340 Sosh BB PLAN.pdf (application to analyze)
+## [2026-04-06] analyze | ERF-340 Sosh BB - Conditional approval recommended
+## [2026-04-06] ingest | 557 Sosh L application documents (11 PDFs)
+## [2026-04-06] analyze | ERF-557 Sosh L - Conditional approval recommended
+## [2026-04-06] letter | 557 Sosh L conditional approval letter generated
+## [2026-04-06] re-analyze | ERF-557 Sosh L - CORRECTED (is additions/extension)
+## [2026-04-06] update | Added energy calculations, structural, coverage details

@@ -44,6 +44,9 @@
 ## Precedents
 | Page | ERF | Decision | Date |
 |------|-----|----------|------|
+| [[precedents/erf-363-sosh-ww]] | 363 Sosh WW | Conditional approval (additions) | 2024-05 |
+| [[precedents/erf-557-sosh-l]] | 557 Sosh L | Conditional approval | 2026-04-06 |
+| [[precedents/erf-340-sosh-bb]] | 340 Sosh BB | Conditional approval | 2026-04-06 |
 | [[precedents/erf-4521]] | 4521 Silverton | Approved w/ conditions | 2024-08-15 |
 | [[precedents/erf-7721]] | 7721 Garsfontein | Rejected (coverage 68%) | 2025-01-10 |
 | [[precedents/erf-8834]] | 8834 Moreleta | Rejected (coverage) | 2024-09-22 |

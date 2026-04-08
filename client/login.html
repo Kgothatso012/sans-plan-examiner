@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | SANS Plan Examiner</title>
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green-main: #49aa43;
+      --green-dark: #457c36;
+      --green-lime: #b9d330;
+      --yellow-accent: #fed801;
+      --amber-top: #f5a800;
+      --charcoal: #262f37;
+      --ink: #1a1a1a;
+      --steel: #666666;
+      --paper: #f5f5f5;
+      --white: #ffffff;
+      --font-body: 'Open Sans', 'Segoe UI', sans-serif;
+      --font-display: 'Roboto Condensed', Arial Narrow, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-body); background: var(--paper); min-height: 100vh; display: flex; flex-direction: column; }
+
+    .top-bar { background: var(--amber-top); padding: 6px 0; font-size: 0.75rem; color: var(--charcoal); }
+    .top-bar-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: flex-end; gap: 20px; }
+    .top-bar a { color: var(--charcoal); text-decoration: none; font-weight: 500; }
+    .top-bar i { margin-right: 4px; }
+
+    .navbar { background: linear-gradient(135deg, var(--green-main) 0%, var(--green-dark) 100%); padding: 0 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .navbar-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 30px; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 0; }
+    .nav-logo img { height: 38px; }
+    .nav-logo-text { font-family: var(--font-display); font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.1; }
+    .nav-logo-text small { display: block; font-size: 0.6rem; font-weight: 400; opacity: 0.85; letter-spacing: 0.1em; }
+    .nav-menu { display: flex; list-style: none; gap: 4px; margin-left: auto; }
+    .nav-menu a { display: block; padding: 18px 14px; color: white; text-decoration: none; font-size: 0.88rem; font-weight: 500; transition: background 0.2s; }
+    .nav-menu a:hover { background: rgba(255,255,255,0.12); }
+    .nav-menu a.active { background: rgba(0,0,0,0.15); }
+    .nav-auth { display: flex; gap: 8px; margin-left: 16px; }
+    .nav-auth a { padding: 7px 16px; border-radius: 3px; font-size: 0.82rem; font-weight: 600; text-decoration: none; transition: all 0.2s; }
+    .nav-auth .nav-login { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
+    .nav-auth .nav-login:hover { background: rgba(255,255,255,0.25); }
+    .nav-auth .nav-register { background: var(--yellow-accent); color: var(--charcoal); }
+    .nav-auth .nav-register:hover { background: #e6c200; }
+
+    .login-page { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; background: linear-gradient(135deg, #f5f5f5 0%, #e8f5e9 100%); }
+    .login-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      width: 100%;
+      max-width: 420px;
+      overflow: hidden;
+    }
+    .login-header {
+      background: linear-gradient(135deg, var(--green-main) 0%, var(--green-dark) 100%);
+      padding: 28px 32px;
+      text-align: center;
+      color: white;
+    }
+    .login-header h1 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+    .login-header p { font-size: 0.85rem; opacity: 0.85; }
+    .login-body { padding: 32px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--charcoal); margin-bottom: 6px; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.04em; }
+    .input-wrap { position: relative; }
+    .input-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--steel); font-size: 0.9rem; }
+    .form-group input { width: 100%; padding: 12px 12px 12px 38px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.95rem; font-family: var(--font-body); transition: all 0.2s; color: var(--ink); }
+    .form-group input:focus { outline: none; border-color: var(--green-main); box-shadow: 0 0 0 3px rgba(73,170,67,0.15); }
+    .form-group input::placeholder { color: #aaa; }
+    .btn-login { width: 100%; padding: 14px; background: var(--green-main); color: white; border: none; border-radius: 4px; font-family: var(--font-display); font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: background 0.2s; }
+    .btn-login:hover { background: var(--green-dark); }
+    .btn-login:disabled { background: #aaa; cursor: not-allowed; }
+    .login-error { background: #ffebee; border: 1px solid #ef3636; color: #b71c1c; padding: 10px 14px; border-radius: 4px; font-size: 0.85rem; margin-bottom: 16px; display: none; }
+    .login-error.show { display: block; }
+    .login-links { text-align: center; margin-top: 20px; font-size: 0.88rem; color: var(--steel); }
+    .login-links a { color: var(--green-main); text-decoration: none; font-weight: 600; }
+    .login-links a:hover { text-decoration: underline; }
+    .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: var(--steel); font-size: 0.78rem; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #ddd; }
+    .info-box { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 14px; margin-bottom: 18px; font-size: 0.83rem; color: var(--steel); line-height: 1.5; }
+    .info-box i { color: var(--green-main); margin-right: 6px; }
+
+    footer { background: var(--charcoal); color: rgba(255,255,255,0.6); padding: var(--space-lg) 20px; text-align: center; }
+    footer a { color: var(--green-lime); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    footer p { font-size: 0.82rem; margin-top: 8px; }
+
+    .loading { text-align: center; padding: 20px; color: var(--steel); }
+    .loading i { color: var(--green-main); }
+
+    @media (max-width: 768px) {
+      .nav-menu { display: none; }
+      .login-card { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <span><i class="fas fa-phone"></i> 012 358 2255</span>
+      <span><i class="fas fa-envelope"></i> building@tshwane.gov.za</span>
+    </div>
+  </div>
+
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="nav-logo">
+        <img src="images/e-tshwane-logo.png" alt="e-Tshwane" onerror="this.style.display='none'">
+        <div class="nav-logo-text">
+          e-Tshwane
+          <small>SANS Plan Examiner</small>
+        </div>
+      </a>
+      <ul class="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="apply.html">Apply</a></li>
+        <li><a href="track.html">Track</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+      <div class="nav-auth">
+        <a href="login.html" class="nav-login">Login</a>
+        <a href="register.html" class="nav-register">Register</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="login-page">
+    <div class="login-card">
+      <div class="login-header">
+        <h1>Applicant Login</h1>
+        <p>Sign in to track your building plan applications</p>
+      </div>
+      <div class="login-body">
+        <div id="loginError" class="login-error"></div>
+        <div class="info-box">
+          <i class="fas fa-info-circle"></i>
+          Use your registered email and password to access your applications.
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <div class="input-wrap">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="email" placeholder="your@email.com" autocomplete="email">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="password" placeholder="Your password" autocomplete="current-password">
+          </div>
+        </div>
+        <button class="btn-login" id="loginBtn" onclick="doLogin()">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
+        <div class="login-links">
+          <a href="register.html">Don't have an account? Register here</a>
+        </div>
+        <div class="divider">or</div>
+        <div class="login-links">
+          <a href="track.html">Track application without login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>
+      <a href="index.html">Home</a> &nbsp;|&nbsp;
+      <a href="apply.html">Apply</a> &nbsp;|&nbsp;
+      <a href="track.html">Track</a> &nbsp;|&nbsp;
+      <a href="#">Contact Us</a>
+    </p>
+    <p>&copy; 2024 City of Tshwane Metropolitan Municipality. All rights reserved.</p>
+  </footer>
+
+  <script>
+    async function doLogin() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const errorEl = document.getElementById('loginError');
+      const btn = document.getElementById('loginBtn');
+
+      errorEl.classList.remove('show');
+      if (!email || !password) {
+        errorEl.textContent = 'Please enter both email and password.';
+        errorEl.classList.add('show');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+          errorEl.textContent = data.error || 'Login failed. Please check your credentials.';
+          errorEl.classList.add('show');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+          return;
+        }
+
+        localStorage.setItem('applicantToken', data.token);
+        window.location.href = 'track.html';
+      } catch (e) {
+        errorEl.textContent = 'Connection error. Please try again.';
+        errorEl.classList.add('show');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+      }
+    }
+
+    document.getElementById('password').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') doLogin();
+    });
+  </script>
+</body>
+</html>

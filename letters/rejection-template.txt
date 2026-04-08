@@ -1,0 +1,76 @@
+TSHWANE MUNICIPALITY
+BUILDING CONTROL DIVISION
+APPLICATION FOR BUILDING PLAN APPROVAL
+
+Reference: {{reference}}
+Date: {{date}}
+
+{{owner_name}}
+{{owner_address}}
+{{owner_email}}
+
+RE: BUILDING PLAN APPROVAL - ERF {{erf_number}} {{suburb}}
+
+Dear Applicant,
+
+RE: APPLICATION FOR APPROVAL OF BUILDING PLANS - REFUSED
+
+Your application for building plan approval dated {{application_date}} has been reviewed.
+
+PROPERTY DETAILS:
+- ERF: {{erf_number}} {{suburb}}
+- Proposed Use: {{proposed_use}}
+- Owner: {{owner_name}}
+- Architect: {{architect_name}}
+- Application Date: {{application_date}}
+
+DECISION: REFUSED
+
+The proposed building plans are REFUSED for the following reasons:
+
+{{#each rejection_reasons}}
+{{inc @index}}. {{this}}
+{{/each}}
+
+---
+
+GROUNDS FOR REFUSAL:
+
+{{rejection_details}}
+
+---
+
+APPEAL PROCESS:
+
+If you wish to appeal this decision, you may:
+1. Submit a written appeal to the Building Control Officer within 30 days of this refusal
+2. Include additional documentation or revised plans addressing the grounds for refusal
+3. Pay the applicable appeal fee (per the current municipal fee schedule)
+
+Alternatively, you may:
+- Submit a revised application addressing all the grounds for refusal
+- Apply for any required departures or consents through the Town Planning section
+
+---
+
+GENERAL NOTES:
+
+- A refused building plan application does not preclude the submission of a new or revised application
+
+- You are advised to contact the Building Control Office before submitting a revised application to confirm all requirements
+
+- The municipality reserves the right to impose additional conditions or requirements on any subsequent submission
+
+---
+
+For queries or to discuss this decision, contact the Building Control Office during office hours.
+
+Yours faithfully,
+
+{{examiner_name}}
+Building Control Officer
+Tshwane Municipality
+
+---
+
+cc: File

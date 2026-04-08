@@ -1,0 +1,925 @@
+
+
+GSPublisherVersion 0.0.100.100
+1 500
+2 310
+2 000
+1 630
+3 650
+14 540
+1 087
+3m Access
+point
+No
+obstruction
+on vehicle
+additions
+2m BL/ 2m Servitude
+2
+2
+.
+5
+m boundary 
+wall
+15m boundary 
+wall
+2
+m 
+BL
+/ 
+2
+m Servitude
+1m BL/ 1m Servitude
+erf 
+556
+erf 540
+15m boundary 
+wall
+2
+2
+.
+5
+m boundary 
+wall
+erf 
+558
+1
+m BL
+/ 
+1
+m Servitude
+3 770
+2 2323 775
+7 110
+2 100
+600
+2 026
+2 950
+2 026
+4 976
+26°
+24°
+KitchenNew BedroomLoungeDining Area
+GSPublisherVersion 0.0.100.100
+GSPublisherVersion0.0.100.100
+GSPublisherVersion0.0.100.100
+GSPublisherVersion0.0.100.100
+HOT WATER OUT
+SOLAR 
+PANELS
+JACKET
+RELIEFVALVE.
+.
+EXPANSION RELIEFVALVE
+STOPVALVE
+COLD WATER IN
+ASSUMED HOT WATER CONSUMPTION:115L
+NUMBER OF PERSONS:6PERDAY
+ASSUMEDDAILY HOT WATER CONSUMPTION:6x115L=690L
+ASSUMED ANNUAL WATER CONSUMPTION:0.69x7x52=251.16kL
+50%OF DAILY HOT WATER CONSUMPTION:345
+-DWELLING TO BE PROVIDED WITH TWO180L HOTWATER TANK(GEYSER)
+ TO COMPLY TO SANS10254
+-SOLAR PANEL TO BE INSTALLED BY SPECIALIST
+ TO COMPLY TO SANS10400
+-OPTIONALLY A HOT WATER PUMP CAN BE INSTALLED BY A SPECIALIST
+ TO COMPLY TO SANS10400
+CONCLUSIONCALCULATION
+-THE DESIGN COMPLIES WITH THE REQUIREMENT OF SANS10400-XA:2011AND SANS10252-1:2004FOR THE HOT WATER CALCULATIONS
+HOT WATER SYSTEMS
+CALCULATED AS PER SANS10252-1:2004
+HOT WATER SYSTEM TO BE ENDORSED BY SPECIALIST
+ACCOMODATION TYPE:DWELLING HOUSE-115-140L/day
+-A  MINIMUM OF50%BY VOLUME OF THE ANNUAL AVERAGE HOT WATER HEATING REQUIREMENTSHALL BE PROVIDED BY MEANS OTHER THAN ELECTRICAL RESISTANCE HEATING,INCLUDING,BUT NOT LIMITED
+TO,SOLAR HEATING,HEAT PUMPS,HEAT RECOVER FROM OTHER SYSTEMS OR PROCESSES.-
+-THE SOLAR WATER HEATING SYSTEMSSHALL COMPLY WITHSANS1307AND SANS10106,BASED ON THE THERMAL PERFORMANCE DETERMINED IN ACCORDANCE WITH THE PROVISION OF SANS6211-1AND SANS
+6211-2.THE INSTALLATION THEREOFSHALL COMPLY WITHSANS10254.-
+GENERAL NOTES:
+All work to be in accordance with the national building regulations SANS10400-2011.
+All levels and dimensions to be checked and veri edonsitepriortocommentofwork
+any discrepancies to be reported to the architect immediatly.
+FOUNDATION NOTES:
+All foundations,foundation walls,retaining walls,sub soil stormwater
+drainage and soil compaction to Eng's spec&approval.
+230mm walls on min600(w)x300(h)&115mm walls on min450(w)x300(h)
+strip foundations with20mpa concrete.
+SURFACE BED NOTES:
+Internal surface bed100mm20mpa concrete on dpc&well compacted llat
+150mm layers.
+Slabs are not to be cast on in-situ materialallow to remove min.300mm
+and re-compact in150mm layers external surface bed85mm20mpa
+concrete as above.
+WALL NOTES:
+Brickwork:Clay stock keyed to receive plaster nish
+230mm brick walls with brickforce every4courses and every course for6
+courses over openings or to Eng's spec.&approval
+All brickwork min7mpa with Class II mortar.
+ROOF NOTES:
+Refer to roof notes.
+GLAZING NOTES:
+All glazing to comply with part"N OF SANS10400-2011."
+PLUMBING&DRAINAGE:
+All plumbing to comply with  P of the SANS10400:2011
+All waste pipes and drains to be accessible along their entire length.
+ Provide inspection eyes at all drain bends and juctions and at a mix.
+Cleaning eyes to be provided at all bends and juctions of waste pipes.
+Waste ppipes to be ttedwith:
+mm reseal traps
+Water connections to be ttedwith:
+mm dia to WHB,WCand Showers
+mm dia to Geyser
+mm dia to FHR
+All vent pipes to discharge to external air.
+mm dia waste pipes require to75mm dia sleeve.
+110mm dia waste pipes require a150mm dia sleeve.
+For plumbing and drainage layout plans and cross sections refer to registed wet
+services
+engineer'sdrawings for rational design drawings
+.
+All sorm water to be collected and drained to comply with part P of the SANS
+10400,
+drain municipal storm water drainage system
+.
+STRUCTURAL:
+All reinforced concrete work and retainind walls to be strictly in accordance
+with registered
+sructural engineer
+'
+s details and speci fications
+.
+MECHANICAL VENTILATION&LIGHTING:
+All lighting and ventilation(fresh air and extrct)to comply with part"O SANS10400
+accordance with registered mechanical engineer's drawings and registerd electrical
+engineer drawings
+All arti ciallightingtocomplywithSANS10400XA
+SANS10400XA(WALLS:)
+Non masonary walls will haveR"values as provided(SANS10400XA4.4.3.1)
+Double sking masonary with plaster inside or render outside to complies.
+Single leafe min
+,of
+150mm with plaster inside or render outside to complies(SANS10400XA4.4.3.2)
+Other masonary walls will haveR'value of0.35(SANS10400XA4.4.3.3)
+REV
+DATEDETAILSBY
+A
+Job No.Drawing No.Rev.No.
+ISSUED FOR
+OWNER:
+ISSUED FOR
+CONSTRUCTION:
+Sheet Size:A1
+2024-05
+Issue Date:__________________________________
+ISSUED FOR
+TENDER:
+Contact:
+General Manager
+Cell: (069)5337778
+MAKENA BUILDING GROUP
+4/1619Soshanguve A
+Soshanguve,0152
+-A-01###/##/##
+REVISIONS
+AREA SCHEDULE
+SITE AREA(erf)
+:
+:
+PERMISSIBLE  COVERAGE
+:
+ACTUAL  COVERAGE
+:
+Engineer Sig:
+Architect Sig:
+Owner/Client Sig:
+PROJECT 
+TITLE
+ADDITIONAL FLOOR AREA
+:
+:
+PROPOSED ADDITIONS
+ERF
+For
+REV:DESCRIPTION:DATE:
+ROOF ASSEMBLIES(R
+_
+VALUE):
+R
+_
+value=3.7m².W/k
+Direction of Heat ow
+_
+UP
+Basic roof assembliesClay roman tiles
+R_Value for roof covering0.35m²K/
+R_Value for ceiling ins,0.05m²K/
+Required added R
+_
+Value inst,3.3Km
+2
+/W
+ROOF UNVENTIALATED.
+Out door air lm(7m/s)0.03
+Roof clay tiles(1922kg/m
+3
+)0.02
+Roof air space(non
+_
+re ective)0.18
+Plasterboard gypsum(10mm,880kg/m
+3
+)0.06
+Indoor air(stil air)0.11
+Generic Insulation Product added(Flexible breglass
+blankek)
+Required added R
+_
+value inst,0.4
+Total R
+_
+value(3.3 +0.4)3.1
+Climantic zone1
+ENERGY CONSUMPTION LIGHTING
+Legend/Types
+Amound
+Calculations
+Total watts
+Ceiling Lights
+Ceiling Lights
+Down Lights
+(LDL005)
+Fluorescent
+Lights
+(KB22GE)
+Total Lights
+06
+02
+80
+02
+06x11w
+02x22w
+80x6w
+02x18w
+66watts
+44watts
+480watts
+36watts
+626watts
+INTERNAL ACTUAL:
+Permissible:5w/m
+2
+or5Kwh.a[a=year]assume lights
+are  on from17:00to22:00each day.
+5h/day=52(weeks)x7(days)=1820h.a
+BULDING CLASSIFICATIONS
+_
+H4
+ENERGY CONSUPTION:
+Allowed5kWh/sqm per year
+5Wh x329.52sqm=1,647.6m
+2
+.a
+Total Residence
+House area
+626
+329
+TOTALINTERNAL AND EXTERNAL ACTUAL:
+1,139.32kw<1,647.6Kwh.a(per year)
+Consumption:The design complies with the
+requirement of SANS10400_XA:2011for energy
+consumption
+Max.Demand as per SANS10142=5W per sqm.
+Actual: (626w/329.52sqm=1.9w/m
+2
+FENESTRATION:
+FENESTRATION CALCULATIONS AND NATURAL
+ENVIRONMENTAL CONTROL(SANS10400XA)
+Total of Floor Area
+195.5
+m
+2
+Total of Glazing Area22.83m
+2
+Total15% of floorArea21.05m
+2
+Therefore glazing area is more than15%of the
+area
+ orof proposal therefore calculations.t..
+i.t.o SANS204is
+required.
+HOT WATER CALCULATIONS:
+Volume of annual hot water heating requirements:
+Population calculations
+Bed roomsPeople per bed rmTotal
+3
+2
+9
+Volume of annual hot water heating requirements:
+Population calculations
+DEMAND:1150L/UNIT
+HEATER POWER
+80L/Person/day1150L_960=1.19793kWunits(3X9
+72kW/day
+Thus:38400kw/Year but use of solar panel=50%saving
+Thus:19200kw/Year hot water heating requirement>
+±0.000
+±
+0
+.
+000
+±0.000
+0.000
+±
+Electrical Legend
+Distribution board
+Down lights
+Ceiling lights
+Double wall plugs
+Doublelights switch
+Single lights switch
+Stove  point
+Flourescent Lights
+300LGeyser in roof spec
+GRANTTOTAL  FLOOR AREA
+:
+m
+²
+Designed by:
+Kgothatso Makena
+Checked by:
+SACAP:
+signature:
+150mm STRIP
+150
+mm Internal brick wall plastered
+&painted to client's choice
+10mmSand,Cement plaster
+25mmSand
+Cement screed
+400
+200
+10mm thick
+internal plaster
+Skirting to match
+floorfinish
+NATURAL GROUND
+110mm STRIP FOUNDATION DETAIL
+Scale1:100
+BOOT LEG FOUNDATION DETAILS
+01
+_
+76mm Meranti skirting with19mm quadrant.
+02
+_
+Finishedfloorlevel.
+03
+_
+125mm Conrete surface bed
+04
+_
+250mm Micro black DPC
+05
+_
+3x150mm Hardcorefilling(G7)compacted to93%mod AASHTO density
+06
+_
+Compact in sut_meterial  to93%mod AASHTO density for cut/fill
+       compact in150mm layers to93%mod AASHTO density
+07
+_
+60mm x250mm Thick strip concrete footing
+09
+_
+250mm Micro black DPC
+10
+_
+1m Apron with Ref193and expension joint for every2m or less
+New Wall
+Existing Wall
+Demolishing  Wall
+WALLLEGEND
+scale1:100
+SANS10400XA
+WALLS:
+Non-masonry wall will have'R'values as provided. (SANS10400-XA-4.4.3.1)
+Double sking masonry with plaster inside or render
+outsidecomplies.Single leave,in.140mm with plaster inside and
+render outsidecomplies. (SANS10400-XA-4.4.3.2)
+Other masonry walls will have'R'value of O.35. (SANS10400-XA-4.4.3.3)
+HEALTH:
+Ceiling level to be at least
+2
+.4m  in habitable rooms or
+comply with C3of the NBR
+Window to be at least10%and opening section5%of thefloorareaofthehabitablearea.
+Water hating and cooking apparatus in house and out building to be smoke free.
+m
+²
+Hot pipe line
+Cold pipe line
+WATERLEGEND
+scal1:100
+EXISTING GROUND FLOOR AREA
+:
+Scale1:00
+Ground Floor Plan
+557 Soshanguve L
+Pretoria
+Maleho Grace Mogane
+000mNgl
++0,250mSlab
++ Wall Plate
++2100mLintol Level
++Roof Height
++
+2900
+North 
+Elevation
+62.4
+FIRE 
+NOTES
+SANS
+10400
+-
+T
+-
+2011
+EDITION
+4
+.
+9
+.
+2
+any door 
+between 
+such 
+garage
+&
+any such 
+room 
+shall 
+have 
+a fire
+resistance 
+of not that
+30
+mm
+&
+such 
+doorway 
+shall 
+require 
+threshold
+of not les than
+10
+mm
+no combustable 
+roof 
+shall  
+penetrate 
+the separating 
+element 
+diving
+the space 
+between 
+the garage
+&
+habitable 
+room
+gulley
+r.e
+MainMunicipalSewerline
+6627 DIKGETHO STR
+ERF
+557 Sosh
+L
+Element IDPT99PTT1515PTT2218PTT2218
+Quantity3613
+W x H Size900×9001 500×1 5002 200×4502 200×1 800
+2D Symbol
+View from Side
+Opposite to Opening
+Side
+ Window Schedule
+Element IDExisting Miranthi Do...Existing Miranthi Do...Existing Miranthi Do...
+Quantity1111
+W x H Size1 300×2 1002 650×2 100880×2 100
+2D Symbol
+View from Side
+Opposite to Opening
+Side
+ Door Schedule
+We
+st
+ Elevation
+Scale1:100
+Scale1:100
+195.5
+1Scale1:00
+Site Plan
+2
+m
+²
+133
+000mNgl
++0,250mSlab
++ Wall Plate
++2100mLintol Level
++
+2900
+100Øpvcsewerpipelinetofallat1:60mmtoconnect
+tomunicipalsewerconnection
+All sewer pipes line runinng under the building must be
+ENCASED
+Scale1:00
+Water Layout
+2
+gulley
+r.e
++Roof Height
+0152
+m
+²
+337.5
+Floor covering as per schedule.30mm cement screed on85mm concrete surface
+mmThick layer of G5material or better compacted to95%mod AASHTO
+density.250mm micron polyonlefin sheeting under floor slab on well compacted
+filling in layers not exceeding150mm treated with SABS approved,poisoned weed
+acc to SABS0124.
+i.e
+Geyser
+Concrete
+foundation
+According
+to Engineer
+FFL
+NGL mm250
+FFL
+NGL mm250
+FFL
+NGL mm250
+FFL
+NGL mm250
+FFL
+NGL mm250
+FFL
+NGL mm250
+FFL
+NGL mm250
+r.e
+i.ei.e
+r.e
+Sou
+th Elevation
+Scale1:100
+East
+ Elevation
+Scale1:100
+60%
+57.8%
+Concrete
+foundation
+According
+to Engineer
+FFL
+NGL mm250
+FFL
+NGL mm250
+Section
+Scale1:100
+A
+-
+ 
+A
+i.e
+Roor cover
+_
+Roman  conretetiles on38mm x38mm Battens SABS aproval Grade
+S5@320mm c/c with plastic underlay.
+152mm x38mm Rafters SABS aproved Grade S5@760mm c/c tied with
+114mm x38mm Web members SABS aproved Grade S5@760mm c/c.
+Tied beam152mm x38mm SABS aproved Grade S5and76mm Wall plate
+Grade S5and ceiling to be nailed on38mm Brendering@450mm c
+ROOF NOTES
+Roor cover
+_
+Roman  conretetiles on38mm x38mm Battens SABS aproval Grade
+S5@320mm c/c with plastic underlay.
+152mm x38mm Rafters SABS aproved Grade S5@760mm c/c tied with
+114mm x38mm Web members SABS aproved Grade S5@760mm c/c.
+Tied beam152mm x38mm SABS aproved Grade S5and76mm Wall plate
+Grade S5and ceiling to be nailed on38mm Brendering@450mm c
+ROOF NOTES
+gulley
+i.e
+i.e
+r.e
+i.e
+i.e
+FFL
+NGL mm250
+Concrete
+foundation
+According
+to Engineer
+North 
+Elevation 
+02
+Scale1:100
+000mNgl
++0,250mSlab
++ Wall Plate
++2100mLintol Level
++
+2900
++Roof Height
+S
+outh 
+Elevagion 
+02
+Scale1:100
+FFL
+NGL mm250
+FFL
+NGL mm250
+100Øpvcsewerpipelinetofallat1:60mmtoconnect
+tomunicipalsewerconnection
+All sewer pipes line runinng under the building must be
+ENCASED
+i.e
+i.ei.e
+r.e
+i.e
+i.e
+i.e
+i.ei.e
+i.e
+i.e
+i.e
+i.e
+r.er.e
+r.e
+r.e
+Step Down
+CarGarage
+Grano
+10
+mm Threshold
+Bedroom 02
+C/Tiles
+Kitchen
+C/Tiles
+PTT2218
+PTT
+2218
+PT99PTT1515
+PT
+99
+PTT
+1515
+PTT1515
+PT99
+PTT
+1515
+PTT1515
+PTT
+2218
+PTT1515
+A-AA-A
+B
+-
+B
+A-A1A-A1
+Bathrm
+C/Tiles
+Ensuite
+C/Tiles
+Lounge
+C/Tiles
+Dining Area
+C/Tiles
+Main Bedroom
+C/Tiles
+Bedroom 03
+C/Tiles
+New Bedroom
+C/Tiles
+New Bedroom 02
+C/Tiles
+Study room
+C/Tiles
+Covered Patio
+C/Tiles
+MainMunicipalSewerline
+Geyser
+r.e
+Step Down
+CarGarage
+Grano
+10
+mm Threshold
+Bedroom 02
+C/Tiles
+Kitchen
+C/Tiles
+PTT2218
+PTT
+2218
+PT99PTT1515
+PT
+99
+PTT
+1515
+PTT2218
+PTT1515
+PT99
+PTT
+1515
+PTT1515
+PTT
+2218
+PTT1515
+230
+460
+2303 0002302 0002303 7702302 770230
+6903 4602 0004 0003 230
+13 380
+230
+5 000
+230
+2 655
+115
+3 000
+230
+480
+600
+230
+2 500
+230
+3 270
+230
+5 460
+6 000
+480
+600
+2 730
+3 730
+19 000
+2304 8851 4032 982230
+420
+230
+2 770230
+9 7304203 000230
+13 380
+230
+3 880
+115
+3 115
+115
+3 775
+230
+480
+600
+230
+6 000
+230
+7 340
+4 120
+480
+600
+6 460
+19 000
+2 730
+3 500
+2 0004 0003 230
+1 080
+2 230
+2 070
+1 930
+2303 1601152 0001153 150230
+230500
+4 1554 270
+A
+-
+A
+A
+-
+A
+Bathrm
+C/Tiles
+Ensuite
+C/Tiles
+Bathrm
+C/Tiles
+Lounge
+C/Tiles
+Dining Area
+C/Tiles
+Main Bedroom
+C/Tiles
+Bedroom 03
+C/Tiles
+New Bedroom
+C/Tiles
+New Bedroom 02
+C/Tiles
+Study room
+C/Tiles
+Covered Patio
+C/Tiles
+100
+Ø
+pvc
+sewer
+pipe
+line
+to
+fall
+at
+1
+:
+60
+mm
+to
+connect
+to
+municipal
+sewer
+connection
+All 
+sewer 
+pipes 
+line 
+runinng 
+under 
+the 
+building 
+must 
+be
+ENCASED
+300
+350 
+min
+150
+800
+INVERT LEVEL=+450 mm.
+IF LESS ENCASE IN CONC
+new 
+drainage 
+Ø
+100
+mm  
+pvc 
+soil
+pipe 
+laid 
+to 
+min  
+1
+:
+40 
+fall
+GLAZED EARTHENWARE
+DISHED GULLEY CAST
+IN CONCRETE
+CLEANING EYE
+DETAIL SECTION OF GULLEY
+NGLNGL
+dpc
+Concrete 
+Tiles
+Concrete 
+Tiles
+Concrete 
+Tiles
+Concrete 
+Tiles
+Concrete 
+Tiles
+WATER METER
+Concrete 
+Tiles
+dpc
+Concrete 
+Tiles
+FacebrickFacebrick
+FacebrickFacebrickFacebrick
+Facebrick
+ExistingHouse
+Existing
+dpc
+VP
+whb
+wc
+b
+VP
+whb
+b
+wc
+dpc
+VP
+whb
+wc
+b
+VP
+s
+dpcdpc

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examiner Login | SANS Plan Examiner</title>
+  <link rel="icon" type="image/png" href="../images/favicon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green-main: #49aa43;
+      --green-dark: #457c36;
+      --green-lime: #b9d330;
+      --yellow-accent: #fed801;
+      --amber-top: #f5a800;
+      --charcoal: #262f37;
+      --ink: #1a1a1a;
+      --steel: #666666;
+      --paper: #f5f5f5;
+      --white: #ffffff;
+      --font-body: 'Open Sans', 'Segoe UI', sans-serif;
+      --font-display: 'Roboto Condensed', Arial Narrow, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-body); background: linear-gradient(135deg, var(--charcoal) 0%, #1a2530 100%); min-height: 100vh; display: flex; flex-direction: column; }
+
+    .top-bar { background: var(--amber-top); padding: 6px 0; font-size: 0.75rem; color: var(--charcoal); }
+    .top-bar-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: flex-end; gap: 20px; }
+    .top-bar a { color: var(--charcoal); text-decoration: none; font-weight: 500; }
+    .top-bar i { margin-right: 4px; }
+
+    .navbar { background: linear-gradient(135deg, var(--green-main) 0%, var(--green-dark) 100%); padding: 0 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+    .navbar-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 30px; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 0; }
+    .nav-logo img { height: 38px; }
+    .nav-logo-text { font-family: var(--font-display); font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.1; }
+    .nav-logo-text small { display: block; font-size: 0.6rem; font-weight: 400; opacity: 0.85; letter-spacing: 0.1em; }
+    .nav-menu { display: flex; list-style: none; gap: 4px; margin-left: auto; }
+    .nav-menu a { display: block; padding: 18px 14px; color: white; text-decoration: none; font-size: 0.88rem; font-weight: 500; transition: background 0.2s; }
+    .nav-menu a:hover { background: rgba(255,255,255,0.12); }
+    .nav-badge { background: var(--yellow-accent); color: var(--charcoal); padding: 2px 8px; border-radius: 3px; font-size: 0.7rem; font-weight: 700; margin-left: 8px; text-transform: uppercase; }
+
+    .admin-login-page { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+    .admin-login-card { background: white; border-radius: 10px; box-shadow: 0 12px 48px rgba(0,0,0,0.35); width: 100%; max-width: 420px; overflow: hidden; }
+    .admin-login-header { background: linear-gradient(135deg, var(--charcoal) 0%, #1a2530 100%); padding: 32px; text-align: center; color: white; }
+    .admin-login-header .shield-icon { width: 60px; height: 60px; background: linear-gradient(135deg, var(--green-main), var(--green-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+    .admin-login-header .shield-icon i { font-size: 1.6rem; color: white; }
+    .admin-login-header h1 { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+    .admin-login-header p { font-size: 0.82rem; opacity: 0.7; }
+    .admin-login-body { padding: 32px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--charcoal); margin-bottom: 6px; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.04em; }
+    .input-wrap { position: relative; }
+    .input-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--steel); font-size: 0.9rem; }
+    .form-group input { width: 100%; padding: 12px 12px 12px 38px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.95rem; font-family: var(--font-body); transition: all 0.2s; color: var(--ink); }
+    .form-group input:focus { outline: none; border-color: var(--green-main); box-shadow: 0 0 0 3px rgba(73,170,67,0.15); }
+    .form-group input::placeholder { color: #aaa; }
+    .btn-admin-login { width: 100%; padding: 14px; background: var(--green-main); color: white; border: none; border-radius: 4px; font-family: var(--font-display); font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: background 0.2s; }
+    .btn-admin-login:hover { background: var(--green-dark); }
+    .btn-admin-login:disabled { background: #aaa; cursor: not-allowed; }
+    .login-error { background: #ffebee; border: 1px solid #ef3636; color: #b71c1c; padding: 10px 14px; border-radius: 4px; font-size: 0.85rem; margin-bottom: 16px; display: none; }
+    .login-error.show { display: block; }
+    .admin-info { background: #fff8e6; border: 1px solid var(--yellow-accent); border-radius: 6px; padding: 12px; margin-bottom: 18px; font-size: 0.8rem; color: #8a6000; display: flex; gap: 10px; align-items: flex-start; }
+    .admin-info i { color: var(--yellow-accent); margin-top: 2px; flex-shrink: 0; }
+    .back-link { text-align: center; margin-top: 20px; font-size: 0.85rem; }
+    .back-link a { color: var(--steel); text-decoration: none; }
+    .back-link a:hover { color: var(--green-main); }
+
+    footer { background: var(--charcoal); color: rgba(255,255,255,0.6); padding: var(--space-lg) 20px; text-align: center; }
+    footer a { color: var(--green-lime); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    footer p { font-size: 0.82rem; margin-top: 8px; }
+
+    @media (max-width: 768px) {
+      .nav-menu { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <span><i class="fas fa-phone"></i> 012 358 2255</span>
+      <span><i class="fas fa-envelope"></i> building@tshwane.gov.za</span>
+    </div>
+  </div>
+
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="../client/index.html" class="nav-logo">
+        <img src="../images/e-tshwane-logo.png" alt="e-Tshwane" onerror="this.style.display='none'">
+        <div class="nav-logo-text">
+          e-Tshwane
+          <small>SANS Plan Examiner</small>
+        </div>
+      </a>
+      <ul class="nav-menu">
+        <li><a href="../client/index.html">Home</a></li>
+        <li><a href="../client/apply.html">Apply</a></li>
+        <li><a href="../client/track.html">Track</a></li>
+      </ul>
+      <span class="nav-badge">Examiner Portal</span>
+    </div>
+  </nav>
+
+  <div class="admin-login-page">
+    <div class="admin-login-card">
+      <div class="admin-login-header">
+        <div class="shield-icon">
+          <i class="fas fa-user-shield"></i>
+        </div>
+        <h1>Examiner Login</h1>
+        <p>Building Plan Compliance System</p>
+      </div>
+      <div class="admin-login-body">
+        <div id="loginError" class="login-error"></div>
+        <div class="admin-info">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span>Authorized personnel only. All actions are logged and audited.</span>
+        </div>
+        <div class="form-group">
+          <label for="employeeNum">Employee Number</label>
+          <div class="input-wrap">
+            <i class="fas fa-id-badge"></i>
+            <input type="text" id="employeeNum" placeholder="Employee number" autocomplete="username">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="password" placeholder="Your password" autocomplete="current-password">
+          </div>
+        </div>
+        <button class="btn-admin-login" id="loginBtn" onclick="doLogin()">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
+        <div class="back-link">
+          <a href="../client/index.html"><i class="fas fa-arrow-left"></i> Back to Home</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>
+      <a href="../client/index.html">Home</a> &nbsp;|&nbsp;
+      <a href="../client/apply.html">Apply</a> &nbsp;|&nbsp;
+      <a href="../client/track.html">Track</a>
+    </p>
+    <p>&copy; 2024 City of Tshwane Metropolitan Municipality. All rights reserved.</p>
+  </footer>
+
+  <script>
+    async function doLogin() {
+      const employeeNum = document.getElementById('employeeNum').value.trim();
+      const password = document.getElementById('password').value;
+      const errorEl = document.getElementById('loginError');
+      const btn = document.getElementById('loginBtn');
+
+      errorEl.classList.remove('show');
+      if (!employeeNum || !password) {
+        errorEl.textContent = 'Please enter employee number and password.';
+        errorEl.classList.add('show');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+
+      try {
+        const res = await fetch('/api/examiners/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ employee_number: employeeNum, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorEl.textContent = data.error || 'Authentication failed.';
+          errorEl.classList.add('show');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+          return;
+        }
+
+        localStorage.setItem('examinerToken', data.token);
+        localStorage.setItem('examinerEmail', data.examiner.email);
+        window.location.href = 'admin.html';
+      } catch (e) {
+        errorEl.textContent = 'Connection error. Please try again.';
+        errorEl.classList.add('show');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+      }
+    }
+
+    document.getElementById('password').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') doLogin();
+    });
+  </script>
+</body>
+</html>

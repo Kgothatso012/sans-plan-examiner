@@ -25,3 +25,4 @@
 - Always measure actual treads - drawing may show 900mm but construction at 850mm
 - Spiral stairs: 800mm clear width acceptable for secondary access only
 - Handrail projections reduce effective width - must add 100mm to clear width
+- **From SANS 10400-A:** 900mm residential, 1000mm commercial, 1100mm for >50 persons

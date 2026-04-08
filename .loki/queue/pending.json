@@ -1,0 +1,48 @@
+[
+  {
+    "id": "task-001",
+    "type": "UNIT_TESTS",
+    "description": "Add unit tests for plan-checker.js",
+    "status": "completed",
+    "result": "43 → 76 tests",
+    "completedAt": "2026-04-07T18:26:00Z"
+  },
+  {
+    "id": "task-002",
+    "type": "API_TESTS",
+    "description": "Add API endpoint tests",
+    "status": "completed",
+    "result": "15 tests",
+    "completedAt": "2026-04-07T18:28:00Z"
+  },
+  {
+    "id": "task-003",
+    "type": "SECURITY",
+    "description": "Review server.js security",
+    "status": "completed",
+    "result": "XSS protection, rate limiting, PDF-only",
+    "completedAt": "2026-04-07T18:30:00Z"
+  },
+  {
+    "id": "task-004",
+    "type": "ENHANCEMENT",
+    "description": "Add missing SANS rules",
+    "status": "completed",
+    "result": "34 rules (was 14)",
+    "completedAt": "2026-04-07T18:40:00Z"
+  },
+  {
+    "id": "task-005",
+    "type": "INTEGRATION",
+    "description": "Add integration tests",
+    "status": "completed",
+    "result": "20 tests, 96 total",
+    "completedAt": "2026-04-07T18:45:00Z"
+  },
+  {
+    "id": "task-006",
+    "type": "REFACTOR",
+    "description": "Modularize server.js (1783 lines)",
+    "status": "pending"
+  }
+]

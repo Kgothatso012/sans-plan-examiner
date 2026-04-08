@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | SANS Plan Examiner</title>
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green-main: #49aa43;
+      --green-dark: #457c36;
+      --green-lime: #b9d330;
+      --yellow-accent: #fed801;
+      --amber-top: #f5a800;
+      --charcoal: #262f37;
+      --ink: #1a1a1a;
+      --steel: #666666;
+      --paper: #f5f5f5;
+      --white: #ffffff;
+      --font-body: 'Open Sans', 'Segoe UI', sans-serif;
+      --font-display: 'Roboto Condensed', Arial Narrow, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-body); background: var(--paper); min-height: 100vh; display: flex; flex-direction: column; }
+
+    .top-bar { background: var(--amber-top); padding: 6px 0; font-size: 0.75rem; color: var(--charcoal); }
+    .top-bar-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: flex-end; gap: 20px; }
+    .top-bar a { color: var(--charcoal); text-decoration: none; font-weight: 500; }
+    .top-bar i { margin-right: 4px; }
+
+    .navbar { background: linear-gradient(135deg, var(--green-main) 0%, var(--green-dark) 100%); padding: 0 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .navbar-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 30px; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 0; }
+    .nav-logo img { height: 38px; }
+    .nav-logo-text { font-family: var(--font-display); font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.1; }
+    .nav-logo-text small { display: block; font-size: 0.6rem; font-weight: 400; opacity: 0.85; letter-spacing: 0.1em; }
+    .nav-menu { display: flex; list-style: none; gap: 4px; margin-left: auto; }
+    .nav-menu a { display: block; padding: 18px 14px; color: white; text-decoration: none; font-size: 0.88rem; font-weight: 500; transition: background 0.2s; }
+    .nav-menu a:hover { background: rgba(255,255,255,0.12); }
+    .nav-auth { display: flex; gap: 8px; margin-left: 16px; }
+    .nav-auth a { padding: 7px 16px; border-radius: 3px; font-size: 0.82rem; font-weight: 600; text-decoration: none; transition: all 0.2s; }
+    .nav-auth .nav-login { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
+    .nav-auth .nav-login:hover { background: rgba(255,255,255,0.25); }
+    .nav-auth .nav-register { background: var(--yellow-accent); color: var(--charcoal); }
+    .nav-auth .nav-register:hover { background: #e6c200; }
+
+    .register-page { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; background: linear-gradient(135deg, #f5f5f5 0%, #e8f5e9 100%); }
+    .register-card { background: white; border-radius: 10px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); width: 100%; max-width: 440px; overflow: hidden; }
+    .register-header { background: linear-gradient(135deg, var(--green-main) 0%, var(--green-dark) 100%); padding: 28px 32px; text-align: center; color: white; }
+    .register-header h1 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+    .register-header p { font-size: 0.85rem; opacity: 0.85; }
+    .register-body { padding: 32px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--charcoal); margin-bottom: 6px; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.04em; }
+    .input-wrap { position: relative; }
+    .input-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--steel); font-size: 0.9rem; }
+    .form-group input { width: 100%; padding: 12px 12px 12px 38px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.95rem; font-family: var(--font-body); transition: all 0.2s; color: var(--ink); }
+    .form-group input:focus { outline: none; border-color: var(--green-main); box-shadow: 0 0 0 3px rgba(73,170,67,0.15); }
+    .form-group input::placeholder { color: #aaa; }
+    .form-hint { font-size: 0.75rem; color: var(--steel); margin-top: 4px; }
+    .btn-register { width: 100%; padding: 14px; background: var(--green-main); color: white; border: none; border-radius: 4px; font-family: var(--font-display); font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: background 0.2s; margin-top: 6px; }
+    .btn-register:hover { background: var(--green-dark); }
+    .btn-register:disabled { background: #aaa; cursor: not-allowed; }
+    .register-error { background: #ffebee; border: 1px solid #ef3636; color: #b71c1c; padding: 10px 14px; border-radius: 4px; font-size: 0.85rem; margin-bottom: 16px; display: none; }
+    .register-error.show { display: block; }
+    .register-success { background: #e8f5e9; border: 1px solid #4caf50; color: #1b5e20; padding: 14px; border-radius: 4px; font-size: 0.9rem; margin-bottom: 16px; display: none; }
+    .register-success.show { display: block; }
+    .register-success i { margin-right: 6px; color: #4caf50; }
+    .register-links { text-align: center; margin-top: 20px; font-size: 0.88rem; color: var(--steel); }
+    .register-links a { color: var(--green-main); text-decoration: none; font-weight: 600; }
+    .register-links a:hover { text-decoration: underline; }
+    .benefits { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 14px; margin-bottom: 18px; }
+    .benefits h4 { font-family: var(--font-display); font-size: 0.8rem; text-transform: uppercase; color: var(--green-dark); margin-bottom: 10px; }
+    .benefits ul { list-style: none; font-size: 0.83rem; color: var(--steel); }
+    .benefits ul li { padding: 4px 0; display: flex; align-items: center; gap: 8px; }
+    .benefits ul li i { color: var(--green-main); font-size: 0.75rem; }
+
+    footer { background: var(--charcoal); color: rgba(255,255,255,0.6); padding: var(--space-lg) 20px; text-align: center; }
+    footer a { color: var(--green-lime); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    footer p { font-size: 0.82rem; margin-top: 8px; }
+
+    @media (max-width: 768px) {
+      .nav-menu { display: none; }
+      .register-card { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <span><i class="fas fa-phone"></i> 012 358 2255</span>
+      <span><i class="fas fa-envelope"></i> building@tshwane.gov.za</span>
+    </div>
+  </div>
+
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="nav-logo">
+        <img src="images/e-tshwane-logo.png" alt="e-Tshwane" onerror="this.style.display='none'">
+        <div class="nav-logo-text">
+          e-Tshwane
+          <small>SANS Plan Examiner</small>
+        </div>
+      </a>
+      <ul class="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="apply.html">Apply</a></li>
+        <li><a href="track.html">Track</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+      <div class="nav-auth">
+        <a href="login.html" class="nav-login">Login</a>
+        <a href="register.html" class="nav-register">Register</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="register-page">
+    <div class="register-card">
+      <div class="register-header">
+        <h1>Create Account</h1>
+        <p>Register to submit and track building plan applications</p>
+      </div>
+      <div class="register-body">
+        <div id="registerError" class="register-error"></div>
+        <div id="registerSuccess" class="register-success">
+          <i class="fas fa-check-circle"></i>
+          <strong>Account created!</strong> Redirecting to login...
+        </div>
+
+        <div class="benefits">
+          <h4>Benefits of Registering</h4>
+          <ul>
+            <li><i class="fas fa-check"></i> Submit building plan applications online</li>
+            <li><i class="fas fa-check"></i> Track application status in real-time</li>
+            <li><i class="fas fa-check"></i> Receive AI-powered compliance feedback</li>
+            <li><i class="fas fa-check"></i> Access examiner comments and documents</li>
+          </ul>
+        </div>
+
+        <div class="form-group">
+          <label for="name">Full Name <span style="color:#ef3636">*</span></label>
+          <div class="input-wrap">
+            <i class="fas fa-user"></i>
+            <input type="text" id="name" placeholder="Your full name" autocomplete="name">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address <span style="color:#ef3636">*</span></label>
+          <div class="input-wrap">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="email" placeholder="your@email.com" autocomplete="email">
+          </div>
+          <div class="form-hint">This will be used for login and notifications.</div>
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <div class="input-wrap">
+            <i class="fas fa-phone"></i>
+            <input type="tel" id="phone" placeholder="012 345 6789" autocomplete="tel">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="password">Password <span style="color:#ef3636">*</span></label>
+          <div class="input-wrap">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="password" placeholder="Choose a password (min. 6 characters)" autocomplete="new-password">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password <span style="color:#ef3636">*</span></label>
+          <div class="input-wrap">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="confirmPassword" placeholder="Repeat your password" autocomplete="new-password">
+          </div>
+        </div>
+
+        <button class="btn-register" id="registerBtn" onclick="doRegister()">
+          <i class="fas fa-user-plus"></i> Create Account
+        </button>
+        <div class="register-links">
+          Already have an account? <a href="login.html">Sign in here</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>
+      <a href="index.html">Home</a> &nbsp;|&nbsp;
+      <a href="apply.html">Apply</a> &nbsp;|&nbsp;
+      <a href="track.html">Track</a> &nbsp;|&nbsp;
+      <a href="#">Contact Us</a>
+    </p>
+    <p>&copy; 2024 City of Tshwane Metropolitan Municipality. All rights reserved.</p>
+  </footer>
+
+  <script>
+    async function doRegister() {
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const errorEl = document.getElementById('registerError');
+      const successEl = document.getElementById('registerSuccess');
+      const btn = document.getElementById('registerBtn');
+
+      errorEl.classList.remove('show');
+      successEl.classList.remove('show');
+
+      if (!name || !email || !password) {
+        errorEl.textContent = 'Please fill in all required fields.';
+        errorEl.classList.add('show');
+        return;
+      }
+      if (password.length < 6) {
+        errorEl.textContent = 'Password must be at least 6 characters.';
+        errorEl.classList.add('show');
+        return;
+      }
+      if (password !== confirmPassword) {
+        errorEl.textContent = 'Passwords do not match.';
+        errorEl.classList.add('show');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorEl.textContent = data.error || 'Registration failed. Please try again.';
+          errorEl.classList.add('show');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+          return;
+        }
+
+        successEl.classList.add('show');
+        btn.innerHTML = '<i class="fas fa-check"></i> Account Created!';
+        setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+      } catch (e) {
+        errorEl.textContent = 'Connection error. Please try again.';
+        errorEl.classList.add('show');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+      }
+    }
+  </script>
+</body>
+</html>

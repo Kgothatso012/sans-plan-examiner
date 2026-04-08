@@ -153,6 +153,19 @@ When analyzing a new plan:
 4. Generate analysis with citations
 5. After examiner approves/rejects, add decision to precedents
 
+## Citation Format
+
+When analyzing, ALWAYS cite the wiki with clause references:
+
+**Example:**
+- ✅ "Stair width is 900mm per [[clauses/D1]]"
+- ✅ "Site coverage is 60% max per [[clauses/H2]] - see [[interpretations/site-coverage]] for calculation"
+- ✅ "This follows precedent [[precedents/erf-4521]] (approved)"
+
+** NEVER cite raw SANS documents - always use the wiki as the source.**
+
+The wiki is your single source of truth for all SANS requirements.
+
 ## log.md Format
 ```markdown
 # Operation Log
@@ -167,3 +180,39 @@ When analyzing a new plan:
 - Wiki size: number of pages in INDEX.md
 - Query hit rate: questions answered without external search
 - Citation accuracy: % of claims with wiki source
+
+## Key Documents for Analysis
+
+When analyzing building plans, use these sources in priority order:
+
+1. **Tshwane Land Use Scheme 2024** (`TSHWANE-SCHEME-SUMMARY.md`)
+   - Official zoning requirements
+   - Clause 20: Residential 1 controls
+   - Coverage: 60% max
+   - Height: 10m max
+   - FAR: 0.3 max
+
+2. **Joe's Checklist** (`CHECKLIST.md`)
+   - Examiner's standard review process
+   - 60+ items across 8 sections
+   - Use for systematic compliance check
+   - **ALWAYS add examiner comments** to each section
+
+3. **SANS 10400** (via wiki clauses)
+   - Technical building standards
+   - Room sizes, stairs, windows, etc.
+
+4. **Wiki Clauses & Precedents**
+   - Interpretation of SANS in practice
+   - Past decisions for reference
+
+## Checklist Workflow
+
+When analyzing any application:
+
+1. Run OCR on PDF: `node extract-pdf-text.js`
+2. Go through CHECKLIST page by page
+3. Mark PASS/FAIL/N/A for each item
+4. **Add comments** to each section with findings
+5. Use wiki clauses to justify decisions
+6. Generate approval/rejection letter

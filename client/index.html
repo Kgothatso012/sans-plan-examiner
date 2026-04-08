@@ -4,936 +4,1324 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>e-Tshwane | Building Plan Examiner</title>
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="apple-touch-icon" href="images/e-tshwane-logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.18/css/all.min.css">
   <style>
+    /* ============================================
+       CSS VARIABLES - EXACT E-TSHWANE BRAND
+    ============================================ */
     :root {
-      --primary: #00695c;
-      --primary-dark: #004d40;
-      --green: #49aa43;
-      --green-dark: #3d8b3a;
+      --green-main: #49aa43;
+      --green-dark: #457c36;
+      --green-lime: #b9d330;
+      --yellow-accent: #fed801;
       --white: #ffffff;
       --light-gray: #f5f5f5;
-      --gray: #616161;
-      --dark: #212121;
-      --border: #e0e0e0;
+      --gray-100: #f8f8f8;
+      --gray-200: #e7e7e7;
+      --gray-500: #616161;
+      --gray-700: #424242;
+      --gray-900: #212121;
+      --dark-charcoal: #262f37;
+      --primary-teal: #49aa43;
+      --primary-teal-dark: #457c36;
+      --accent-green: #49aa43;
+      --accent-green-dark: #3d8b3a;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'Segoe UI', Arial, sans-serif;
+      font-family: 'Segoe UI', Arial, Helvetica, Tahoma, sans-serif;
       line-height: 1.6;
-      color: var(--dark);
+      color: var(--gray-900);
       background: var(--white);
+      font-size: 14px;
     }
 
     a { text-decoration: none; color: inherit; }
     ul { list-style: none; }
 
     /* ============================================
-       NEWS TICKER
+       TOP BAR - E-TSHWANE ANNOUNCEMENT STRIP
     ============================================ */
-    .newsPanel {
-      background: linear-gradient(90deg, #004d40 0%, #00695c 100%);
-      color: var(--white);
-      padding: 8px 0;
-      font-size: 13px;
+    .topBar {
+      background: #f5a800;
+      color: #1a1a1a;
+      padding: 7px 0;
+      font-size: 12px;
     }
 
-    .newsWidgetContainer {
-      max-width: 1140px;
+    .topBarContainer {
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 0 15px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
-    .newsHeadingContainer {
-      display: inline-block;
-      font-weight: 600;
-      margin-right: 20px;
+    .topBarLeft {
+      display: flex;
+      align-items: center;
+      gap: 20px;
     }
 
-    .newsTickerContainer {
-      display: inline-block;
-      overflow: hidden;
-      white-space: nowrap;
+    .topBarLeft span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .newsTickerItem {
-      display: inline-block;
-      padding: 0 50px;
+    .topBarLeft i {
+      font-size: 11px;
+      color: #7d4e00;
     }
+
+    .topBarRight {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .topBarRight a {
+      color: #1a1a1a;
+      transition: opacity 0.2s;
+    }
+
+    .topBarRight a:hover { opacity: 0.7; }
 
     /* ============================================
-       HEADER
+       HEADER - E-TSHWANE LAYOUT
     ============================================ */
     .header {
       background: var(--white);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      padding: 15px 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 10px 0;
     }
 
-    .header-inner {
-      max-width: 1140px;
+    .headerContainer {
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 0 15px;
+      padding: 0 20px;
       display: flex;
+      align-items: center;
       justify-content: space-between;
+    }
+
+    .logoArea {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logoArea img {
+      height: 52px;
+      width: auto;
+    }
+
+    .brandText {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brandTitle {
+            font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-teal-dark);
+      line-height: 1.2;
+    }
+
+    .brandSub {
+      font-size: 11px;
+      color: var(--gray-500);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .headerActions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .headerPhone {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--gray-700);
+      margin-right: 10px;
+    }
+
+    .headerPhone i { color: var(--green-lime); font-size: 16px; }
+
+    .btnOutline {
+      padding: 8px 18px;
+      border: 1.5px solid var(--green-main);
+      color: var(--green-main);
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .btnOutline:hover {
+      background: var(--green-main);
+      color: var(--white);
+    }
+
+    .btnPrimary {
+      padding: 8px 18px;
+      background: var(--accent-green);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btnPrimary:hover { background: var(--accent-green-dark); }
+
+    /* ============================================
+       NAVIGATION - E-TSHWANE GREEN BAR (EXACT)
+    ============================================ */
+    .navbar {
+      background: linear-gradient(to bottom, #49aa43 0%, #457c36 100%);
+      min-height: 40px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbarContainer {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .navMenu {
+      display: flex;
+      gap: 0;
+    }
+
+    .navMenu > li > a {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 10px 12px;
+      color: var(--white);
+      font-size: 12px;
+      font-weight: 500;
+      border-bottom: 1px solid #49aa43;
+      transition: color 0.15s;
+    }
+
+    .navMenu > li > a:hover,
+    .navMenu > li > a:focus {
+      color: #fed801;
+      text-decoration: none;
+    }
+    }
+
+    .navRight {
+      display: flex;
       align-items: center;
     }
 
-    .e-tshwane-logo {
-      display: inline-block;
-      width: 180px;
-      height: 60px;
-      background: linear-gradient(135deg, #00695c 0%, #00897b 100%);
-      border-radius: 5px;
-      position: relative;
-    }
-
-    .e-tshwane-logo::before {
-      content: '🏛️';
-      position: absolute;
-      left: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 32px;
-    }
-
-    .e-tshwane-logo::after {
-      content: 'e-Tshwane';
-      position: absolute;
-      left: 55px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--white);
-      font-size: 22px;
-      font-weight: 700;
-    }
-
-    .site-logo {
-      display: inline-block;
-      width: 280px;
-      height: 50px;
-      background: var(--primary);
-      border-radius: 5px;
-      position: relative;
-    }
-
-    .site-logo::before {
-      content: '';
-      position: absolute;
-      left: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 35px;
-      height: 35px;
-      background: var(--white);
-      border-radius: 3px;
-    }
-
-    .site-logo::after {
-      content: 'Building Plan Examiner';
-      position: absolute;
-      left: 60px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--white);
-      font-size: 16px;
+    .navLink {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      font-size: 12px;
       font-weight: 600;
+      border-radius: 4px;
+      transition: color 0.15s;
+    }
+
+    .navLinkRegister {
+      color: var(--white);
+      border: 1.5px solid rgba(255,255,255,0.7);
+    }
+
+    .navLinkRegister:hover {
+      color: #fed801;
+      text-decoration: none;
+      border-color: #fed801;
+    }
+
+    .navLinkLogin {
+      background: #457c36;
+      color: var(--white);
+    }
+
+    .navLinkLogin:hover {
+      background: #3d6b2f;
     }
 
     /* ============================================
-       NAVIGATION
+       HERO SLIDER - E-TSHWANE BANNER STYLE
     ============================================ */
-    .navbar {
-      background: var(--white);
-      border: none;
-      border-radius: 0;
-      margin: 0;
-      min-height: 50px;
-    }
-
-    .navbar-default {
-      background-color: #f8f8f8;
-      border-color: #e7e7e7;
-    }
-
-    .navbar-brand,
-    .navbar-nav > li > a {
-      color: var(--dark) !important;
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    .navbar-nav > li > a {
-      padding: 15px 12px;
-    }
-
-    .navbar-toggle {
-      border-color: #ddd;
-    }
-
-    .navbar-toggle .icon-bar {
-      background: #888;
-    }
-
-    .navbar-nav > li > a:hover,
-    .navbar-nav > li > a:focus {
-      background: transparent;
-      color: var(--primary) !important;
-    }
-
-    .navbar-right .dropdown-menu {
-      right: 0;
-      left: auto;
-      padding: 15px;
-      min-width: 300px;
-    }
-
-    .login-form input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border: 1px solid #ddd;
-      border-radius: 3px;
-    }
-
-    .login-form button {
-      width: 100%;
-      padding: 10px;
-      background: var(--primary);
-      color: var(--white);
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .login-form button:hover {
-      background: var(--primary-dark);
-    }
-
-    .login-links {
-      margin-top: 10px;
-      text-align: center;
-    }
-
-    .login-links a {
-      color: var(--primary);
-      font-size: 13px;
-    }
-
-    .login-links a:hover {
-      text-decoration: underline;
-    }
-
-    .login-links .divider {
-      margin: 0 8px;
-      color: #999;
-    }
-
-    .register-link {
-      margin-top: 10px;
-      text-align: center;
-      font-size: 13px;
-    }
-
-    .register-link a {
-      color: var(--primary);
-      font-weight: 600;
-    }
-
-    /* ============================================
-       HERO SLIDER
-    ============================================ */
-    .rev_slider_wrapper {
+    .heroSection {
       position: relative;
-    }
-
-    .hero-slider {
-      position: relative;
-      height: 420px;
+      height: 440px;
       overflow: hidden;
     }
 
-    .hero-slide {
+    .heroSlide {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-size: cover;
+      background-position: center;
       display: flex;
       align-items: center;
       opacity: 0;
       transition: opacity 0.8s ease;
     }
 
-    .hero-slide.active {
-      opacity: 1;
+    .heroSlide.active { opacity: 1; }
+
+    .heroSlide::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.5) 100%);
     }
 
-    .hero-slide-1 {
-      background: linear-gradient(135deg, #004d40 0%, #00695c 50%, #00897b 100%);
-    }
-
-    .hero-slide-2 {
-      background: linear-gradient(135deg, #01579b 0%, #0277bd 50%, #0288d1 100%);
-    }
-
-    .hero-slide-3 {
-      background: linear-gradient(135deg, #1565c0 0%, #1976d2 50%, #1e88e5 100%);
-    }
-
-    .hero-slide-4 {
-      background: linear-gradient(135deg, #6a1b9a 0%, #7b1fa2 50%, #8e24aa 100%);
-    }
-
-    .hero-slide-5 {
-      background: linear-gradient(135deg, #c62828 0%, #d32f2f 50%, #e53935 100%);
-    }
-
-    .hero-content {
-      max-width: 1140px;
-      margin: 0 auto;
-      padding: 0 15px;
+    .heroContent {
       position: relative;
       z-index: 2;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
     }
 
-    .tp-custom-caption-head {
-      font-size: 36px;
+    .heroHeadline {
+      font-size: 40px;
       font-weight: 700;
       color: var(--white);
-      margin-bottom: 10px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      margin-bottom: 6px;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.35);
+      max-width: 700px;
     }
 
-    .tp-custom-caption-subheading {
-      font-size: 28px;
-      color: var(--white);
-      margin-bottom: 15px;
-      font-weight: 500;
+    .heroSubheadline {
+      font-size: 22px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.95);
+      margin-bottom: 14px;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
     }
 
-    .tp-custom-caption-summary {
-      font-size: 18px;
-      color: var(--white);
-      max-width: 600px;
-      line-height: 1.5;
+    .heroDescription {
+      font-size: 15px;
+      color: rgba(255,255,255,0.9);
+      max-width: 580px;
+      margin-bottom: 22px;
+      line-height: 1.7;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
     }
 
-    .revolutionSliderButton {
+    .heroButton {
       display: inline-block;
-      padding: 12px 25px;
-      background: var(--white);
-      color: var(--primary);
+      padding: 12px 30px;
+      background: var(--green-lime);
+      color: var(--dark-charcoal);
+      font-size: 14px;
+      font-weight: 700;
       border-radius: 5px;
-      font-weight: 600;
-      margin-top: 20px;
-      cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
+      border: none;
     }
 
-    .revolutionSliderButton:hover {
-      background: var(--light-gray);
+    .heroButton:hover {
+      background: #a0be2b;
+      transform: translateY(-2px);
     }
 
-    .hero-nav {
+    .heroButtonOutline {
+      display: inline-block;
+      padding: 12px 30px;
+      background: transparent;
+      color: var(--white);
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 5px;
+      border: 2px solid rgba(255,255,255,0.7);
+      transition: all 0.2s ease;
+      margin-left: 10px;
+    }
+
+    .heroButtonOutline:hover {
+      background: rgba(255,255,255,0.15);
+      border-color: var(--white);
+    }
+
+    .heroDots {
       position: absolute;
-      bottom: 20px;
+      bottom: 22px;
       left: 50%;
       transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
       z-index: 10;
     }
 
+    .heroDot {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.45);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .heroDot.active {
+      background: var(--white);
+      transform: scale(1.15);
+      border-color: var(--green-lime);
+    }
+
     /* ============================================
-       FEATURE BOXES
+       SERVICES BAND - E-TSHWANE ICON STRIP
     ============================================ */
-    .feature-boxes {
-      padding: 40px 0;
+    .servicesBand {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .servicesBandInner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .servicesRow {
+      display: flex;
+      flex-wrap: nowrap;
+    }
+
+    .serviceItem {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 16px;
+      border-right: 1px solid var(--gray-200);
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .serviceItem:last-child { border-right: none; }
+
+    .serviceItem:hover {
       background: var(--light-gray);
     }
 
-    .feature-boxes-inner {
-      max-width: 1140px;
-      margin: 0 auto;
-      padding: 0 15px;
-    }
-
-    .feature-boxes .row {
+    .serviceIcon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--green-main);
       display: flex;
-      flex-wrap: wrap;
-      margin: 0 -15px;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
-    .feature-box {
-      padding: 20px;
-      background: var(--white);
-      border-radius: 5px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    .feature-box.green {
-      background: var(--green);
+    .serviceIcon i {
       color: var(--white);
+      font-size: 16px;
     }
 
-    .box-header {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 15px;
+    .serviceIconGreen {
+      background: var(--green-lime);
     }
 
-    .feature-box.green .box-header {
-      color: var(--white);
+    .serviceIconGreen i {
+      color: var(--dark-charcoal);
     }
 
-    .feature-box p {
-      font-size: 14px;
-      color: var(--gray);
-      margin-bottom: 15px;
-      line-height: 1.6;
+    .serviceText h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 2px;
     }
 
-    .feature-box.green p {
-      color: rgba(255,255,255,0.9);
-    }
-
-    .box-button {
-      display: inline-block;
-      padding: 10px 20px;
-      background: var(--primary);
-      color: var(--white);
-      border-radius: 5px;
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .box-button:hover {
-      background: var(--primary-dark);
-    }
-
-    .feature-box.green .box-button {
-      background: var(--white);
-      color: var(--green);
-    }
-
-    .feature-box.green .box-button:hover {
-      background: #f0f0f0;
-    }
-
-    .two-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    .serviceText p {
+      font-size: 11.5px;
+      color: var(--gray-500);
+      line-height: 1.4;
     }
 
     /* ============================================
-       TESTIMONIALS
+       MAIN CONTENT
     ============================================ */
-    .testimonials {
-      padding: 50px 0;
-      background: linear-gradient(135deg, #004d40 0%, #00695c 100%);
+    .mainContent {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .sectionTitle {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--dark-charcoal);
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .sectionSubtitle {
+      font-size: 14px;
+      color: var(--gray-500);
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    /* ============================================
+       FEATURE GRID - E-TSHWANE STYLE
+    ============================================ */
+    .featureSection {
+      padding: 0 0 40px;
+      background: var(--gray-100);
+      margin-top: -30px;
+      position: relative;
+      z-index: 30;
+    }
+
+    .featureGrid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .featureCard {
+      background: var(--white);
+      border-radius: 5px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 58px 19px -48px rgba(0,0,0,0.24);
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .featureCard:hover {
+      transform: translateY(-2px);
+    }
+
+    .featureCardGreen {
+      background: var(--green-main);
+      border-color: var(--green-main);
+    }
+
+    .featureCardIcon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(73,170,67,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+    }
+
+    .featureCardGreen .featureCardIcon {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .featureCardIcon i {
+      font-size: 20px;
+      color: var(--green-dark);
+    }
+
+    .featureCardGreen .featureCardIcon i {
       color: var(--white);
     }
 
-    .testimonials-inner {
-      max-width: 1140px;
-      margin: 0 auto;
-      padding: 0 15px;
+    .featureCard h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gray-700);
+      margin-bottom: 15px;
+      border-bottom: 2px solid var(--green-lime);
+      padding-bottom: 9px;
+      display: block;
+      text-align: left;
     }
 
-    .testimonials-heading {
-      font-size: 28px;
-      font-weight: 600;
-      text-align: center;
+    .featureCardGreen h3 {
+      color: var(--white);
+    }
+    }
+
+    .featureCardGreen h3 { color: var(--white); }
+
+    .featureCard p {
+      font-size: 13px;
+      color: var(--gray-700);
+      line-height: 1.6;
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    .featureCardGreen p { color: rgba(255,255,255,0.88); }
+
+    .featureBtn {
+      display: inline-block;
+      padding: 9px 20px;
+      background: var(--green-dark);
+      color: var(--white);
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 4px;
+      border: none;
+      transition: background 0.2s;
+      text-align: left;
+    }
+
+    .featureBtn:hover { background: var(--dark-charcoal); }
+
+    .featureCardGreen .featureBtn {
+      background: var(--green-lime);
+      color: var(--dark-charcoal);
+    }
+
+    .featureCardGreen .featureBtn:hover {
+      background: #a0be2b;
+    }
+
+    /* ============================================
+       SPLIT SECTION - HOW IT WORKS
+    ============================================ */
+    .splitSection {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
       margin-bottom: 40px;
     }
 
-    .testimonials-carousel {
-      position: relative;
-      overflow: hidden;
-    }
-
-    .testimonial-item {
-      text-align: center;
-      padding: 20px;
-    }
-
-    .testimonial-content {
-      font-size: 16px;
-      font-style: italic;
-      max-width: 800px;
-      margin: 0 auto 20px;
-      line-height: 1.8;
-    }
-
-    .testimonial-author {
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    /* ============================================
-       HOW TO PAY SECTION
-    ============================================ */
-    .how-to-pay {
-      padding: 50px 0;
-      background: var(--light-gray);
-    }
-
-    .how-to-pay-inner {
-      max-width: 1140px;
-      margin: 0 auto;
-      padding: 0 15px;
-    }
-
-    .pay-section {
-      display: flex;
-      gap: 30px;
-      flex-wrap: wrap;
-    }
-
-    .pay-icon,
-    .wallet-icon {
+    .splitCard {
       background: var(--white);
-      padding: 25px;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 28px;
     }
 
-    .wallet-icon {
-      flex: 1;
-      min-width: 300px;
-    }
-
-    .pay-icon {
-      flex: 2;
-      min-width: 400px;
-    }
-
-    .pay-icon .box-header,
-    .wallet-icon .box-header {
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--primary);
-      margin-bottom: 20px;
-    }
-
-    .pay-list {
-      list-style: none;
-    }
-
-    .pay-list li {
-      padding: 10px 0;
-      border-bottom: 1px solid #eee;
-    }
-
-    .pay-list li:last-child {
-      border-bottom: none;
-    }
-
-    .pay-list a {
+    .splitCard h3 {
+            font-size: 17px;
+      font-weight: 700;
+      color: var(--primary-teal-dark);
+      margin-bottom: 14px;
       display: flex;
       align-items: center;
       gap: 10px;
-      color: var(--primary);
-      font-weight: 500;
     }
 
-    .pay-list a:hover {
-      text-decoration: underline;
-    }
+    .splitCard h3 i { font-size: 18px; color: var(--green-lime); }
 
-    .pay-list i {
-      color: var(--primary);
-    }
-
-    /* ============================================
-       FOOTER
-    ============================================ */
-    .footer-section {
-      background: #263238;
-      color: var(--white);
-      padding: 40px 0 20px;
-    }
-
-    .footer-inner {
-      max-width: 1140px;
-      margin: 0 auto;
-      padding: 0 15px;
-    }
-
-    .footer h3 {
-      font-size: 18px;
-      margin-bottom: 20px;
-      color: var(--white);
-    }
-
-    .footer-links {
-      list-style: none;
-    }
-
-    .footer-links li {
+    .splitCard p {
+      font-size: 13.5px;
+      color: var(--gray-700);
+      line-height: 1.7;
       margin-bottom: 12px;
     }
 
-    .footer-links a {
-      color: rgba(255,255,255,0.7);
-      font-size: 14px;
+    .stepList {
+      list-style: none;
+      margin-top: 16px;
+    }
+
+    .stepList li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray-200);
+      font-size: 13.5px;
+      color: var(--gray-700);
+    }
+
+    .stepList li:last-child { border-bottom: none; }
+
+    .stepList li .stepNum {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--green-lime);
+      color: var(--dark-charcoal);
+      font-size: 11px;
+      font-weight: 700;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
     }
 
-    .footer-links a:hover {
+    .stepList li .stepNum i { font-size: 10px; }
+
+    /* ============================================
+       TESTIMONIALS - E-TSHWANE GREEN
+    ============================================ */
+    .testimonialSection {
+      padding: 50px 0;
+      background: var(--green-main);
       color: var(--white);
-      text-decoration: none;
     }
 
-    .footer-links i {
-      font-size: 10px;
-      color: var(--primary);
+    .testimonialContainer {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .testimonialTitle {
+      font-size: 19px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .testimonialGrid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .testimonialCard {
+      background: rgba(255,255,255,0.1);
+      padding: 22px 18px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .testimonialQuote {
+      font-size: 13px;
+      font-style: italic;
+      margin-bottom: 14px;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    .testimonialAuthor {
+      font-size: 12px;
+      font-weight: 700;
+      opacity: 0.9;
     }
 
     /* ============================================
-       SUB FOOTER
+       CONTACT BAND
     ============================================ */
-    .sub-footer {
-      background: #1a2327;
-      padding: 20px 0;
-      text-align: center;
-      color: rgba(255,255,255,0.6);
-      font-size: 14px;
+    .contactBand {
+      background: var(--light-gray);
+      padding: 45px 0;
     }
 
-    .sub-footer b {
-      color: var(--white);
+    .contactBandInner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
     }
+
+    .contactInfo {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 28px;
+    }
+
+    .contactInfo h3 {
+            font-size: 17px;
+      font-weight: 700;
+      color: var(--primary-teal-dark);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .contactInfo h3 i { color: var(--green-lime); }
+
+    .contactInfo p {
+      font-size: 13.5px;
+      color: var(--gray-700);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .contactInfo p i {
+      width: 20px;
+      color: var(--green-lime);
+      text-align: center;
+    }
+
+    .contactForm {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 28px;
+    }
+
+    .contactForm h3 {
+            font-size: 17px;
+      font-weight: 700;
+      color: var(--primary-teal-dark);
+      margin-bottom: 18px;
+    }
+
+    .formRow {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .formGroup {
+      margin-bottom: 12px;
+    }
+
+    .formGroup.full { grid-column: span 2; }
+
+    .formGroup label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 5px;
+    }
+
+    .formGroup input,
+    .formGroup textarea,
+    .formGroup select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--gray-200);
+      border-radius: 4px;
+      font-size: 13px;
+      font-family: inherit;
+      background: var(--gray-100);
+      transition: border-color 0.2s;
+    }
+
+    .formGroup input:focus,
+    .formGroup textarea:focus,
+    .formGroup select:focus {
+      outline: none;
+      border-color: var(--primary-teal);
+      background: var(--white);
+    }
+
+    .formButton {
+      width: 100%;
+      padding: 12px;
+      background: var(--green-main);
+      color: var(--white);
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .formButton:hover { background: var(--dark-charcoal); }
+
+    /* ============================================
+       FOOTER - E-TSHWANE STYLE
+    ============================================ */
+    .footerSection {
+      background: var(--dark-charcoal);
+      color: var(--white);
+      padding: 45px 0 25px;
+    }
+
+    .footerContainer {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .footerGrid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 30px;
+    }
+
+    .footerCol h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      color: var(--white);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--green-lime);
+      padding-bottom: 9px;
+      display: block;
+    }
+
+    .footerCol ul li {
+      margin-bottom: 10px;
+    }
+
+    .footerCol ul li a {
+      color: var(--green-lime);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.2s ease;
+    }
+
+    .footerCol ul li a:hover { color: var(--white); }
+
+    .footerCol ul li i {
+      font-size: 9px;
+      color: var(--green-lime);
+    }
+
+    .footerCol p {
+      color: rgba(255,255,255,0.65);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .footerCol p i { margin-right: 8px; color: var(--green-lime); }
+
+    .subFooter {
+      background: #1a2327;
+      padding: 18px 0;
+      text-align: center;
+      color: rgba(255,255,255,0.55);
+      font-size: 12px;
+      margin-top: 35px;
+      border-top: 1px solid #333;
+    }
+
+    .subFooter b { color: var(--white); }
 
     /* ============================================
        RESPONSIVE
     ============================================ */
-    @media (max-width: 992px) {
-      .site-logo { display: none; }
-      .e-tshwane-logo { margin: 0 auto; }
+    @media (max-width: 1024px) {
+      .featureGrid { grid-template-columns: repeat(2, 1fr); }
+      .testimonialGrid { grid-template-columns: repeat(2, 1fr); }
+      .footerGrid { grid-template-columns: repeat(2, 1fr); }
+      .servicesRow { flex-wrap: wrap; }
+      .serviceItem { flex: 0 0 50%; border-bottom: 1px solid var(--gray-200); }
     }
 
     @media (max-width: 768px) {
-      .newsPanel { display: none; }
-      .hero-slide { height: 300px; }
-      .tp-custom-caption-head { font-size: 24px; }
-      .tp-custom-caption-subheading { font-size: 18px; }
-      .tp-custom-caption-summary { font-size: 14px; }
-      .feature-boxes .col-md-3 { width: 100%; }
+      .topBarLeft span:not(:first-child) { display: none; }
+      .navMenu { display: none; }
+      .heroSection { height: 360px; }
+      .heroHeadline { font-size: 28px; }
+      .heroSubheadline { font-size: 18px; }
+      .heroDescription { font-size: 13px; }
+      .featureGrid { grid-template-columns: 1fr; }
+      .splitSection { grid-template-columns: 1fr; }
+      .testimonialGrid { grid-template-columns: 1fr; }
+      .contactBandInner { grid-template-columns: 1fr; }
+      .footerGrid { grid-template-columns: repeat(2, 1fr); }
+      .formRow { grid-template-columns: 1fr; }
+      .formGroup.full { grid-column: span 1; }
+      .serviceItem { flex: 0 0 100%; }
+    }
+
+    @media (max-width: 480px) {
+      .headerPhone { display: none; }
+      .brandSub { display: none; }
+      .footerGrid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <!-- NEWS TICKER -->
-  <div class="newsPanel">
-    <div class="newsWidgetContainer">
-      <div class="newsHeadingContainer">
-        <label>Latest Announcements</label>
+
+  <!-- TOP BAR -->
+  <div class="topBar">
+    <div class="topBarContainer">
+      <div class="topBarLeft">
+        <span><i class="fas fa-phone"></i> 012 358 2255</span>
+        <span><i class="fas fa-envelope"></i> info@tshwane.gov.za</span>
+        <span><i class="fas fa-clock"></i> Mon – Fri: 7:30 – 16:30</span>
       </div>
-      <div class="newsTickerContainer">
-        <div class="newsTickerItem">
-          <label>e-Tshwane Building Plan Examiner is now live - Submit your building plans online!</label>
-        </div>
+      <div class="topBarRight">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+        <a href="#"><i class="fab fa-linkedin-in"></i></a>
       </div>
     </div>
   </div>
 
   <!-- HEADER -->
   <header class="header">
-    <div class="header-inner">
-      <a href="#" class="e-tshwane-logo"></a>
-      <a href="#" class="site-logo"></a>
+    <div class="headerContainer">
+      <div class="logoArea">
+        <img src="images/e-tshwane-logo.png" alt="e-Tshwane">
+        <div class="brandText">
+          <span class="brandTitle">e-Tshwane</span>
+          <span class="brandSub">Building Plan Examiner</span>
+        </div>
+      </div>
+      <div class="headerActions">
+        <div class="headerPhone">
+          <i class="fas fa-phone"></i>
+          <span>012 358 2255</span>
+        </div>
+        <a href="client/apply.html" class="btnOutline">Register</a>
+        <a href="client/track.html" class="btnPrimary">Login</a>
+      </div>
     </div>
   </header>
 
-  <!-- NAVIGATION -->
-  <nav class="navbar navbar-default">
-    <div class="container">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-      </div>
-
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav">
-          <li><a href="#">Home</a></li>
-          <li><a href="#services">Services</a></li>
-          <li><a href="#benefits">Benefits</a></li>
-          <li><a href="#process">How It Works</a></li>
-          <li><a href="#contact">Contact Us</a></li>
-          <li><a href="#">Help / FAQs</a></li>
-          <li><a href="#">Forms</a></li>
-        </ul>
-
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="client/apply.html" class="ui-link">Register</a></li>
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b>Login</b> <span class="caret"></span></a>
-            <ul id="login-dp" class="dropdown-menu">
-              <li>
-                <div class="login-form" style="padding: 15px;">
-                  <form id="loginForm">
-                    <input type="text" placeholder="Reference Number" id="trackRef">
-                    <button type="submit" onclick="trackApplication(); return false;">Track Application</button>
-                  </form>
-                  <div class="login-links">
-                    <a href="client/track.html">View All Applications</a>
-                  </div>
-                  <div class="register-link">
-                    New here? <a href="client/apply.html">Register</a>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </li>
-        </ul>
+  <!-- NAVIGATION - GREEN BAR -->
+  <nav class="navbar">
+    <div class="navbarContainer">
+      <ul class="navMenu">
+        <li><a href="#"><i class="fas fa-home"></i></a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#benefits">Benefits</a></li>
+        <li><a href="#">Security</a></li>
+        <li><a href="#">Payment</a></li>
+        <li><a href="#">Investor Portal</a></li>
+        <li><a href="#">EMS</a></li>
+        <li><a href="#">Land Development</a></li>
+        <li><a href="#contact">I want to report</a></li>
+        <li><a href="#">Help / FAQs</a></li>
+        <li><a href="#">Forms</a></li>
+        <li><a href="#contact">Contact Us</a></li>
+      </ul>
+      <div class="navRight">
+        <a href="client/apply.html" class="navLink navLinkRegister">Register</a>
+        <a href="client/track.html" class="navLink navLinkLogin"><i class="fas fa-sign-in-alt"></i> Login</a>
       </div>
     </div>
   </nav>
 
   <!-- HERO SLIDER -->
-  <div class="hero-slider">
-    <div class="hero-slide hero-slide-1 active">
-      <div class="hero-content">
-        <div class="tp-custom-caption-head">It's Time!</div>
-        <div class="tp-custom-caption-subheading">Fast & Convenient!</div>
-        <div class="tp-custom-caption-summary">AI-Powered Building Plan Compliance for Tshwane Municipality. Submit, track, and approve building plans 10x faster.</div>
-        <a href="client/apply.html" class="revolutionSliderButton">More info</a>
+  <section class="heroSection">
+    <div class="heroSlide active" style="background-image: url('images/banner-01.jpg')">
+      <div class="heroContent">
+        <h1 class="heroHeadline">It's Time! Fast & Convenient!</h1>
+        <p class="heroSubheadline">AI-Powered Building Plan Compliance</p>
+        <p class="heroDescription">Submit and track your building plan applications to Tshwane Municipality online — anytime, anywhere, 24/7.</p>
+        <a href="client/apply.html" class="heroButton">Apply Now</a>
+        <a href="#benefits" class="heroButtonOutline">Learn More</a>
       </div>
     </div>
-    <div class="hero-slide hero-slide-2">
-      <div class="hero-content">
-        <div class="tp-custom-caption-head">We're open 24 hours, 7 days a week, 365 days a year.</div>
-        <div class="tp-custom-caption-subheading">Submit Anytime, Anywhere</div>
-        <div class="tp-custom-caption-summary">No more queuing at municipal offices. Submit your building plans from the comfort of your office or home.</div>
-        <a href="client/apply.html" class="revolutionSliderButton">Apply Now</a>
+    <div class="heroSlide" style="background-image: url('images/banner-02.jpg')">
+      <div class="heroContent">
+        <h1 class="heroHeadline">We're open 24 hours, 7 days a week, 365 days a year.</h1>
+        <p class="heroDescription">Submit and track building plan applications anytime, anywhere.</p>
+        <a href="client/apply.html" class="heroButton">Apply Now</a>
+        <a href="client/track.html" class="heroButtonOutline">Track Application</a>
       </div>
     </div>
-    <div class="hero-slide hero-slide-3">
-      <div class="hero-content">
-        <div class="tp-custom-caption-head">10x Faster Processing</div>
-        <div class="tp-custom-caption-subheading">AI-Powered Analysis</div>
-        <div class="tp-custom-caption-summary">Our AI checks your plans against 30+ SANS 10400 clauses in minutes. Get instant feedback before waiting days for manual review.</div>
-        <a href="#services" class="revolutionSliderButton">Learn More</a>
+    <div class="heroSlide" style="background-image: url('images/banner-03.jpg')">
+      <div class="heroContent">
+        <h1 class="heroHeadline">e-Tshwane</h1>
+        <p class="heroSubheadline">Enhanced service and peace of mind.</p>
+        <p class="heroDescription">Guaranteed statement delivery, electronically reconciled payment, history of bills, payments and enhanced services.</p>
+        <a href="#benefits" class="heroButton">Read More About Us</a>
       </div>
     </div>
-    <div class="hero-slide hero-slide-4">
-      <div class="hero-content">
-        <div class="tp-custom-caption-head">e-Tshwane Invest</div>
-        <div class="tp-custom-caption-subheading">The new Building Plan Portal</div>
-        <div class="tp-custom-caption-summary">Our new portal will put you as an architect, contractor, or property owner in touch with the correct people to fast track your building applications.</div>
-        <a href="client/apply.html" class="revolutionSliderButton">Get Started</a>
+    <div class="heroSlide" style="background-image: url('images/banner-ed-01.jpg')">
+      <div class="heroContent">
+        <h1 class="heroHeadline">e-Tshwane Invest</h1>
+        <p class="heroSubheadline">The new Investor Portal.</p>
+        <p class="heroDescription">Our new portal will put you in touch with the correct people to fast track your building applications.</p>
+        <a href="client/apply.html" class="heroButton">Get Started</a>
       </div>
     </div>
-    <div class="hero-slide hero-slide-5">
-      <div class="hero-content">
-        <div class="tp-custom-caption-head">Emergency Services Portal</div>
-        <div class="tp-custom-caption-subheading">Apply for certificates and building control services</div>
-        <div class="tp-custom-caption-summary">For general enquiries please contact us on 012 358 2255</div>
-        <a href="#contact" class="revolutionSliderButton">Contact Us</a>
+    <div class="heroSlide" style="background-image: url('images/slider1.jpg')">
+      <div class="heroContent">
+        <h1 class="heroHeadline">Emergency Services Portal</h1>
+        <p class="heroSubheadline">Apply for certificates and ER services.</p>
+        <p class="heroDescription">For General Enquiries please contact us on 012 358 2255</p>
+        <a href="#contact" class="heroButton">Contact Us</a>
       </div>
     </div>
-  </div>
+    <div class="heroDots">
+      <span class="heroDot active" data-slide="0"></span>
+      <span class="heroDot" data-slide="1"></span>
+      <span class="heroDot" data-slide="2"></span>
+      <span class="heroDot" data-slide="3"></span>
+      <span class="heroDot" data-slide="4"></span>
+    </div>
+  </section>
 
-  <!-- FEATURE BOXES -->
-  <section class="feature-boxes" id="services">
-    <div class="feature-boxes-inner">
-      <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
-          <div class="feature-box green">
-            <div class="box-header">Building Plan Application</div>
-            <p>Submit building plan applications online. Upload PDFs, site plans & architectural drawings from anywhere.</p>
-            <a href="client/apply.html" class="box-button">Apply Here</a>
+  <!-- SERVICES BAND WITH ICONS -->
+  <section class="servicesBand" id="services">
+    <div class="servicesBandInner">
+      <div class="servicesRow">
+        <div class="serviceItem">
+          <div class="serviceIcon serviceIconGreen">
+            <i class="fas fa-building"></i>
+          </div>
+          <div class="serviceText">
+            <h4>Building Plan Application</h4>
+            <p>Submit plans for residential &amp; commercial</p>
           </div>
         </div>
-        <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-          <div class="feature-box">
-            <div class="box-header">Payment Benefits</div>
-            <p>Secure online payments for application fees. Immediate confirmation and account updates. No more delayed payments.</p>
-            <a href="#contact" class="box-button">Make a payment</a>
+        <div class="serviceItem">
+          <div class="serviceIcon">
+            <i class="fas fa-credit-card"></i>
+          </div>
+          <div class="serviceText">
+            <h4>Payment Services</h4>
+            <p>Safe, instant municipal payments</p>
           </div>
         </div>
-        <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-          <div class="feature-box">
-            <div class="box-header">What is e-Tshwane?</div>
-            <p>e-Tshwane Building Plan Examiner is designed to make it faster and easier to interact with the City. Part of our Smart City strategy.</p>
-            <a href="#benefits" class="box-button">Read more about us</a>
+        <div class="serviceItem">
+          <div class="serviceIcon">
+            <i class="fas fa-search"></i>
+          </div>
+          <div class="serviceText">
+            <h4>Track Application</h4>
+            <p>Real-time application status</p>
           </div>
         </div>
-        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
-          <div class="feature-box green">
-            <div class="box-header">I want to report</div>
-            <p>Your input is greatly valued and will be directed to the relevant department</p>
-            <div class="two-buttons">
-              <a href="#contact" class="box-button">New query</a>
-              <a href="client/track.html" class="box-button">Track Application</a>
+        <div class="serviceItem">
+          <div class="serviceIcon serviceIconGreen">
+            <i class="fas fa-headset"></i>
+          </div>
+          <div class="serviceText">
+            <h4>24/7 Support</h4>
+            <p>We're here to help anytime</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT -->
+  <div class="mainContent">
+    <h2 class="sectionTitle">Our Services</h2>
+    <p class="sectionSubtitle">Everything you need to submit and track your building plans with Tshwane Municipality</p>
+
+    <div class="featureGrid">
+      <div class="featureCard featureCardGreen">
+        <div class="featureCardIcon">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <h3>Building Plan Application</h3>
+        <p>The City of Tshwane offers online registration for building plan applications for architects, contractors, and property owners.</p>
+        <a href="client/apply.html" class="featureBtn">Apply Here</a>
+      </div>
+      <div class="featureCard">
+        <div class="featureCardIcon">
+          <i class="fas fa-credit-card"></i>
+        </div>
+        <h3>Payment Benefits</h3>
+        <p>The best and safest way of making a payment to the City. You receive immediate confirmation and your account is updated instantly.</p>
+        <a href="#contact" class="featureBtn">Make a Payment</a>
+      </div>
+      <div class="featureCard">
+        <div class="featureCardIcon">
+          <i class="fas fa-info-circle"></i>
+        </div>
+        <h3>What is e-Tshwane?</h3>
+        <p>e-Tshwane is designed to make it faster and easier to interact with the City. Part of our Smart City strategy to improve customer service.</p>
+        <a href="#benefits" class="featureBtn">Read More</a>
+      </div>
+      <div class="featureCard featureCardGreen">
+        <div class="featureCardIcon">
+          <i class="fas fa-bullhorn"></i>
+        </div>
+        <h3>I Want to Report</h3>
+        <p>Your input is greatly valued and will be directed to the relevant department promptly.</p>
+        <div style="display:flex; flex-direction:column; gap:8px; align-items:center;">
+          <a href="#contact" class="featureBtn">New Query</a>
+          <a href="client/track.html" class="featureBtn" style="background:#fff; color:var(--accent-green);">Track Status</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <div class="splitSection" id="benefits">
+      <div class="splitCard">
+        <h3><i class="fas fa-laptop"></i> One place to submit &amp; track</h3>
+        <p>Everyone can securely submit and track their building plan applications from the e-Tshwane service.</p>
+        <p>Choose from our range of services — online submission, real-time tracking, AI analysis against SANS 10400, and digital approval letters.</p>
+        <p>No more queues. No more lost documents. No more waiting weeks for feedback.</p>
+      </div>
+      <div class="splitCard">
+        <h3><i class="fas fa-list-ol"></i> How It Works</h3>
+        <ul class="stepList">
+          <li>
+            <span class="stepNum"><i class="fas fa-upload"></i></span>
+            <span>Submit your building plans online (PDF format)</span>
+          </li>
+          <li>
+            <span class="stepNum"><i class="fas fa-robot"></i></span>
+            <span>AI analysis against 30+ SANS 10400 clauses</span>
+          </li>
+          <li>
+            <span class="stepNum"><i class="fas fa-bolt"></i></span>
+            <span>Receive instant preliminary compliance feedback</span>
+          </li>
+          <li>
+            <span class="stepNum"><i class="fas fa-user-check"></i></span>
+            <span>Municipal examiner reviews and adds comments</span>
+          </li>
+          <li>
+            <span class="stepNum"><i class="fas fa-check-circle"></i></span>
+            <span>Get approval, rejection, or revision request</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- TESTIMONIALS -->
+    <section class="testimonialSection">
+      <div class="testimonialContainer">
+        <h2 class="testimonialTitle">What our clients say about us...</h2>
+        <div class="testimonialGrid">
+          <div class="testimonialCard">
+            <p class="testimonialQuote">"I just registered today and had a couple of questions. I spoke to Nonhlanhla Sekhethela who was extremely helpful, patient and thorough."</p>
+            <p class="testimonialAuthor">— Mr H Botha</p>
+          </div>
+          <div class="testimonialCard">
+            <p class="testimonialQuote">"Thank you for the wonderful service on Friday evening. I was most surprised when you called to resolve my account login issue. Stellar service!"</p>
+            <p class="testimonialAuthor">— Shailendra</p>
+          </div>
+          <div class="testimonialCard">
+            <p class="testimonialQuote">"Keep on igniting excellence, this e-Tshwane service is the best ever."</p>
+            <p class="testimonialAuthor">— Mr PL Tjiane</p>
+          </div>
+          <div class="testimonialCard">
+            <p class="testimonialQuote">"e-Tshwane will limit and reduce long queues from Tshwane offices. e-Tshwane is simple and easy to use. KEEP UP THE GOOD WORK!"</p>
+            <p class="testimonialAuthor">— Mr M.S Mtsweni</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="contactBand" id="contact">
+      <div class="contactBandInner">
+        <div class="contactInfo">
+          <h3><i class="fas fa-phone-alt"></i> Contact Us</h3>
+          <p><i class="fas fa-phone"></i> <strong>Phone:</strong> 012 358 2255</p>
+          <p><i class="fas fa-envelope"></i> <strong>Email:</strong> building@tshwane.gov.za</p>
+          <p><i class="fas fa-map-marker-alt"></i> <strong>Address:</strong> Tshwane Municipality, Pretoria</p>
+          <p><i class="fas fa-clock"></i> <strong>Hours:</strong> Mon – Fri: 7:30 – 16:30</p>
+          <p style="margin-top:16px; font-size:12px; color:var(--gray-500);">Brought to you by the City of Tshwane in collaboration with Building Control Division</p>
+        </div>
+        <div class="contactForm">
+          <h3>Send Us a Message</h3>
+          <form>
+            <div class="formRow">
+              <div class="formGroup">
+                <label>Your Name</label>
+                <input type="text" placeholder="Full Name" required>
+              </div>
+              <div class="formGroup">
+                <label>Email Address</label>
+                <input type="email" placeholder="you@example.com" required>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- TESTIMONIALS -->
-  <section class="testimonials">
-    <div class="testimonials-inner">
-      <div class="testimonials-heading">What our clients say about us...</div>
-      <div class="testimonials-carousel" id="testimonialCarousel">
-        <div class="testimonial-item">
-          <div class="testimonial-content">"I just registered today and had a couple of questions. The system is so easy to use and the AI analysis caught issues before submission. Highly recommended!"</div>
-          <div class="testimonial-author">- Mr H Botha, Architect</div>
-        </div>
-        <div class="testimonial-item">
-          <div class="testimonial-content">"The building plan submission process used to take weeks. With e-Tshwane, I submitted my plans and got preliminary feedback in hours. Incredible service!"</div>
-          <div class="testimonial-author">- Sarah M, Property Developer</div>
-        </div>
-        <div class="testimonial-item">
-          <div class="testimonial-content">"Finally, a system that works! No more queuing at municipal offices. I could track my application status in real-time and knew exactly what was happening."</div>
-          <div class="testimonial-author">- Mr J van der Merwe, Contractor</div>
-        </div>
-        <div class="testimonial-item">
-          <div class="testimonial-content">"The AI compliance checking saved us thousands in revision costs. We fixed issues before they became expensive problems. Brilliant!"</div>
-          <div class="testimonial-author">- Tina K, Architecture Firm</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- HOW TO PAY -->
-  <section class="how-to-pay" id="benefits">
-    <div class="how-to-pay-inner">
-      <div class="pay-section">
-        <div class="wallet-icon">
-          <div class="box-header">One place to receive & track your applications</div>
-          <p>Everyone can securely submit and track their building plan applications from the e-Tshwane service.</p>
-          <p>Choose from our range of services - online submission, real-time tracking, AI analysis, and digital approval letters.</p>
-        </div>
-        <div class="pay-icon" id="process">
-          <div class="box-header">How It Works</div>
-          <ul class="pay-list">
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Submit your building plans online (PDF format)</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> AI analysis against SANS 10400 clauses</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Receive instant preliminary feedback</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Municipal examiner reviews and adds comments</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Get approval, rejection, or revision request</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CONTACT -->
-  <section class="how-to-pay" id="contact">
-    <div class="how-to-pay-inner">
-      <div class="pay-section">
-        <div class="wallet-icon" style="flex: 1;">
-          <div class="box-header">Contact Us</div>
-          <p>Have questions? Our team is here to help.</p>
-          <p><strong>Phone:</strong> 012 358 2255</p>
-          <p><strong>Email:</strong> building@tshwane.gov.za</p>
-          <p><strong>Address:</strong> Tshwane Municipality, Pretoria</p>
-        </div>
-        <div class="pay-icon" style="flex: 2;">
-          <div class="box-header">Send Us a Message</div>
-          <form id="contactForm" style="display: flex; flex-direction: column; gap: 10px;">
-            <input type="text" placeholder="Your Name" required style="padding: 10px; border: 1px solid #ddd; border-radius: 3px;">
-            <input type="email" placeholder="Your Email" required style="padding: 10px; border: 1px solid #ddd; border-radius: 3px;">
-            <select style="padding: 10px; border: 1px solid #ddd; border-radius: 3px;">
-              <option>General Inquiry</option>
-              <option>Technical Support</option>
-              <option>Lodge a Complaint</option>
-            </select>
-            <textarea placeholder="Your Message" rows="4" required style="padding: 10px; border: 1px solid #ddd; border-radius: 3px;"></textarea>
-            <button type="submit" class="box-button" style="align-self: flex-start;">Send Message</button>
+            <div class="formGroup">
+              <label>Subject</label>
+              <select>
+                <option>General Enquiry</option>
+                <option>Building Plan Application</option>
+                <option>Technical Support</option>
+                <option>Complaint</option>
+              </select>
+            </div>
+            <div class="formGroup">
+              <label>Message</label>
+              <textarea placeholder="Your message..." rows="4" required></textarea>
+            </div>
+            <button type="submit" class="formButton">Send Message</button>
           </form>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
   <!-- FOOTER -->
-  <footer class="footer-section">
-    <div class="footer-inner">
-      <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+  <footer class="footerSection">
+    <div class="footerContainer">
+      <div class="footerGrid">
+        <div class="footerCol">
           <h3>Quick Links</h3>
-          <ul class="footer-links">
+          <ul>
             <li><a href="#"><i class="fas fa-chevron-right"></i> Home</a></li>
             <li><a href="#services"><i class="fas fa-chevron-right"></i> Services</a></li>
             <li><a href="#benefits"><i class="fas fa-chevron-right"></i> Benefits</a></li>
-            <li><a href="#process"><i class="fas fa-chevron-right"></i> How It Works</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> How It Works</a></li>
           </ul>
         </div>
-        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+        <div class="footerCol">
           <h3>Account</h3>
-          <ul class="footer-links">
+          <ul>
             <li><a href="client/track.html"><i class="fas fa-chevron-right"></i> Track Application</a></li>
             <li><a href="client/apply.html"><i class="fas fa-chevron-right"></i> Register New Account</a></li>
-            <li><a href="#"><i class="fas fa-chevron-right"></i> Help Topics and FAQs</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Help Topics &amp; FAQs</a></li>
             <li><a href="#contact"><i class="fas fa-chevron-right"></i> Lodge a Complaint</a></li>
           </ul>
         </div>
-        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+        <div class="footerCol">
           <h3>Services</h3>
-          <ul class="footer-links">
+          <ul>
             <li><a href="#"><i class="fas fa-chevron-right"></i> About e-Tshwane</a></li>
             <li><a href="#"><i class="fas fa-chevron-right"></i> Payment Services</a></li>
             <li><a href="#"><i class="fas fa-chevron-right"></i> Services Security</a></li>
             <li><a href="#"><i class="fas fa-chevron-right"></i> Benefits of e-Tshwane</a></li>
           </ul>
         </div>
-        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+        <div class="footerCol">
           <h3>Contact</h3>
-          <ul class="footer-links">
-            <li><i class="fas fa-phone"></i> 012 358 2255</li>
-            <li><i class="fas fa-envelope"></i> building@tshwane.gov.za</li>
-            <li><i class="fas fa-map-marker-alt"></i> Tshwane Municipality</li>
-          </ul>
+          <p><i class="fas fa-phone"></i> 012 358 2255</p>
+          <p><i class="fas fa-envelope"></i> building@tshwane.gov.za</p>
+          <p><i class="fas fa-map-marker-alt"></i> Tshwane Municipality</p>
+          <p><i class="fas fa-globe"></i> www.tshwane.gov.za</p>
         </div>
       </div>
     </div>
+    <div class="subFooter">
+      <div>Brought to you by the <b>City of Tshwane</b> in collaboration with <b>Building Control Division</b></div>
+    </div>
   </footer>
 
-  <!-- SUB FOOTER -->
-  <div class="sub-footer">
-    <div class="container">
-      <div class="subFooterWrapper">
-        <div class="subFooterTxt">Brought to you by the <b>City of Tshwane</b> in collaboration with <b>Building Control Division</b></div>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     // Hero Slider
-    const slides = document.querySelectorAll('.hero-slide');
+    const slides = document.querySelectorAll('.heroSlide');
+    const dots = document.querySelectorAll('.heroDot');
     let currentSlide = 0;
 
     function showSlide(index) {
       slides.forEach(s => s.classList.remove('active'));
+      dots.forEach(d => d.classList.remove('active'));
       slides[index].classList.add('active');
+      dots[index].classList.add('active');
       currentSlide = index;
     }
 
-    setInterval(() => {
-      showSlide((currentSlide + 1) % slides.length);
-    }, 5000);
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => showSlide(parseInt(dot.dataset.slide)));
+    });
+
+    setInterval(() => showSlide((currentSlide + 1) % slides.length), 5000);
 
     // Smooth scroll
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -942,33 +1330,9 @@
         if (href !== '#') {
           e.preventDefault();
           const target = document.querySelector(href);
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       });
-    });
-
-    // Track application
-    function trackApplication() {
-      const ref = document.getElementById('trackRef').value;
-      if (ref) {
-        window.location.href = 'client/track.html?ref=' + ref;
-      } else {
-        window.location.href = 'client/track.html';
-      }
-    }
-
-    // Contact form
-    document.getElementById('contactForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      alert('Thank you for your message! We will contact you shortly.');
-      this.reset();
-    });
-
-    // Bootstrap navbar toggle (minimal implementation)
-    document.querySelector('.navbar-toggle').addEventListener('click', function() {
-      document.querySelector('#bs-example-navbar-collapse-1').classList.toggle('collapse');
     });
   </script>
 </body>
