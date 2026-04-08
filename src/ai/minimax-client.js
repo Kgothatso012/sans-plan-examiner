@@ -141,12 +141,34 @@ For EACH relevant clause, return JSON with:
   "clause_id": "SANS10400-XXX",
   "clause_title": "Descriptive title",
   "status": "PASS" | "FAIL" | "WARNING" | "NEED_INFO",
+  "severity": "CRITICAL" | "HIGH" | "MEDIUM" | "LOW",
+  "department_code": "BC" | "RSP" | "FS" | "GEO" | "MH" | "TI" | "RSW" | "WS" | "WM" | "EPO" | "WP" | "TRES",
   "measured_value": "What was found (e.g., '2400mm ceiling')",
   "required_value": "What is required (e.g., 'min 2400mm')",
   "reasoning": "Why you made this判断",
   "suggestion": "What needs to be fixed (if FAIL)",
   "confidence": 0.0-1.0
 }
+
+SEVERITY LEVELS:
+- CRITICAL: Life safety issues (fire exits blocked, structural failure risk)
+- HIGH: Major compliance failure requiring correction before approval
+- MEDIUM: Minor non-compliance that can be addressed as conditions
+- LOW: Minor documentation or aesthetic issues
+
+DEPARTMENT ROUTING (map clause to responsible department):
+- BC (Building Control): Structural, foundation, room sizes, ceiling height, site coverage
+- RSP (Regional Spatial Planning): Land use, zoning compliance, site coverage, height limits
+- FS (Fire Safety): Fire resistance, means of egress, occupancy classification, detection systems
+- GEO (Geology): Soil conditions, foundation requirements
+- MH (Municipal Health): Sanitation, bathroom facilities, kitchen ventilation
+- TI (Traffic Impact): Parking, driveway, turnaround space
+- RSW (Roads and Storm Water): Stormwater drainage, access road requirements
+- WS (Water and Sanitation): Water supply, sewerage connections
+- WM (Waste Management): Waste disposal facilities
+- EPO (Environmental Planning): Open space, environmental impact
+- WP (Water Pollution): Pollution control, water quality
+- TRES (Treasury): Fee calculations (no compliance findings)
 
 If no issues found, status is PASS.
 If missing information to decide, status is NEED_INFO.
@@ -197,15 +219,18 @@ Be thorough - check dimensions, ratios, and specific requirements.`;
     const ceilingMatch = text.match(/ceiling.*?(\d+)\s*mm/i);
     if (ceilingMatch) {
       const height = parseInt(ceilingMatch[1]);
+      const isPass = height >= 2400;
       results.push({
         application_id: applicationId,
         clause_id: 'SANS10400-A2',
         clause_title: 'Ceiling Height',
-        status: height >= 2400 ? 'PASS' : 'FAIL',
+        status: isPass ? 'PASS' : 'FAIL',
+        severity: isPass ? null : 'HIGH',
+        department_code: 'BC',
         measured_value: `${height}mm`,
         required_value: 'min 2400mm (habitable), 2100mm (non-habitable)',
         reasoning: `Ceiling height measured at ${height}mm. Minimum requirement is 2400mm for habitable rooms.`,
-        suggestion: height < 2400 ? 'Increase ceiling height to meet 2400mm requirement' : null,
+        suggestion: !isPass ? 'Increase ceiling height to meet 2400mm requirement' : null,
         confidence: 0.9,
         analyzed_at: new Date().toISOString()
       });
@@ -215,15 +240,18 @@ Be thorough - check dimensions, ratios, and specific requirements.`;
     const floorHeightMatch = text.match(/floor.*?height.*?(\d+)\s*mm/i);
     if (floorHeightMatch) {
       const height = parseInt(floorHeightMatch[1]);
+      const isPass = height >= 300;
       results.push({
         application_id: applicationId,
         clause_id: 'SANS10400-A3',
         clause_title: 'Floor Height Above Ground',
-        status: height >= 300 ? 'PASS' : 'WARNING',
+        status: isPass ? 'PASS' : 'WARNING',
+        severity: isPass ? null : 'MEDIUM',
+        department_code: 'BC',
         measured_value: `${height}mm`,
         required_value: 'min 300mm in flood-prone areas',
         reasoning: `Floor height is ${height}mm above ground level.`,
-        suggestion: height < 300 ? 'Consider raising floor height for flood protection' : null,
+        suggestion: !isPass ? 'Consider raising floor height for flood protection' : null,
         confidence: 0.7,
         analyzed_at: new Date().toISOString()
       });
@@ -238,6 +266,8 @@ Be thorough - check dimensions, ratios, and specific requirements.`;
         clause_id: 'SANS10400-B1',
         clause_title: 'Occupancy Classification',
         status: 'PASS',
+        severity: null,
+        department_code: 'FS',
         measured_value: occ,
         required_value: 'Valid occupancy type (A-F, H1-H4)',
         reasoning: `Occupancy classification: ${occ}`,
@@ -247,19 +277,43 @@ Be thorough - check dimensions, ratios, and specific requirements.`;
       });
     }
 
+    // SANS10400-B3: Fire Means of Egress
+    const exitWidthMatch = text.match(/exit.*?width.*?(\d+)\s*mm/i);
+    if (exitWidthMatch) {
+      const width = parseInt(exitWidthMatch[1]);
+      const isPass = width >= 900;
+      results.push({
+        application_id: applicationId,
+        clause_id: 'SANS10400-B3',
+        clause_title: 'Means of Egress',
+        status: isPass ? 'PASS' : 'FAIL',
+        severity: isPass ? null : 'CRITICAL',
+        department_code: 'FS',
+        measured_value: `${width}mm`,
+        required_value: 'min 900mm for residential, 1000mm for commercial',
+        reasoning: `Exit width is ${width}mm. Minimum is 900mm for safe egress.`,
+        suggestion: !isPass ? 'Widen exit to minimum 900mm for safe egress' : null,
+        confidence: 0.8,
+        analyzed_at: new Date().toISOString()
+      });
+    }
+
     // SANS10400-D1: Stair Width
     const stairWidthMatch = text.match(/stair.*?width.*?(\d+)\s*mm/i);
     if (stairWidthMatch) {
       const width = parseInt(stairWidthMatch[1]);
+      const isPass = width >= 900;
       results.push({
         application_id: applicationId,
         clause_id: 'SANS10400-D1',
         clause_title: 'Stair Width',
-        status: width >= 900 ? 'PASS' : 'FAIL',
+        status: isPass ? 'PASS' : 'FAIL',
+        severity: isPass ? null : 'HIGH',
+        department_code: 'BC',
         measured_value: `${width}mm`,
         required_value: 'min 900mm (residential), 1000mm (commercial)',
         reasoning: `Stair width measured at ${width}mm. Minimum requirement is 900mm for residential.`,
-        suggestion: width < 900 ? 'Increase stair width to meet 900mm requirement' : null,
+        suggestion: !isPass ? 'Increase stair width to meet 900mm requirement' : null,
         confidence: 0.85,
         analyzed_at: new Date().toISOString()
       });
@@ -269,15 +323,18 @@ Be thorough - check dimensions, ratios, and specific requirements.`;
     const stairRiseMatch = text.match(/stair.*?rise.*?(\d+)\s*mm/i);
     if (stairRiseMatch) {
       const rise = parseInt(stairRiseMatch[1]);
+      const isPass = rise <= 190;
       results.push({
         application_id: applicationId,
         clause_id: 'SANS10400-D2',
         clause_title: 'Stair Rise',
-        status: rise <= 190 ? 'PASS' : 'FAIL',
+        status: isPass ? 'PASS' : 'FAIL',
+        severity: isPass ? null : 'HIGH',
+        department_code: 'BC',
         measured_value: `${rise}mm`,
         required_value: 'max 190mm per step',
         reasoning: `Stair rise is ${rise}mm. Maximum allowed is 190mm per step.`,
-        suggestion: rise > 190 ? 'Reduce step rise to max 190mm' : null,
+        suggestion: !isPass ? 'Reduce step rise to max 190mm' : null,
         confidence: 0.85,
         analyzed_at: new Date().toISOString()
       });
@@ -287,15 +344,18 @@ Be thorough - check dimensions, ratios, and specific requirements.`;
     const handrailMatch = text.match(/handrail.*?height.*?(\d+)\s*mm/i);
     if (handrailMatch) {
       const height = parseInt(handrailMatch[1]);
+      const isPass = height >= 900 && height <= 1000;
       results.push({
         application_id: applicationId,
         clause_id: 'SANS10400-D3',
         clause_title: 'Handrail Height',
-        status: height >= 900 && height <= 1000 ? 'PASS' : 'FAIL',
+        status: isPass ? 'PASS' : 'FAIL',
+        severity: isPass ? null : 'MEDIUM',
+        department_code: 'BC',
         measured_value: `${height}mm`,
         required_value: 'min 900mm, max 1000mm',
         reasoning: `Handrail height is ${height}mm. Must be between 900mm and 1000mm.`,
-        suggestion: height < 900 || height > 1000 ? 'Adjust handrail height to 900-1000mm range' : null,
+        suggestion: !isPass ? 'Adjust handrail height to 900-1000mm range' : null,
         confidence: 0.8,
         analyzed_at: new Date().toISOString()
       });

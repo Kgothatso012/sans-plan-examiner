@@ -167,4 +167,73 @@ router.get('/applications/:id/analysis', async (req, res) => {
   }
 });
 
+// Get analysis summary grouped by department
+router.get('/applications/:id/analysis/by-department', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { data: analysis, error } = await supabase
+      .from('application_analysis')
+      .select('*')
+      .eq('application_id', id)
+      .order('analyzed_at', { ascending: true });
+
+    if (error) throw error;
+
+    // Group by department
+    const byDept = {};
+    const deptNames = {
+      'BC': 'Building Control',
+      'RSP': 'Regional Spatial Planning',
+      'FS': 'Fire Safety',
+      'GEO': 'Geology',
+      'MH': 'Municipal Health',
+      'TI': 'Traffic Impact',
+      'RSW': 'Roads and Storm Water',
+      'WS': 'Water and Sanitation',
+      'WM': 'Waste Management',
+      'EPO': 'Environmental Planning',
+      'WP': 'Water Pollution',
+      'TRES': 'Treasury'
+    };
+
+    analysis.forEach(item => {
+      const dept = item.department_code || 'BC';
+      if (!byDept[dept]) {
+        byDept[dept] = {
+          department_code: dept,
+          department_name: deptNames[dept] || dept,
+          findings: [],
+          passCount: 0,
+          failCount: 0,
+          warningCount: 0,
+          criticalCount: 0,
+          highCount: 0
+        };
+      }
+      byDept[dept].findings.push(item);
+      if (item.status === 'PASS') byDept[dept].passCount++;
+      else if (item.status === 'FAIL') {
+        byDept[dept].failCount++;
+        if (item.severity === 'CRITICAL') byDept[dept].criticalCount++;
+        if (item.severity === 'HIGH') byDept[dept].highCount++;
+      }
+      else if (item.status === 'WARNING') byDept[dept].warningCount++;
+    });
+
+    res.json({
+      totalFindings: analysis.length,
+      departments: Object.values(byDept),
+      criticalItems: analysis.filter(a => a.status === 'FAIL' && a.severity === 'CRITICAL'),
+      highItems: analysis.filter(a => a.status === 'FAIL' && a.severity === 'HIGH'),
+      summary: {
+        totalPassed: analysis.filter(a => a.status === 'PASS').length,
+        totalFailed: analysis.filter(a => a.status === 'FAIL').length,
+        totalWarnings: analysis.filter(a => a.status === 'WARNING').length
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
