@@ -359,36 +359,34 @@
         <input type="text" class="search-input" id="searchInput" placeholder="Search by ref, ERF, applicant...">
       </div>
 
-      <!-- DASHBOARD STATS -->
-      <div class="stats-section" style="padding: 12px; border-bottom: 1px solid #eee; background: #f8f9fa;">
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
-          <div style="background: white; padding: 10px; border-radius: 6px; text-align: center;">
-            <div style="font-size: 1.5rem; font-weight: 700; color: var(--tshwane-blue);" id="statTotal">0</div>
-            <div style="font-size: 0.65rem; color: var(--steel); text-transform: uppercase;">Total</div>
+      <!-- DASHBOARD STATS - Compact HUD -->
+      <div class="stats-section" style="padding: 8px 12px; border-bottom: 1px solid #eee; background: #f8f9fa;">
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <div style="text-align: center; min-width: 45px;">
+            <div style="font-size: 1.1rem; font-weight: 700; color: var(--tshwane-blue);" id="statTotal">0</div>
+            <div style="font-size: 0.6rem; color: var(--steel); text-transform: uppercase;">Total</div>
           </div>
-          <div style="background: white; padding: 10px; border-radius: 6px; text-align: center;">
-            <div style="font-size: 1.5rem; font-weight: 700; color: #1565c0;" id="statPending">0</div>
-            <div style="font-size: 0.65rem; color: var(--steel); text-transform: uppercase;">Pending</div>
+          <div style="text-align: center; min-width: 45px;">
+            <div style="font-size: 1.1rem; font-weight: 700; color: #1565c0;" id="statPending">0</div>
+            <div style="font-size: 0.6rem; color: var(--steel); text-transform: uppercase;">Pending</div>
           </div>
-          <div style="background: white; padding: 10px; border-radius: 6px; text-align: center;">
-            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);" id="statApproved">0</div>
-            <div style="font-size: 0.65rem; color: var(--steel); text-transform: uppercase;">Approved</div>
+          <div style="text-align: center; min-width: 45px;">
+            <div style="font-size: 1.1rem; font-weight: 700; color: var(--success);" id="statApproved">0</div>
+            <div style="font-size: 0.6rem; color: var(--steel); text-transform: uppercase;">Approved</div>
           </div>
-          <div style="background: white; padding: 10px; border-radius: 6px; text-align: center;">
-            <div style="font-size: 1.5rem; font-weight: 700; color: var(--danger);" id="statRejected">0</div>
-            <div style="font-size: 0.65rem; color: var(--steel); text-transform: uppercase;">Rejected</div>
+          <div style="text-align: center; min-width: 45px;">
+            <div style="font-size: 1.1rem; font-weight: 700; color: var(--danger);" id="statRejected">0</div>
+            <div style="font-size: 0.6rem; color: var(--steel); text-transform: uppercase;">Rejected</div>
           </div>
-        </div>
-        <div style="margin-top: 8px; text-align: center;">
-          <span style="font-size: 0.75rem; color: var(--steel);">Approval Rate: <strong id="statRate">0%</strong></span>
-        </div>
-        <div id="statsChart" style="display:flex;gap:4px;height:60px;align-items:flex-end;padding:8px 0;">
-          <div id="chartPending" style="flex:1;background:#1565c0;height:0%;border-radius:4px 4px 0 0;transition:height 0.3s;" title="Pending"></div>
-          <div id="chartApproved" style="flex:1;background:#2e7d32;height:0%;border-radius:4px 4px 0 0;transition:height 0.3s;" title="Approved"></div>
-          <div id="chartRejected" style="flex:1;background:#ef3636;height:0%;border-radius:4px 4px 0 0;transition:height 0.3s;" title="Rejected"></div>
-        </div>
-        <div style="display:flex;justify-content:space-around;font-size:0.65rem;color:var(--steel);">
-          <span>Pending</span><span>Approved</span><span>Rejected</span>
+          <div style="text-align: center; min-width: 50px;">
+            <div style="font-size: 0.9rem; font-weight: 700; color: var(--tshwane-blue);" id="statRate">0%</div>
+            <div style="font-size: 0.6rem; color: var(--steel); text-transform: uppercase;">Rate</div>
+          </div>
+          <div id="statsChart" style="display:flex;gap:3px;height:30px;align-items:flex-end;flex:1;min-width:80px;">
+            <div id="chartPending" style="flex:1;background:#1565c0;height:0%;border-radius:2px 2px 0 0;transition:height 0.3s;" title="Pending"></div>
+            <div id="chartApproved" style="flex:1;background:#2e7d32;height:0%;border-radius:2px 2px 0 0;transition:height 0.3s;" title="Approved"></div>
+            <div id="chartRejected" style="flex:1;background:#ef3636;height:0%;border-radius:2px 2px 0 0;transition:height 0.3s;" title="Rejected"></div>
+          </div>
         </div>
       </div>
 
