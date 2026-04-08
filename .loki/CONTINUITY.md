@@ -1,46 +1,54 @@
 # Loki Mode Continuity Ledger
 
-**Project:** SANS Plan Examiner
+**Project:** SANS Plan Examiner v2 (Tshwane Municipality)
 **Started:** 2026-04-07T16:22:33Z
-**Phase:** ENHANCEMENT - Running (Iteration 10+)
+**Phase:** ENHANCEMENT - v2 Implementation Complete
 
 ## Current State
-- Tests: 171 passing (7 suites)
-- Commits: 10 new
-- Rules: 34 SANS rules
-- Coverage: 93.65% statements, 62.5% branches
+- v2 Implementation: COMPLETE
+- Commits (v2): 5 new (68093bb, 9ca700b, 66dcf37, 07611b3, d8b5ceb)
+- Departments: 11 (BC, RSP, FS, GEO, MH, TI, RSW, WS, WM, EPO, WP, TRES)
+- Workflow Stages: 5 (RECEIVED → ACKNOWLEDGED → UNDER_REVIEW → DECISION → COLLECTION)
 
-## Test Suites (7 total, 171 tests)
-| Suite | Tests | Purpose |
-|-------|-------|---------|
-| plan-checker.test.js | 43 | SANS rule unit tests |
-| api.test.js | 15 | API endpoint tests |
-| integration.test.js | 20 | Application flow tests |
-| regression.test.js | 31 | Core functionality |
-| performance.test.js | 8 | Timing & memory |
-| accessibility.test.js | 15 | SANS 10400-E disabled access |
-| extract-data.test.js | 21 | Text extraction patterns |
+## v2 Implementation Summary
 
-## Bug Found & Documented
-- extractDataFromText regex `\d+%` doesn't capture decimals (e.g., "55.5%")
-- Coverage stays at 0 (default) when decimal provided
+### Phase 1 - Branding + Workflow (commit 68093bb)
+- 5-stage progress bar in apply.html + track.html
+- Application type selector (Residential/Commercial/Industrial/Other)
+- Document checklist with visual indicators
+- QP registration (SACAP/ECSA/SAIA/SAICE)
 
-## Commits (10 new since session start)
-1. 704ead0 - Extract data tests (171 tests)
-2. 596bb99 - Accessibility tests SANS 10400-E
-3. 715da68 - Performance tests
-4. 5f6f559 - Regression test suite
-5. d9be8e2 - Integration tests
-6. 7dacf06 - 10 more SANS rules (34 total)
-7. af7e087 - 10 new SANS rules
-8. cf45aba - API integration tests
-9. 2fe24f0 - Unit tests
-10. 239bce4 - SANS wiki
+### Phase 2 - Multi-Department Routing (commit 9ca700b)
+- 11 departments routing based on application type
+- departments array stored per application
+- Per-department status tracking
+- New endpoints: GET /department/:code, PUT /:id/stage
+
+### Phase 3 - Enhanced AI Examination (commit 66dcf37)
+- Severity classification (CRITICAL, HIGH, MEDIUM, LOW)
+- department_code mapping per clause
+- New endpoint: GET /analysis/by-department
+
+### Phase 4 - Email Notifications (commit 07611b3)
+- stage_changed, decision, collection, ai_complete, department_completed
+- Tshwane branded templates
+- Department breakdown in emails
+
+### Phase 5 - Admin Department Tabs (commit d8b5ceb)
+- 11 department tabs in admin sidebar
+- switchDept() filtering
+- updateDeptCounts() with badge counts
+
+## Research Done
+- Singapore CORENET X system studied
+- Tshwane NAPS (New Applications Processing System) discovered (launched Dec 2024)
+- 11-department model adopted from Tshwane's actual structure
 
 ## Next Actions
-- Add E2E tests
-- Add security tests (XSS, SQL injection)
-- Improve branch coverage (currently 62.5%)
+- Deploy to production
+- Set up SMTP credentials in .env
+- Add department-specific AI prompts
+- Build department approval workflow UI
 
 ## Active Agents
-- orchestrator-main (PID 2915)
+- None (v2 complete)
