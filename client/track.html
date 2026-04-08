@@ -689,6 +689,12 @@
           <span class="detail-label">Assigned Examiner</span>
           <span class="detail-value" id="examinerValue">-</span>
         </div>
+        <div class="detail-row">
+          <span class="detail-label">Departments</span>
+          <span class="detail-value">
+            <div class="dept-badges" id="deptBadges"></div>
+          </span>
+        </div>
       </div>
 
       <!-- PDF Viewer -->
@@ -959,6 +965,11 @@
         // Update stage progress bar
         updateStageProgress(data.status);
 
+        // Render department badges
+        if (data.departments && data.departments.length > 0) {
+          renderDepartmentBadges(data.departments);
+        }
+
         // Load comments
         if (data.id) {
           await loadComments(data.id);
@@ -1106,6 +1117,42 @@
           el.classList.add('active');
         }
       });
+    }
+
+    // Render department badges
+    function renderDepartmentBadges(departments) {
+      const container = document.getElementById('deptBadges');
+      if (!container) return;
+
+      const deptNames = {
+        'BC': 'Building Control',
+        'RSP': 'Regional Spatial',
+        'FS': 'Fire Safety',
+        'GEO': 'Geology',
+        'MH': 'Municipal Health',
+        'TI': 'Traffic Impact',
+        'RSW': 'Roads & Storm',
+        'WS': 'Water & Sanitation',
+        'WM': 'Waste Mgmt',
+        'EPO': 'Enviro Planning',
+        'WP': 'Water Pollution',
+        'TRES': 'Treasury'
+      };
+
+      const statusColors = {
+        'PENDING': '#f5a800',
+        'IN_REVIEW': '#2196f3',
+        'APPROVED': '#4caf50',
+        'REJECTED': '#ef5350'
+      };
+
+      container.innerHTML = departments.map(dept => {
+        const color = statusColors[dept.status] || '#999';
+        const isActive = dept.status === 'IN_REVIEW';
+        return `<span class="dept-badge ${isActive ? 'active' : ''}" style="${isActive ? '' : 'background:' + color + ';color:white;border-color:' + color}" title="${dept.name}: ${dept.status}">
+          ${deptNames[dept.code] || dept.code}
+        </span>`;
+      }).join('');
     }
 
     document.getElementById('reference').addEventListener('keypress', (e) => { if (e.key === 'Enter') trackApplication(); });

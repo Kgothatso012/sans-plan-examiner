@@ -10,10 +10,40 @@ const { logAudit } = require('../services/audit');
 
 const router = express.Router();
 
+// Department routing - determines which depts need to review based on application type
+function getRequiredDepartments(applicationType, erfSize = null) {
+  const departments = {
+    BC: 'Building Control',
+    RSP: 'Regional Spatial Planning',
+    FS: 'Fire Safety',
+    GEO: 'Geology',
+    MH: 'Municipal Health',
+    TI: 'Traffic Impact',
+    RSW: 'Roads and Storm Water',
+    WS: 'Water and Sanitation',
+    WM: 'Waste Management',
+    EPO: 'Environmental Planning & Open Space',
+    WP: 'Water Pollution',
+    TRES: 'Treasury'
+  };
+
+  const routingRules = {
+    'residential-small': ['BC', 'MH', 'RSW'],  // < 500m²
+    'residential': ['BC', 'RSP', 'MH', 'RSW'], // >= 500m²
+    'commercial': ['BC', 'RSP', 'FS', 'TI', 'RSW', 'WS', 'EPO', 'TRES'],
+    'industrial': ['BC', 'RSP', 'FS', 'GEO', 'TI', 'RSW', 'WS', 'WM', 'EPO', 'WP', 'TRES'],
+    'other': ['BC', 'RSP', 'MH', 'TRES'],
+    'default': ['BC', 'RSP', 'MH', 'TRES']
+  };
+
+  const requiredDepts = routingRules[applicationType] || routingRules['default'];
+  return requiredDepts.map(code => ({ code, name: departments[code], status: 'PENDING' }));
+}
+
 // Submit new application
 router.post('/submit', submitLimiter, upload.array('documents', 10), async (req, res) => {
   try {
-    const { erfNumber, ownerName, ownerEmail, ownerPhone, description, zoning } = req.body;
+    const { erfNumber, ownerName, ownerEmail, ownerPhone, description, zoning, applicationType, professionalName, professionalReg, professionalBody, professionalEmail, professionalCompany } = req.body;
 
     if (!erfNumber || !ownerName || !ownerEmail) {
       return res.status(400).json({ error: 'ERF number, owner name, and email are required' });
@@ -24,16 +54,27 @@ router.post('/submit', submitLimiter, upload.array('documents', 10), async (req,
       return res.status(400).json({ error: 'Invalid email format' });
     }
 
+    const refNumber = 'TC' + Date.now().toString().slice(-6);
+    const departments = getRequiredDepartments(applicationType || 'default');
+
     const sanitized = {
       erf_number: erfNumber.trim().slice(0, 50),
       owner_name: ownerName.trim().slice(0, 100),
       owner_email: ownerEmail.toLowerCase().trim(),
       owner_phone: ownerPhone?.trim().slice(0, 20) || null,
       description: description?.trim().slice(0, 1000) || null,
-      zoning: zoning?.trim().slice(0, 50) || null
+      zoning: zoning?.trim().slice(0, 50) || null,
+      application_type: applicationType || 'other',
+      // QP fields
+      professional_name: professionalName?.trim().slice(0, 100) || null,
+      professional_reg: professionalReg?.trim().slice(0, 50) || null,
+      professional_body: professionalBody?.trim().slice(0, 50) || null,
+      professional_email: professionalEmail?.toLowerCase().trim() || null,
+      professional_company: professionalCompany?.trim().slice(0, 200) || null,
+      // Department routing
+      departments: departments,
+      workflow_stage: 'RECEIVED'
     };
-
-    const refNumber = 'TC' + Date.now().toString().slice(-6);
 
     const { data: application, error } = await supabase
       .from('applications')
@@ -45,7 +86,15 @@ router.post('/submit', submitLimiter, upload.array('documents', 10), async (req,
         owner_phone: sanitized.owner_phone,
         description: sanitized.description,
         zoning: sanitized.zoning,
-        status: 'PENDING'
+        application_type: sanitized.application_type,
+        professional_name: sanitized.professional_name,
+        professional_reg: sanitized.professional_reg,
+        professional_body: sanitized.professional_body,
+        professional_email: sanitized.professional_email,
+        professional_company: sanitized.professional_company,
+        departments: sanitized.departments,
+        workflow_stage: 'RECEIVED',
+        status: 'RECEIVED'
       })
       .select()
       .single();
@@ -77,7 +126,8 @@ router.post('/submit', submitLimiter, upload.array('documents', 10), async (req,
       success: true,
       reference: refNumber,
       applicationId: application.id,
-      message: 'Application submitted successfully'
+      message: 'Application submitted successfully',
+      departments: departments.map(d => d.code)
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -186,11 +236,49 @@ router.put('/:id/status', requireAdminAuth, async (req, res) => {
 router.post('/:id/decision', requireAdminAuth, async (req, res) => {
   try {
     const { id } = req.params;
-    const { decision } = req.body;
+    const { decision, department } = req.body;
 
     const validDecisions = ['PENDING', 'IN_PROGRESS', 'IN_REVIEW', 'APPROVED', 'REJECTED', 'REVISION', 'COMPLETED'];
     if (!validDecisions.includes(decision)) {
       return res.status(400).json({ error: 'Invalid decision. Valid: ' + validDecisions.join(', ') });
+    }
+
+    // If department specified, update that department's status in the departments array
+    if (department) {
+      const { data: app } = await supabase.from('applications').select('departments').eq('id', id).single();
+      if (!app) return res.status(404).json({ error: 'Application not found' });
+
+      const depts = app.departments || [];
+      const updatedDepts = depts.map(d => {
+        if (d.code === department) {
+          return { ...d, status: decision, updated_at: new Date().toISOString() };
+        }
+        return d;
+      });
+
+      // Check if all required departments have approved
+      const allApproved = updatedDepts.filter(d => d.status !== 'N/A').every(d => d.status === 'APPROVED');
+      const anyRejected = updatedDepts.some(d => d.status === 'REJECTED');
+
+      let overallStatus = 'UNDER_REVIEW';
+      if (anyRejected) overallStatus = 'REJECTED';
+      else if (allApproved) overallStatus = 'APPROVED';
+
+      const { data, error } = await supabase
+        .from('applications')
+        .update({
+          departments: updatedDepts,
+          status: overallStatus,
+          workflow_stage: overallStatus === 'APPROVED' || overallStatus === 'REJECTED' ? 'DECISION' : 'UNDER_REVIEW',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      await logAudit('DEPT_DECISION', 'application', id, { department, decision, overallStatus });
+      return res.json({ success: true, application: data, departmentStatus: decision });
     }
 
     const dbStatus = decision === 'APPROVED' ? 'COMPLETED' : decision;
@@ -208,6 +296,79 @@ router.post('/:id/decision', requireAdminAuth, async (req, res) => {
     await notifyApplicant(id, 'status_changed');
 
     res.json({ success: true, application: data, message: `Application ${decision}` });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get applications by department
+router.get('/department/:deptCode', requireAdminAuth, async (req, res) => {
+  try {
+    const { deptCode } = req.params;
+    const { status } = req.query;
+
+    const { data: applications, error } = await supabase
+      .from('applications')
+      .select('*, application_documents(*)')
+      .not('departments', 'is', null)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    // Filter applications that have this department and match status
+    const filtered = applications.filter(app => {
+      const depts = app.departments || [];
+      const deptMatch = depts.some(d => d.code === deptCode);
+      if (!deptMatch) return false;
+      if (status) {
+        const deptStatus = depts.find(d => d.code === deptCode)?.status;
+        return deptStatus === status;
+      }
+      return true;
+    });
+
+    res.json(filtered);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update workflow stage
+router.put('/:id/stage', requireAdminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { stage } = req.body;
+
+    const validStages = ['RECEIVED', 'ACKNOWLEDGED', 'UNDER_REVIEW', 'DECISION', 'COLLECTION'];
+    if (!validStages.includes(stage)) {
+      return res.status(400).json({ error: 'Invalid stage. Valid: ' + validStages.join(', ') });
+    }
+
+    const statusMap = {
+      'RECEIVED': 'RECEIVED',
+      'ACKNOWLEDGED': 'ACKNOWLEDGED',
+      'UNDER_REVIEW': 'UNDER_REVIEW',
+      'DECISION': 'APPROVED',
+      'COLLECTION': 'COLLECTION'
+    };
+
+    const { data, error } = await supabase
+      .from('applications')
+      .update({
+        workflow_stage: stage,
+        status: statusMap[stage] || stage,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    await logAudit('STAGE_CHANGE', 'application', id, { stage });
+    await notifyApplicant(id, 'stage_changed');
+
+    res.json({ success: true, application: data });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
