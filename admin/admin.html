@@ -343,6 +343,60 @@
 
     .details-content { flex: 1; overflow-y: auto; padding: var(--space-md); }
 
+    /* === DEPARTMENT LIST === */
+    .dept-list { display: flex; flex-direction: column; gap: 8px; }
+    .dept-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: white;
+      border: 1px solid #eee;
+      border-radius: 6px;
+    }
+    .dept-item.completed { border-left: 3px solid var(--tshwane-blue); }
+    .dept-item.rejected { border-left: 3px solid var(--sans-red); }
+    .dept-item.pending { border-left: 3px solid #ddd; }
+    .dept-code {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--tshwane-dark);
+      background: #f0f0f0;
+      padding: 4px 8px;
+      border-radius: 4px;
+      min-width: 50px;
+      text-align: center;
+    }
+    .dept-item.completed .dept-code { background: #e8f5e9; color: var(--tshwane-dark); }
+    .dept-item.rejected .dept-code { background: #ffebee; color: var(--sans-red); }
+    .dept-name { flex: 1; font-size: 13px; color: #333; }
+    .dept-status {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .dept-status.pending { background: #f5f5f5; color: #666; }
+    .dept-status.in_progress { background: #fff3cd; color: #856404; }
+    .dept-status.completed { background: #e8f5e9; color: #2e7d32; }
+    .dept-status.rejected { background: #ffebee; color: #c62828; }
+    .dept-actions { display: flex; gap: 4px; }
+    .dept-btn {
+      padding: 4px 10px;
+      font-size: 11px;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .dept-btn:hover { background: #f5f5f5; }
+    .dept-btn.approve { color: #2e7d32; border-color: #2e7d32; }
+    .dept-btn.approve:hover { background: #e8f5e9; }
+    .dept-btn.reject { color: #c62828; border-color: #c62828; }
+    .dept-btn.reject:hover { background: #ffebee; }
+
     /* === COMMENTS LIST === */
     .comments-list { display: flex; flex-direction: column; gap: var(--space-md); }
     .comment-thread { border: 1px solid #eee; border-radius: 6px; overflow: hidden; }
@@ -686,6 +740,7 @@
 
           <div class="details-tabs">
             <div class="details-tab active" onclick="switchTab('info')">Info</div>
+            <div class="details-tab" onclick="switchTab('depts')">Depts</div>
             <div class="details-tab" onclick="switchTab('comments')">Comments</div>
             <div class="details-tab" onclick="switchTab('ai')">AI Check</div>
             <div class="details-tab" onclick="switchTab('revisions')">Revisions</div>
@@ -718,6 +773,11 @@
                   <div class="info-item"><label>Status</label><div id="infoStatus">-</div></div>
                 </div>
               </div>
+            </div>
+
+            <!-- DEPARTMENTS TAB -->
+            <div id="tab-depts" class="tab-content hidden">
+              <div class="dept-list" id="deptList"></div>
             </div>
 
             <!-- COMMENTS TAB -->
@@ -1126,6 +1186,7 @@
         renderComments(app.comments || []);
         renderAIAnalysis(app.application_analysis || []);
         renderRevisions(app);
+        renderDeptList(app.departments || []);
         loadAppPDF(app.application_documents);
         updateWorkflowUI(app.workflow_stage || 'RECEIVED');
 
@@ -1262,6 +1323,73 @@
           </div>
         </div>
       `;
+    }
+
+    // === DEPARTMENTS ===
+    const DEPT_NAMES = {
+      BC: 'Building Control',
+      RSP: 'Regional Spatial Planning',
+      FS: 'Fire Safety',
+      GEO: 'Geology',
+      MH: 'Municipal Health',
+      TI: 'Traffic Impact',
+      RSW: 'Roads & Storm Water',
+      WS: 'Water & Sanitation',
+      WM: 'Waste Management',
+      EPO: 'Environmental Planning',
+      WP: 'Water Pollution',
+      TRES: 'Treasury'
+    };
+
+    function renderDeptList(departments) {
+      const container = document.getElementById('deptList');
+
+      if (!departments || departments.length === 0) {
+        container.innerHTML = '<p style="color: var(--steel); text-align: center; padding: 16px;">No departments assigned to this application.</p>';
+        return;
+      }
+
+      container.innerHTML = departments.map(dept => {
+        const statusClass = dept.status === 'COMPLETED' ? 'completed' : dept.status === 'REJECTED' ? 'rejected' : 'pending';
+        const statusLabel = dept.status === 'COMPLETED' ? 'Complete' : dept.status === 'REJECTED' ? 'Rejected' : dept.status === 'IN_PROGRESS' ? 'In Progress' : 'Pending';
+        const canUpdate = dept.status !== 'COMPLETED' && dept.status !== 'REJECTED';
+
+        return `
+          <div class="dept-item ${statusClass}">
+            <div class="dept-code">${dept.code}</div>
+            <div class="dept-name">${dept.name || DEPT_NAMES[dept.code] || dept.code}</div>
+            <div class="dept-status ${dept.status?.toLowerCase() || 'pending'}">${statusLabel}</div>
+            ${canUpdate ? `
+              <div class="dept-actions">
+                <button class="dept-btn approve" onclick="setDeptStatus('${dept.code}', 'COMPLETED')" title="Approve this department">✓</button>
+                <button class="dept-btn reject" onclick="setDeptStatus('${dept.code}', 'REJECTED')" title="Reject this department">✕</button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function setDeptStatus(deptCode, status) {
+      if (!currentApp) return;
+
+      try {
+        const res = await adminFetch('/api/applications/' + currentApp.id + '/department/' + deptCode, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+
+        if (!res.ok) throw new Error('Failed to update department');
+
+        const result = await res.json();
+        currentApp.departments = result.departments;
+        renderDeptList(result.departments);
+        showToast(deptCode + ' marked as ' + status.toLowerCase(), 'success');
+      } catch (e) {
+        console.error('Dept status error:', e);
+        showToast('Failed to update department', 'error');
+      }
     }
 
     // === COMMENTS ===

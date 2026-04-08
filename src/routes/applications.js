@@ -374,6 +374,53 @@ router.put('/:id/stage', requireAdminAuth, async (req, res) => {
   }
 });
 
+// Update department status
+router.put('/:id/department/:deptCode', requireAdminAuth, async (req, res) => {
+  try {
+    const { id, deptCode } = req.params;
+    const { status } = req.body;
+
+    const validStatuses = ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'REJECTED'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: 'Invalid status. Valid: ' + validStatuses.join(', ') });
+    }
+
+    // Get current application
+    const { data: app, error: appErr } = await supabase
+      .from('applications')
+      .select('departments')
+      .eq('id', id)
+      .single();
+
+    if (appErr) throw appErr;
+
+    // Update department in array
+    const departments = app.departments || [];
+    const deptIndex = departments.findIndex(d => d.code === deptCode);
+
+    if (deptIndex === -1) {
+      return res.status(404).json({ error: 'Department not found in application' });
+    }
+
+    departments[deptIndex] = { ...departments[deptIndex], status };
+
+    const { data, error } = await supabase
+      .from('applications')
+      .update({ departments, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    await logAudit('DEPT_STATUS', 'application', id, { department: deptCode, status });
+
+    res.json({ success: true, departments });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Assign application
 router.put('/:id/assign', async (req, res) => {
   try {
