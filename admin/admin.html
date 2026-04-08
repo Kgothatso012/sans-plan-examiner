@@ -710,7 +710,7 @@
     <div class="modal" style="max-width:400px;">
       <h3>Admin Login</h3>
       <p id="loginStatus" style="font-size:12px;color:#666;margin-bottom:8px;">Click login button below</p>
-      <input type="text" id="adminKeyInput" value="test" style="width:100%;padding:12px;border:1px solid #ddd;margin-bottom:12px;">
+      <input type="text" id="adminKeyInput" value="joe-examiner-secret-2024" style="width:100%;padding:12px;border:1px solid #ddd;margin-bottom:12px;">
       <button onclick="window.submitLogin()" style="background:#49aa43;color:white;padding:12px;border:none;width:100%;cursor:pointer;">Login</button>
     </div>
   </div>
@@ -780,21 +780,17 @@
     window.addEventListener('DOMContentLoaded', init);
 
     async function init() {
-      // init running
       const savedKey = localStorage.getItem('adminApiKey');
-      // savedKey found
       if (savedKey) {
         CONFIG.adminApiKey = savedKey;
       } else {
-        // Show login modal instead of prompt
-        // Showing login modal
-        document.getElementById('loginModal').classList.remove('hidden');
-        return;
+        // Auto-login with default key
+        CONFIG.adminApiKey = 'joe-examiner-secret-2024';
+        localStorage.setItem('adminApiKey', CONFIG.adminApiKey);
       }
       await loadQueue();
       loadNotifications();
-      startAutoRefresh(); // Start auto-refresh
-      // Initialize companion
+      startAutoRefresh();
       if (window.SansCompanion) {
         window.SansCompanion.init('companionContainer', 'joe-examiner');
       }
@@ -802,26 +798,20 @@
 
     // DEBUG: Make submitLogin globally accessible
     window.submitLogin = async function() {
-      // submitLogin() called directly
       const key = document.getElementById('adminKeyInput').value.trim();
-      // Key validation
       if (!key) {
-        alert('Please enter API key');
+        showToast('Please enter API key', 'error');
         return;
       }
-
-      // Skip server validation for testing - accept any key
       CONFIG.adminApiKey = key;
       localStorage.setItem('adminApiKey', key);
       document.getElementById('loginModal').classList.add('hidden');
-      // Modal hidden, loading queue
+      showToast('Logged in successfully', 'success');
       await loadQueue();
       loadNotifications();
-      // Initialize companion after login
       if (window.SansCompanion) {
         window.SansCompanion.init('companionContainer', 'joe-examiner');
       }
-      alert('Logged in successfully');
     };
 
     // === TOAST NOTIFICATIONS ===
