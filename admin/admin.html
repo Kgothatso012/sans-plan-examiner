@@ -120,26 +120,77 @@
     .notification-badge { background: var(--sans-red); color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; }
     .notification-item { font-size: 0.8rem; padding: var(--space-sm); background: var(--white); border-radius: 4px; margin-bottom: var(--space-xs); border-left: 3px solid var(--tshwane-blue); }
 
-    /* === TOOLBAR === */
-    .toolbar { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-sm) var(--space-md); background: var(--white); border-bottom: 1px solid #ddd; flex-wrap: wrap; }
-    .toolbar-group { display: flex; gap: var(--space-xs); align-items: center; }
-    .toolbar-btn { padding: var(--space-sm) var(--space-md); background: transparent; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
-    .toolbar-btn:hover { background: #f5f5f5; }
-    .toolbar-btn.active { background: var(--tshwane-blue); color: white; border-color: var(--tshwane-blue); }
-    .batch-toolbar { display: flex; }
-    .toolbar-btn.primary { background: var(--tshwane-blue); color: white; border-color: var(--tshwane-blue); }
-    .toolbar-btn.ai-analyze-btn { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border: none; font-weight: 600; padding: 8px 16px; border-radius: 4px; }
-    .toolbar-btn.ai-analyze-btn:hover { background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); }
-    .toolbar-btn.ai-analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    .toolbar-btn.ai-analyze-btn.loading { animation: pulse 1.5s infinite; }
-
-    /* Zoom Controls */
-    .zoom-controls { display: flex; align-items: center; gap: 8px; background: #f5f5f5; padding: 4px 8px; border-radius: 4px; }
-    .zoom-btn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: none; background: white; border-radius: 4px; cursor: pointer; font-size: 14px; }
-    .zoom-btn:hover { background: #e0e0e0; }
-    .zoom-slider { width: 100px; height: 4px; -webkit-appearance: none; background: #ddd; border-radius: 2px; cursor: pointer; }
-    .zoom-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: var(--tshwane-blue); border-radius: 50%; cursor: pointer; }
-    .zoom-value { font-size: 0.8rem; font-weight: 600; min-width: 45px; text-align: center; }
+    /* === TOOLBAR - Photoshop Style === */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 4px 8px;
+      background: #323232;
+      border-bottom: 1px solid #444;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+    }
+    .toolbar-group {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+      padding: 0 6px;
+      border-right: 1px solid #555;
+    }
+    .toolbar-group:last-child { border-right: none; }
+    .toolbar-group:empty { display: none; }
+    .toolbar-btn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #ccc;
+      transition: all 0.15s;
+    }
+    .toolbar-btn:hover { background: #555; color: #fff; }
+    .toolbar-btn.active { background: var(--tshwane-blue); color: white; }
+    .toolbar-btn.primary { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; }
+    .toolbar-btn.primary:hover { background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); }
+    .toolbar-btn.verify { background: #059669; color: white; }
+    .toolbar-btn.verify:hover { background: #047857; }
+    .toolbar-sep { width: 1px; height: 20px; background: #555; margin: 0 4px; }
+    .toolbar-label { font-size: 11px; color: #888; margin-right: 4px; text-transform: uppercase; }
+    .zoom-slider {
+      width: 80px;
+      height: 4px;
+      -webkit-appearance: none;
+      background: #555;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+    .zoom-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      background: var(--tshwane-blue);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .zoom-value { font-size: 11px; color: #ccc; min-width: 40px; text-align: center; font-family: var(--font-mono); }
+    .zoom-controls { display: flex; align-items: center; gap: 4px; }
+    .toolbar input[type="text"] {
+      width: 60px;
+      padding: 4px 6px;
+      background: #444;
+      border: 1px solid #555;
+      border-radius: 3px;
+      color: #ccc;
+      font-size: 11px;
+    }
+    .page-nav { display: flex; align-items: center; gap: 2px; }
+    .page-info { font-size: 11px; color: #888; font-family: var(--font-mono); min-width: 45px; text-align: center; }
 
     /* Scale Ruler */
     .scale-ruler { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 6px 12px; border-radius: 4px; font-size: 0.75rem; display: none; z-index: 100; }
@@ -424,62 +475,76 @@
 
     <!-- MAIN CONTENT -->
     <div class="main-content">
-      <!-- TOOLBAR -->
+      <!-- TOOLBAR - Photoshop Style Dark -->
       <div class="toolbar">
-        <!-- Zoom Controls -->
         <!-- ZOOM -->
         <div class="toolbar-group">
-          <button class="zoom-btn" onclick="zoomOut()">−</button>
-          <input type="range" class="zoom-slider" id="zoomSlider" min="25" max="400" value="150" onchange="setZoom(this.value)">
-          <button class="zoom-btn" onclick="zoomIn()">+</button>
+          <span class="zoom-controls">
+            <button class="toolbar-btn" onclick="zoomOut()" title="Zoom Out">−</button>
+            <input type="range" class="zoom-slider" id="zoomSlider" min="25" max="400" value="150" onchange="setZoom(this.value)">
+            <button class="toolbar-btn" onclick="zoomIn()" title="Zoom In">+</button>
+          </span>
           <span class="zoom-value" id="zoomValue">150%</span>
-          <button class="toolbar-btn" onclick="fitToWidth()">W</button>
-          <button class="toolbar-btn" onclick="fitToPage()">P</button>
         </div>
 
-        <!-- VIEW MODE -->
+        <!-- FIT -->
+        <div class="toolbar-group">
+          <button class="toolbar-btn" onclick="fitToWidth()" title="Fit Width">⊡</button>
+          <button class="toolbar-btn" onclick="fitToPage()" title="Fit Page">▢</button>
+        </div>
+
+        <!-- VIEW -->
         <div class="toolbar-group">
           <button class="toolbar-btn" id="btnFullscreen" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
-          <button class="toolbar-btn" id="btnDarkMode" onclick="toggleDarkMode()" title="Dark">🌙</button>
-          <button class="toolbar-btn" id="btnCompare" onclick="toggleCompareMode()" title="Compare">⚖</button>
           <button class="toolbar-btn" id="btnPan" onclick="togglePan()" title="Pan">✋</button>
-          <button class="toolbar-btn primary" id="btnComment" onclick="enableCommentMode()">💬</button>
+          <button class="toolbar-btn" id="btnComment" onclick="enableCommentMode()" title="Comment">💬</button>
         </div>
 
-        <!-- AI & EXPORT -->
+        <!-- AI -->
         <div class="toolbar-group">
-          <button class="toolbar-btn ai-analyze-btn" id="btnAIAnalyze" onclick="runAIAnalysis()" title="AI Analyze">🤖</button>
-          <button class="toolbar-btn" id="btnVerifyDocs" onclick="runDocVerification()" style="background:#059669;color:white;border:none;" title="Verify">📋</button>
-          <button class="toolbar-btn" onclick="exportCSV()">📊</button>
-          <button class="toolbar-btn" onclick="exportPDF()">📄</button>
+          <button class="toolbar-btn primary" id="btnAIAnalyze" onclick="runAIAnalysis()" title="AI Analyze">🤖</button>
+          <button class="toolbar-btn verify" id="btnVerifyDocs" onclick="runDocVerification()" title="Verify Docs">📋</button>
+        </div>
+
+        <!-- EXPORT -->
+        <div class="toolbar-group">
+          <button class="toolbar-btn" onclick="exportCSV()" title="Export CSV">📊</button>
+          <button class="toolbar-btn" onclick="exportPDF()" title="Export PDF">📄</button>
           <button class="toolbar-btn" onclick="saveAnnotatedPDF()" title="Save">💾</button>
         </div>
 
         <!-- DOCUMENT -->
-        <div class="toolbar-group" style="margin-left: auto;">
+        <div class="toolbar-group" style="margin-left: auto; border-left: 1px solid #555;">
           <input type="file" id="uploadDocInput" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleDocUpload(event)">
           <button class="toolbar-btn" onclick="document.getElementById('uploadDocInput').click()" title="Upload">📤</button>
-          <input type="text" id="pdfSearch" placeholder="Search..." style="width:70px;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:0.8rem;" onkeyup="if(event.key==='Enter')searchPDF()">
+          <input type="text" id="pdfSearch" placeholder="..." style="width:50px;padding:4px 6px;background:#444;border:1px solid #555;border-radius:3px;color:#ccc;font-size:11px;" onkeyup="if(event.key==='Enter')searchPDF()">
           <button class="toolbar-btn" onclick="searchPDF()" title="Search">🔍</button>
-          <span id="pageInfo">1/1</span>
-          <button class="toolbar-btn" onclick="prevPage()">◀</button>
-          <button class="toolbar-btn" onclick="nextPage()">▶</button>
         </div>
 
-        <!-- ANNOTATION -->
-        <div class="toolbar-group">
-          <button class="toolbar-btn" id="btnLine" onclick="toggleLineTool()" title="Line">📏</button>
-          <button class="toolbar-btn" id="btnRect" onclick="toggleRectTool()" title="Rect">⬜</button>
-          <button class="toolbar-btn" id="btnArrow" onclick="toggleArrowTool()" title="Arrow">➡</button>
+        <!-- PAGE -->
+        <div class="toolbar-group page-nav">
+          <button class="toolbar-btn" onclick="prevPage()" title="Previous">◀</button>
+          <span class="page-info" id="pageInfo">1/1</span>
+          <button class="toolbar-btn" onclick="nextPage()" title="Next">▶</button>
+        </div>
+
+        <!-- DRAW -->
+        <div class="toolbar-group" style="border-left: 1px solid #555;">
+          <button class="toolbar-btn" id="btnLine" onclick="toggleLineTool()" title="Line">╱</button>
+          <button class="toolbar-btn" id="btnRect" onclick="toggleRectTool()" title="Rectangle">▢</button>
+          <button class="toolbar-btn" id="btnArrow" onclick="toggleArrowTool()" title="Arrow">→</button>
           <button class="toolbar-btn" id="btnStamp" onclick="showStampMenu()" title="Stamp">🖊</button>
         </div>
 
-        <!-- MEASUREMENT -->
+        <!-- MEASURE -->
         <div class="toolbar-group">
           <button class="toolbar-btn" id="btnScaleRuler" onclick="toggleScaleRuler()" title="Scale">📏</button>
-          <button class="toolbar-btn" id="btnGrid" onclick="toggleGrid()" title="Grid">⊞</button>
           <button class="toolbar-btn" id="btnMeasure" onclick="toggleMeasure()" title="Measure">📐</button>
-          <button class="toolbar-btn" id="btnCoords" onclick="toggleCoords()" title="Coords">📍</button>
+        </div>
+
+        <!-- THEME -->
+        <div class="toolbar-group" style="border-left: 1px solid #555;">
+          <button class="toolbar-btn" id="btnDarkMode" onclick="toggleDarkMode()" title="Dark Mode">◐</button>
         </div>
       </div>
 
