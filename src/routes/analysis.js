@@ -7,6 +7,7 @@ const { requireAdminAuth } = require('../middleware/auth');
 const SansAnalyzer = require('../ai/sans-analyzer');
 const MiniMaxClient = require('../ai/minimax-client');
 const DocumentVerifier = require('../ai/document-verifier');
+const BRA_JOE_CHECKLIST = require('../data/bra-joe-checklist');
 
 const router = express.Router();
 
@@ -69,6 +70,9 @@ router.post('/applications/:id/analyze', requireAdminAuth, async (req, res) => {
         });
       }
 
+      // Also populate checklist from fallback results
+      await populateChecklistFromAI(id, fallbackResults);
+
       return res.json({
         success: true,
         analysis: fallbackResults,
@@ -89,6 +93,9 @@ router.post('/applications/:id/analyze', requireAdminAuth, async (req, res) => {
         analyzed_at: r.analyzed_at
       });
     }
+
+    // Dual-write AI results to checklist table for auto-checkable items
+    await populateChecklistFromAI(id, result.results);
 
     await supabase.from('applications').update({ status: 'ANALYZED', updated_at: new Date().toISOString() }).eq('id', id);
 
@@ -235,5 +242,50 @@ router.get('/applications/:id/analysis/by-department', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+/**
+ * Dual-write AI analysis results to application_checklist table
+ * Maps clause_id results to Bra Joe checklist item IDs
+ */
+async function populateChecklistFromAI(applicationId, aiResults) {
+  if (!aiResults || aiResults.length === 0) return;
+
+  // Build clause_id → status lookup
+  const statusByClause = {};
+  for (const r of aiResults) {
+    if (r.clause_id) statusByClause[r.clause_id] = r.status;
+  }
+
+  // Reverse mapping: checklist item ID → clause ID
+  const checklistToClause = {};
+  for (const [checklistId, clauseId] of Object.entries(BRA_JOE_CHECKLIST.clauseMapping)) {
+    if (!checklistToClause[clauseId]) checklistToClause[clauseId] = [];
+    checklistToClause[clauseId].push(checklistId);
+  }
+
+  const updates = [];
+
+  for (const [clauseId, status] of Object.entries(statusByClause)) {
+    const mappedItems = checklistToClause[clauseId] || [];
+    for (const checklistItemId of mappedItems) {
+      const item = BRA_JOE_CHECKLIST.items.find(i => i.id === checklistItemId);
+      if (!item) continue;
+
+      updates.push({
+        application_id: applicationId,
+        checklist_item_id: checklistItemId,
+        section: item.section,
+        ai_status: status,
+        updated_at: new Date().toISOString(),
+      });
+    }
+  }
+
+  if (updates.length > 0) {
+    await supabase
+      .from('application_checklist')
+      .upsert(updates, { onConflict: 'application_id,checklist_item_id' });
+  }
+}
 
 module.exports = router;

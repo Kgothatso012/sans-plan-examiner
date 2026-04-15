@@ -50,3 +50,4 @@
 ## [2026-04-06] letter | 557 Sosh L conditional approval letter generated
 ## [2026-04-06] re-analyze | ERF-557 Sosh L - CORRECTED (is additions/extension)
 ## [2026-04-06] update | Added energy calculations, structural, coverage details
+## [2026-04-15] ingest | 10 anonymized precedents added (erf-1001 through erf-1010)

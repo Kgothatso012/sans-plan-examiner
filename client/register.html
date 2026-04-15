@@ -6,226 +6,506 @@
   <title>Register | SANS Plan Examiner</title>
   <link rel="icon" type="image/png" href="images/favicon.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --green-main: #49aa43;
-      --green-dark: #457c36;
-      --green-lime: #b9d330;
-      --yellow-accent: #fed801;
-      --amber-top: #f5a800;
-      --charcoal: #262f37;
-      --ink: #1a1a1a;
-      --steel: #666666;
-      --paper: #f5f5f5;
-      --white: #ffffff;
-      --font-body: 'Open Sans', 'Segoe UI', sans-serif;
-      --font-display: 'Roboto Condensed', Arial Narrow, sans-serif;
+      --accent:       #f59e0b;
+      --accent-dark:  #d97706;
+      --accent-light: #fbbf24;
+      --accent-muted: rgba(245, 158, 11, 0.1);
+      --accent-border: rgba(245, 158, 11, 0.25);
+      --zinc-50:  #fafafa;
+      --zinc-100: #f4f4f5;
+      --zinc-200: #e4e4e7;
+      --zinc-300: #d4d4d8;
+      --zinc-400: #a1a1aa;
+      --zinc-500: #71717a;
+      --zinc-600: #52525b;
+      --zinc-700: #3f3f46;
+      --zinc-800: #27272a;
+      --zinc-900: #18181b;
+      --zinc-950: #09090b;
+      --white:    #ffffff;
+      --danger:   #ef4444;
+      --success:  #16a34a;
+      --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
+      --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+      --radius:   8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05);
+      --glass-bg:   rgba(255,255,255,0.65);
+      --glass-border: rgba(255,255,255,0.85);
+      --glass-inner:  inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(0,0,0,0.04);
+      --transition-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: var(--font-body); background: var(--paper); min-height: 100vh; display: flex; flex-direction: column; }
 
-    .top-bar { background: var(--amber-top); padding: 6px 0; font-size: 0.75rem; color: var(--charcoal); }
-    .top-bar-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: flex-end; gap: 20px; }
-    .top-bar a { color: var(--charcoal); text-decoration: none; font-weight: 500; }
-    .top-bar i { margin-right: 4px; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
 
-    .navbar { background: linear-gradient(135deg, var(--green-main) 0%, var(--green-dark) 100%); padding: 0 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
-    .navbar-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 30px; }
-    .nav-logo { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; padding: 12px 0; }
-    .nav-logo img { height: 38px; }
-    .nav-logo-text { font-family: var(--font-display); font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.1; }
-    .nav-logo-text small { display: block; font-size: 0.6rem; font-weight: 400; opacity: 0.85; letter-spacing: 0.1em; }
-    .nav-menu { display: flex; list-style: none; gap: 4px; margin-left: auto; }
-    .nav-menu a { display: block; padding: 18px 14px; color: white; text-decoration: none; font-size: 0.88rem; font-weight: 500; transition: background 0.2s; }
-    .nav-menu a:hover { background: rgba(255,255,255,0.12); }
-    .nav-auth { display: flex; gap: 8px; margin-left: 16px; }
-    .nav-auth a { padding: 7px 16px; border-radius: 3px; font-size: 0.82rem; font-weight: 600; text-decoration: none; transition: all 0.2s; }
-    .nav-auth .nav-login { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
-    .nav-auth .nav-login:hover { background: rgba(255,255,255,0.25); }
-    .nav-auth .nav-register { background: var(--yellow-accent); color: var(--charcoal); }
-    .nav-auth .nav-register:hover { background: #e6c200; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--zinc-100);
+      color: var(--zinc-800);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
 
-    .register-page { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; background: linear-gradient(135deg, #f5f5f5 0%, #e8f5e9 100%); }
-    .register-card { background: white; border-radius: 10px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); width: 100%; max-width: 440px; overflow: hidden; }
-    .register-header { background: linear-gradient(135deg, var(--green-main) 0%, var(--green-dark) 100%); padding: 28px 32px; text-align: center; color: white; }
-    .register-header h1 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
-    .register-header p { font-size: 0.85rem; opacity: 0.85; }
-    .register-body { padding: 32px; }
-    .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--charcoal); margin-bottom: 6px; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.04em; }
-    .input-wrap { position: relative; }
-    .input-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--steel); font-size: 0.9rem; }
-    .form-group input { width: 100%; padding: 12px 12px 12px 38px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.95rem; font-family: var(--font-body); transition: all 0.2s; color: var(--ink); }
-    .form-group input:focus { outline: none; border-color: var(--green-main); box-shadow: 0 0 0 3px rgba(73,170,67,0.15); }
-    .form-group input::placeholder { color: #aaa; }
-    .form-hint { font-size: 0.75rem; color: var(--steel); margin-top: 4px; }
-    .btn-register { width: 100%; padding: 14px; background: var(--green-main); color: white; border: none; border-radius: 4px; font-family: var(--font-display); font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: background 0.2s; margin-top: 6px; }
-    .btn-register:hover { background: var(--green-dark); }
-    .btn-register:disabled { background: #aaa; cursor: not-allowed; }
-    .register-error { background: #ffebee; border: 1px solid #ef3636; color: #b71c1c; padding: 10px 14px; border-radius: 4px; font-size: 0.85rem; margin-bottom: 16px; display: none; }
-    .register-error.show { display: block; }
-    .register-success { background: #e8f5e9; border: 1px solid #4caf50; color: #1b5e20; padding: 14px; border-radius: 4px; font-size: 0.9rem; margin-bottom: 16px; display: none; }
-    .register-success.show { display: block; }
-    .register-success i { margin-right: 6px; color: #4caf50; }
-    .register-links { text-align: center; margin-top: 20px; font-size: 0.88rem; color: var(--steel); }
-    .register-links a { color: var(--green-main); text-decoration: none; font-weight: 600; }
-    .register-links a:hover { text-decoration: underline; }
-    .benefits { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 14px; margin-bottom: 18px; }
-    .benefits h4 { font-family: var(--font-display); font-size: 0.8rem; text-transform: uppercase; color: var(--green-dark); margin-bottom: 10px; }
-    .benefits ul { list-style: none; font-size: 0.83rem; color: var(--steel); }
-    .benefits ul li { padding: 4px 0; display: flex; align-items: center; gap: 8px; }
-    .benefits ul li i { color: var(--green-main); font-size: 0.75rem; }
+    ::selection { background: var(--accent); color: var(--white); }
 
-    footer { background: var(--charcoal); color: rgba(255,255,255,0.6); padding: var(--space-lg) 20px; text-align: center; }
-    footer a { color: var(--green-lime); text-decoration: none; font-weight: 600; }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .animate-in      { animation: fadeSlideUp 0.45s var(--transition-spring) both; }
+    .animate-delay-1  { animation-delay: 0.1s; }
+    .animate-delay-2  { animation-delay: 0.2s; }
+
+    /* TOP BAR */
+    .topBar {
+      background: var(--zinc-900);
+      color: var(--zinc-400);
+      padding: 6px 0;
+      font-size: 11.5px;
+    }
+    .topBarInner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 20px;
+    }
+    .topBarInner span { display: flex; align-items: center; gap: 6px; }
+    .topBarInner i { font-size: 10px; color: var(--accent); }
+
+    /* NAVBAR */
+    .navbar {
+      background: var(--zinc-900);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--zinc-800);
+    }
+    .navbarInner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      height: 56px;
+      gap: 24px;
+    }
+    .navLogo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .navLogo img { height: 36px; }
+    .navLogoText { font-size: 14px; font-weight: 700; color: var(--white); line-height: 1.2; }
+    .navLogoText small { display: block; font-size: 10px; color: var(--zinc-500); font-weight: 400; }
+    .navMenu { display: flex; list-style: none; gap: 0; margin-left: 24px; }
+    .navMenu a { display: block; padding: 18px 14px; color: var(--zinc-400); text-decoration: none; font-size: 12.5px; font-weight: 500; border-bottom: 2px solid transparent; transition: all 0.2s; }
+    .navMenu a:hover { color: var(--white); border-bottom-color: var(--accent); }
+    .navAuth { display: flex; gap: 8px; margin-left: 16px; }
+    .navAuth a { padding: 6px 14px; border-radius: var(--radius); font-size: 12px; font-weight: 600; text-decoration: none; transition: all 0.25s var(--transition-spring); }
+    .navAuth .nav-login { background: rgba(255,255,255,0.1); color: var(--white); border: 1px solid rgba(255,255,255,0.2); }
+    .navAuth .nav-login:hover { background: rgba(255,255,255,0.18); }
+    .navAuth .nav-register { background: var(--accent); color: var(--zinc-900); }
+    .navAuth .nav-register:hover { background: var(--accent-dark); transform: translateY(-1px); }
+
+    /* REGISTER PAGE — SPLIT LAYOUT */
+    .registerPage {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: calc(100dvh - 56px);
+    }
+
+    .registerLeft {
+      background: var(--zinc-900);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 56px;
+      position: relative;
+      overflow: hidden;
+    }
+    .registerLeft::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 70% 40%, rgba(245,158,11,0.07) 0%, transparent 65%);
+    }
+
+    .registerLeftContent { position: relative; z-index: 1; }
+
+    .benefitsCard {
+      background: var(--glass-bg);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      backdrop-filter: blur(12px);
+    }
+    .benefitsTitle {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    .benefitItem {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--zinc-800);
+    }
+    .benefitItem:last-child { border-bottom: none; }
+    .benefitCheck {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .benefitCheck i { color: var(--zinc-900); font-size: 11px; }
+    .benefitText h4 { font-size: 13px; font-weight: 700; color: var(--white); margin-bottom: 3px; }
+    .benefitText p { font-size: 12px; color: var(--zinc-500); line-height: 1.5; }
+
+    .registerRight {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      background: var(--zinc-100);
+    }
+
+    .registerCard {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow-card), var(--glass-inner);
+      width: 100%;
+      max-width: 440px;
+      overflow: hidden;
+      transition: all 0.3s var(--transition-spring);
+    }
+    .registerCard:hover { box-shadow: 0 16px 48px rgba(0,0,0,0.1), var(--glass-inner); }
+
+    .registerCardHeader {
+      padding: 28px 32px;
+      background: var(--zinc-900);
+      color: var(--white);
+    }
+    .registerCardHeader h1 { font-size: 1.25rem; font-weight: 700; margin-bottom: 4px; }
+    .registerCardHeader p { font-size: 12.5px; color: var(--zinc-400); }
+
+    .registerCardBody { padding: 28px 32px; }
+
+    .registerError {
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      font-size: 12.5px;
+      margin-bottom: 16px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+    .registerError.show { display: flex; }
+
+    .registerSuccess {
+      background: #dcfce7;
+      border: 1px solid #bbf7d0;
+      color: #15803d;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+    .registerSuccess.show { display: flex; }
+
+    .formRow {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .formGroup { margin-bottom: 14px; }
+    .formGroup label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--zinc-700);
+      margin-bottom: 6px;
+    }
+    .formGroup label .req { color: var(--danger); }
+
+    .inputWrap { position: relative; }
+    .inputWrap i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--zinc-400);
+      font-size: 13px;
+    }
+    .formGroup input {
+      width: 100%;
+      padding: 11px 12px 11px 38px;
+      border: 1.5px solid var(--zinc-300);
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-family: var(--font-sans);
+      color: var(--zinc-800);
+      background: var(--white);
+      box-shadow: var(--glass-inner);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .formGroup input::placeholder { color: var(--zinc-400); }
+    .formGroup input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(245,158,11,0.12), var(--glass-inner);
+    }
+
+    .formHint { font-size: 11.5px; color: var(--zinc-500); margin-top: 4px; }
+
+    .btnRegister {
+      width: 100%;
+      padding: 13px;
+      background: var(--accent);
+      color: var(--zinc-900);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: all 0.25s var(--transition-spring);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .btnRegister:hover:not(:disabled) { background: var(--accent-dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(245,158,11,0.35); }
+    .btnRegister:active:not(:disabled) { transform: scale(0.98); }
+    .btnRegister:disabled { background: var(--zinc-300); color: var(--zinc-500); cursor: not-allowed; }
+
+    .registerLinks { text-align: center; margin-top: 18px; font-size: 12.5px; color: var(--zinc-500); }
+    .registerLinks a { color: var(--accent-dark); font-weight: 600; text-decoration: none; }
+    .registerLinks a:hover { text-decoration: underline; }
+
+    /* FOOTER */
+    footer {
+      background: var(--zinc-950);
+      color: var(--zinc-600);
+      padding: 16px 24px;
+      text-align: center;
+      font-size: 11.5px;
+    }
+    footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
     footer a:hover { text-decoration: underline; }
-    footer p { font-size: 0.82rem; margin-top: 8px; }
 
+    @media (max-width: 900px) {
+      .registerPage { grid-template-columns: 1fr; }
+      .registerLeft { display: none; }
+    }
     @media (max-width: 768px) {
-      .nav-menu { display: none; }
-      .register-card { max-width: 100%; }
+      .navMenu { display: none; }
+      .formRow { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <div class="top-bar">
-    <div class="top-bar-inner">
+  <div class="topBar animate-in">
+    <div class="topBarInner">
       <span><i class="fas fa-phone"></i> 012 358 2255</span>
       <span><i class="fas fa-envelope"></i> building@tshwane.gov.za</span>
     </div>
   </div>
 
-  <nav class="navbar">
-    <div class="navbar-inner">
-      <a href="index.html" class="nav-logo">
+  <nav class="navbar animate-in animate-delay-1">
+    <div class="navbarInner">
+      <a href="index.html" class="navLogo">
         <img src="images/e-tshwane-logo.png" alt="e-Tshwane" onerror="this.style.display='none'">
-        <div class="nav-logo-text">
+        <div class="navLogoText">
           e-Tshwane
           <small>SANS Plan Examiner</small>
         </div>
       </a>
-      <ul class="nav-menu">
+      <ul class="navMenu">
         <li><a href="index.html">Home</a></li>
         <li><a href="apply.html">Apply</a></li>
         <li><a href="track.html">Track</a></li>
         <li><a href="#">Services</a></li>
         <li><a href="#">Contact</a></li>
       </ul>
-      <div class="nav-auth">
+      <div class="navAuth">
         <a href="login.html" class="nav-login">Login</a>
         <a href="register.html" class="nav-register">Register</a>
       </div>
     </div>
   </nav>
 
-  <div class="register-page">
-    <div class="register-card">
-      <div class="register-header">
-        <h1>Create Account</h1>
-        <p>Register to submit and track building plan applications</p>
+  <div class="registerPage">
+    <!-- LEFT BENEFITS PANEL -->
+    <div class="registerLeft animate-in animate-delay-1">
+      <div class="registerLeftContent">
+        <div class="benefitsCard">
+          <div class="benefitsTitle">Why Register?</div>
+          <div class="benefitItem">
+            <div class="benefitCheck"><i class="fas fa-check"></i></div>
+            <div class="benefitText">
+              <h4>Submit Building Plans Online</h4>
+              <p>Upload your plans and get instant AI-powered compliance feedback against SANS 10400.</p>
+            </div>
+          </div>
+          <div class="benefitItem">
+            <div class="benefitCheck"><i class="fas fa-check"></i></div>
+            <div class="benefitText">
+              <h4>Track Application Status</h4>
+              <p>Follow every stage from submission through to approval or revision — all in real time.</p>
+            </div>
+          </div>
+          <div class="benefitItem">
+            <div class="benefitCheck"><i class="fas fa-check"></i></div>
+            <div class="benefitText">
+              <h4>Examiner Communication</h4>
+              <p>Reply to comments, mark issues as fixed, and manage revision requests in one place.</p>
+            </div>
+          </div>
+          <div class="benefitItem">
+            <div class="benefitCheck"><i class="fas fa-check"></i></div>
+            <div class="benefitText">
+              <h4>Download Approval Letters</h4>
+              <p>Receive and download your digital approval certificate once your plan has been processed.</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="register-body">
-        <div id="registerError" class="register-error"></div>
-        <div id="registerSuccess" class="register-success">
-          <i class="fas fa-check-circle"></i>
-          <strong>Account created!</strong> Redirecting to login...
-        </div>
+    </div>
 
-        <div class="benefits">
-          <h4>Benefits of Registering</h4>
-          <ul>
-            <li><i class="fas fa-check"></i> Submit building plan applications online</li>
-            <li><i class="fas fa-check"></i> Track application status in real-time</li>
-            <li><i class="fas fa-check"></i> Receive AI-powered compliance feedback</li>
-            <li><i class="fas fa-check"></i> Access examiner comments and documents</li>
-          </ul>
+    <!-- RIGHT REGISTRATION FORM -->
+    <div class="registerRight">
+      <div class="registerCard animate-in animate-delay-2">
+        <div class="registerCardHeader">
+          <h1>Create Account</h1>
+          <p>Register to submit and track building plan applications</p>
         </div>
+        <div class="registerCardBody">
+          <div id="registerError" class="registerError">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="registerErrorText"></span>
+          </div>
+          <div id="registerSuccess" class="registerSuccess">
+            <i class="fas fa-check-circle"></i>
+            <span><strong>Account created!</strong> Redirecting to login...</span>
+          </div>
 
-        <div class="form-group">
-          <label for="name">Full Name <span style="color:#ef3636">*</span></label>
-          <div class="input-wrap">
-            <i class="fas fa-user"></i>
-            <input type="text" id="name" placeholder="Your full name" autocomplete="name">
+          <div class="formRow">
+            <div class="formGroup">
+              <label>Full Name <span class="req">*</span></label>
+              <div class="inputWrap">
+                <i class="fas fa-user"></i>
+                <input type="text" id="name" placeholder="Your full name" autocomplete="name">
+              </div>
+            </div>
+            <div class="formGroup">
+              <label>Phone Number</label>
+              <div class="inputWrap">
+                <i class="fas fa-phone"></i>
+                <input type="tel" id="phone" placeholder="012 345 6789" autocomplete="tel">
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="form-group">
-          <label for="email">Email Address <span style="color:#ef3636">*</span></label>
-          <div class="input-wrap">
-            <i class="fas fa-envelope"></i>
-            <input type="email" id="email" placeholder="your@email.com" autocomplete="email">
-          </div>
-          <div class="form-hint">This will be used for login and notifications.</div>
-        </div>
-        <div class="form-group">
-          <label for="phone">Phone Number</label>
-          <div class="input-wrap">
-            <i class="fas fa-phone"></i>
-            <input type="tel" id="phone" placeholder="012 345 6789" autocomplete="tel">
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="password">Password <span style="color:#ef3636">*</span></label>
-          <div class="input-wrap">
-            <i class="fas fa-lock"></i>
-            <input type="password" id="password" placeholder="Choose a password (min. 6 characters)" autocomplete="new-password">
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="confirmPassword">Confirm Password <span style="color:#ef3636">*</span></label>
-          <div class="input-wrap">
-            <i class="fas fa-lock"></i>
-            <input type="password" id="confirmPassword" placeholder="Repeat your password" autocomplete="new-password">
-          </div>
-        </div>
 
-        <button class="btn-register" id="registerBtn" onclick="doRegister()">
-          <i class="fas fa-user-plus"></i> Create Account
-        </button>
-        <div class="register-links">
-          Already have an account? <a href="login.html">Sign in here</a>
+          <div class="formGroup">
+            <label>Email Address <span class="req">*</span></label>
+            <div class="inputWrap">
+              <i class="fas fa-envelope"></i>
+              <input type="email" id="email" placeholder="your@email.com" autocomplete="email">
+            </div>
+            <div class="formHint">Used for login and notifications.</div>
+          </div>
+
+          <div class="formRow">
+            <div class="formGroup">
+              <label>Password <span class="req">*</span></label>
+              <div class="inputWrap">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" placeholder="Min. 6 characters" autocomplete="new-password">
+              </div>
+            </div>
+            <div class="formGroup">
+              <label>Confirm Password <span class="req">*</span></label>
+              <div class="inputWrap">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="confirmPassword" placeholder="Repeat password" autocomplete="new-password">
+              </div>
+            </div>
+          </div>
+
+          <button class="btnRegister" id="registerBtn" onclick="doRegister()">
+            <i class="fas fa-user-plus"></i> Create Account
+          </button>
+          <div class="registerLinks">
+            Already have an account? <a href="login.html">Sign in here</a>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
   <footer>
-    <p>
-      <a href="index.html">Home</a> &nbsp;|&nbsp;
-      <a href="apply.html">Apply</a> &nbsp;|&nbsp;
-      <a href="track.html">Track</a> &nbsp;|&nbsp;
-      <a href="#">Contact Us</a>
-    </p>
-    <p>&copy; 2024 City of Tshwane Metropolitan Municipality. All rights reserved.</p>
+    <a href="index.html">Home</a> &nbsp;|&nbsp;
+    <a href="apply.html">Apply</a> &nbsp;|&nbsp;
+    <a href="track.html">Track</a> &nbsp;|&nbsp;
+    <a href="#">Contact</a>
+    <p style="margin-top:6px;">&copy; 2024 City of Tshwane Metropolitan Municipality.</p>
   </footer>
 
   <script>
     async function doRegister() {
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const phone = document.getElementById('phone').value.trim();
+      const name     = document.getElementById('name').value.trim();
+      const email    = document.getElementById('email').value.trim();
+      const phone    = document.getElementById('phone').value.trim();
       const password = document.getElementById('password').value;
-      const confirmPassword = document.getElementById('confirmPassword').value;
-      const errorEl = document.getElementById('registerError');
+      const confirm  = document.getElementById('confirmPassword').value;
+      const errorEl  = document.getElementById('registerError');
+      const errorTxt = document.getElementById('registerErrorText');
       const successEl = document.getElementById('registerSuccess');
-      const btn = document.getElementById('registerBtn');
+      const btn      = document.getElementById('registerBtn');
 
       errorEl.classList.remove('show');
       successEl.classList.remove('show');
 
       if (!name || !email || !password) {
-        errorEl.textContent = 'Please fill in all required fields.';
+        errorTxt.textContent = 'Please fill in all required fields.';
         errorEl.classList.add('show');
         return;
       }
       if (password.length < 6) {
-        errorEl.textContent = 'Password must be at least 6 characters.';
+        errorTxt.textContent = 'Password must be at least 6 characters.';
         errorEl.classList.add('show');
         return;
       }
-      if (password !== confirmPassword) {
-        errorEl.textContent = 'Passwords do not match.';
+      if (password !== confirm) {
+        errorTxt.textContent = 'Passwords do not match.';
         errorEl.classList.add('show');
         return;
       }
@@ -242,7 +522,7 @@
         const data = await res.json();
 
         if (!res.ok) {
-          errorEl.textContent = data.error || 'Registration failed. Please try again.';
+          errorTxt.textContent = data.error || 'Registration failed. Please try again.';
           errorEl.classList.add('show');
           btn.disabled = false;
           btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
@@ -253,7 +533,7 @@
         btn.innerHTML = '<i class="fas fa-check"></i> Account Created!';
         setTimeout(() => { window.location.href = 'login.html'; }, 2000);
       } catch (e) {
-        errorEl.textContent = 'Connection error. Please try again.';
+        errorTxt.textContent = 'Connection error. Please try again.';
         errorEl.classList.add('show');
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';

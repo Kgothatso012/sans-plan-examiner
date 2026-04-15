@@ -27,14 +27,34 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login examiner
+// Login examiner — supports both email and employee_number
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const { data: examiner, error } = await supabase.from('examiners').select('*').eq('email', email).single();
-    if (error || !examiner) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    const { email, employee_number, password } = req.body;
+    let examiner;
+
+    if (employee_number) {
+      // Login via employee number
+      const { data, error } = await supabase
+        .from('examiners')
+        .select('*')
+        .eq('employee_number', employee_number)
+        .single();
+      if (error || !data) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
+      examiner = data;
+    } else if (email) {
+      // Login via email (backwards compatible)
+      const { data, error } = await supabase.from('examiners').select('*').eq('email', email).single();
+      if (error || !examiner) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
+      examiner = data;
+    } else {
+      return res.status(400).json({ error: 'Email or employee number required' });
     }
+
     const valid = await bcrypt.compare(password, examiner.password_hash);
     if (!valid) {
       return res.status(401).json({ error: 'Invalid credentials' });

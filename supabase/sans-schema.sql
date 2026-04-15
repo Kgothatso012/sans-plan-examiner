@@ -150,3 +150,28 @@ CREATE INDEX idx_replies_comment ON comment_replies(comment_id);
 CREATE INDEX idx_revisions_app ON application_revisions(application_id);
 CREATE INDEX idx_feedback_clause ON ai_feedback(clause_id);
 CREATE INDEX idx_applicants_email ON applicants(email);
+
+-- =====================
+-- CHECKLIST (Bra Joe's Official Checklist)
+-- =====================
+
+-- Examiner checklist decisions per application
+CREATE TABLE IF NOT EXISTS application_checklist (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  application_id UUID NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
+  checklist_item_id TEXT NOT NULL,            -- e.g. "GEN-01", "SITE-03"
+  section TEXT NOT NULL,                       -- e.g. "GENERAL", "SITE_PLAN"
+  examiner_status TEXT CHECK (examiner_status IN ('PASS','FAIL','N/A','NEED_INFO')),
+  examiner_notes TEXT,
+  ai_status TEXT CHECK (ai_status IN ('PASS','FAIL','WARNING','NEED_INFO')),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(application_id, checklist_item_id)
+);
+
+ALTER TABLE application_checklist ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "allow_all_checklist" ON application_checklist FOR ALL USING (true) WITH CHECK (true);
+
+CREATE INDEX idx_checklist_app ON application_checklist(application_id);
+CREATE INDEX idx_checklist_item ON application_checklist(checklist_item_id);
+CREATE INDEX idx_checklist_section ON application_checklist(section);

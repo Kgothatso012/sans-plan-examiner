@@ -78,6 +78,27 @@ class MiniMaxClient {
   }
 
   /**
+   * Format Bra Joe's checklist for AI prompt injection
+   */
+  _getBraJoeChecklistPrompt() {
+    const BRA_JOE_CHECKLIST = require('../data/bra-joe-checklist');
+    const lines = [];
+
+    for (const section of BRA_JOE_CHECKLIST.sections) {
+      lines.push(`\n### ${section.label} (${section.itemCount} items)\n`);
+      const sectionItems = BRA_JOE_CHECKLIST.items.filter(i => i.section === section.id);
+      for (const item of sectionItems) {
+        const checkable = item.ai_auto_checkable ? ' [AI-CHECK]' : ' [MANUAL]';
+        lines.push(`- ${item.id}: ${item.description}${checkable}`);
+        lines.push(`  Ref: ${item.requirement}`);
+        lines.push(`  Dept: ${item.department_code} | Req: ${item.required_value || 'N/A'}`);
+      }
+    }
+
+    return lines.join('\n');
+  }
+
+  /**
    * Analyze building plan text against SANS 10400 clauses
    */
   async analyzeBuildingPlan(planText, applicationId) {
@@ -85,78 +106,103 @@ class MiniMaxClient {
       return this._fallbackAnalyze(planText, applicationId);
     }
 
-    const systemPrompt = `You are a building code compliance officer for Tshwane Municipality.
-Your job is to analyze building plan descriptions against SANS 10400 building regulations.
+    // Bra Joe's checklist items formatted for the AI prompt
+    const braJoeItems = this._getBraJoeChecklistPrompt();
 
-Analyze the following building plan information and check compliance for these key SANS 10400 clauses:
+    const systemPrompt = `You are a building code compliance officer for Tshwane Municipality.
+Your job is to analyze building plan text against BOTH:
+1. SANS 10400-NBR building regulations (South African National Standard)
+2. Bra Joe's Official Building Plan Checklist (DOC NO EDSP/BPM/OP 7.5.1/1/9 Rev 5)
+
+Extract measurable values from the plan text wherever possible. If a value cannot be determined from the text, mark as NEED_INFO and explain what information is missing.
+
+---
+
+## BRA JOE'S OFFICIAL CHECKLIST (Primary Reference)
+
+${braJoeItems}
+
+---
+
+## SANS 10400 CLAUSES (Supplementary)
 
 **STRUCTURAL & FOUNDATION:**
-1. SANS10400-A1 - Site Orientation (north arrow, sun path)
-2. SANS10400-A2 - Ceiling Height (min 2400mm for habitable rooms, 2100mm for non-habitable)
-3. SANS10400-A3 - Floor Height (min 300mm above ground level in flood areas)
-4. SANS10400-J1 - Foundation Requirements (depth, type based on soil classification)
-5. SANS10400-J2 - Concrete Strength (min 25MPa for foundations)
-6. SANS10400-J3 - Masonry Strength (compressive strength requirements)
+- SANS10400-A2 - Ceiling Height (min 2400mm habitable, 2100mm non-habitable)
+- SANS10400-A3 - Floor Height (min 300mm in flood areas)
+- SANS10400-J1 - Foundation Requirements (depth, type, soil classification)
+- SANS10400-J2 - Concrete Strength (min 25MPa)
+- SANS10400-J3 - Masonry Strength
 
 **FIRE SAFETY:**
-7. SANS10400-B1 - Occupancy Classification (A-F, H1-H4)
-8. SANS10400-B2 - Fire Resistance (60 min for walls, 30 min for floors)
-9. SANS10400-B3 - Means of Egress (exit width, travel distance)
-10. SANS10400-B4 - Fire Detection (smoke detectors required)
+- SANS10400-B1 - Occupancy Classification (A-F, H1-H4)
+- SANS10400-B2 - Fire Resistance (60 min walls, 30 min floors)
+- SANS10400-B3 - Means of Egress (exit width min 900mm residential)
+- SANS10400-B4 - Fire Detection (smoke detectors)
 
 **ACCESS & EGRESS:**
-11. SANS10400-D1 - Stair Width (min 900mm for residential, 1000mm for commercial)
-12. SANS10400-D2 - Stair Rise (max 190mm per step, max 16 steps per flight)
-13. SANS10400-D3 - Handrail Height (min 900mm, max 1000mm)
-14. SANS10400-D4 - Landings (min 900mm length)
-15. SANS10400-D5 - Ramp Gradient (max 1:12 for ramps)
+- SANS10400-D1 - Stair Width (min 900mm residential, 1000mm commercial)
+- SANS10400-D2 - Stair Rise (max 190mm/step)
+- SANS10400-D3 - Handrail Height (900-1000mm)
+- SANS10400-D4 - Landings (min 900mm length)
+- SANS10400-D5 - Ramp Gradient (max 1:12)
 
 **NATURAL LIGHT & VENTILATION:**
-16. SANS10400-G1 - Window Area (min 10% of floor area for habitable rooms)
-17. SANS10400-G2 - Ventilation (min 5% openable area for habitable rooms)
-18. SANS10400-G3 - Light Shafts (if no direct windows)
-
-**PARKING & ACCESS:**
-19. SANS10400-F1 - Parking Requirements (1 per 100m² for residential, varies for commercial)
-20. SANS10400-F2 - Driveway Width (min 3.5m for single, 5m for double)
-21. SANS10400-F3 - Turnaround Space (adequate for emergency vehicles)
+- SANS10400-G1 - Window Area (min 10% floor area for habitable rooms)
+- SANS10400-G2 - Ventilation (min 5% openable for habitable rooms)
 
 **OCCUPANCY & ROOM SIZES:**
-22. SANS10400-E1 - Room Sizes (min bedroom 6.5m², living room 12m²)
-23. SANS10400-E2 - Bathroom Requirements (toilet, washbasin, shower/bath)
-24. SANS10400-E3 - Kitchen Requirements (minimum fitment space)
+- SANS10400-E1 - Room Sizes (min bedroom 6.5m², living room 12m²)
+- SANS10400-E2 - Bathroom Requirements
+- SANS10400-E3 - Kitchen Requirements
 
 **HEIGHT & BOUNDARY:**
-25. SANS10400-H1 - Building Height (max 2 storeys in residential 1)
-26. SANS10400-H2 - Site Coverage (max 60% for residential)
-27. SANS10400-H3 - Boundary Wall Height (max 1.8m front, 2.1m rear/sides)
+- SANS10400-H1 - Building Height (max 2 storeys residential 1)
+- SANS10400-H2 - Site Coverage (max 60% residential)
+- SANS10400-H3 - Boundary Wall Height (max 1.8m front, 2.1m rear/sides)
 
-**ENERGY EFFICIENCY (SANS 10400-XA):**
-28. SANS10400-XA1 - Thermal Performance (insulation requirements)
-29. SANS10400-XA2 - Glazing (SHGC and U-value limits)
-30. SANS10400-XA3 - Building Orientation (passive solar design)
+**ENERGY EFFICIENCY:**
+- SANS10400-XA1 - Thermal Performance
+- SANS10400-XA2 - Glazing (SHGC and U-value limits)
 
-For EACH relevant clause, return JSON with:
+---
+
+## RESPONSE FORMAT
+
+Return a JSON array with one entry per checklist item that can be evaluated from the plan text:
+
 {
-  "clause_id": "SANS10400-XXX",
+  "clause_id": "SANS10400-XXX or BRA-JOE-XXX",
+  "checklist_item_id": "GEN-01, SITE-03, etc. (only if matching Bra Joe item)",
   "clause_title": "Descriptive title",
-  "status": "PASS" | "FAIL" | "WARNING" | "NEED_INFO",
-  "severity": "CRITICAL" | "HIGH" | "MEDIUM" | "LOW",
-  "department_code": "BC" | "RSP" | "FS" | "GEO" | "MH" | "TI" | "RSW" | "WS" | "WM" | "EPO" | "WP" | "TRES",
-  "measured_value": "What was found (e.g., '2400mm ceiling')",
-  "required_value": "What is required (e.g., 'min 2400mm')",
-  "reasoning": "Why you made this判断",
-  "suggestion": "What needs to be fixed (if FAIL)",
+  "status": "PASS | FAIL | WARNING | NEED_INFO",
+  "severity": "CRITICAL | HIGH | MEDIUM | LOW",
+  "department_code": "BC | RSP | FS | GEO | MH | TI | RSW | WS | WM | EPO",
+  "measured_value": "What was found (e.g., '2400mm ceiling', '60% coverage')",
+  "required_value": "What is required (e.g., 'min 2400mm', 'max 60%')",
+  "reasoning": "How you arrived at this assessment based on plan text",
+  "suggestion": "What must be fixed if FAIL",
   "confidence": 0.0-1.0
 }
 
 SEVERITY LEVELS:
 - CRITICAL: Life safety issues (fire exits blocked, structural failure risk)
 - HIGH: Major compliance failure requiring correction before approval
-- MEDIUM: Minor non-compliance that can be addressed as conditions
+- MEDIUM: Minor non-compliance addressed as conditions
 - LOW: Minor documentation or aesthetic issues
 
-DEPARTMENT ROUTING (map clause to responsible department):
+DEPARTMENT CODES:
+- BC: Building Control (structural, dimensions, room sizes, coverage)
+- RSP: Regional Spatial Planning (zoning, land use, coverage, height)
+- FS: Fire Safety (fire resistance, means of egress, occupancy class)
+- GEO: Geology (soil conditions, foundations)
+- MH: Municipal Health (sanitation, bathroom facilities)
+- TI: Traffic Impact (parking, driveway, turnaround)
+- RSW: Roads & Stormwater (stormwater, access roads)
+- WS: Water and Sanitation (water supply, sewerage, drainage)
+- WM: Waste Management (refuse area)
+- EPO: Environmental Planning (open space, environmental impact)
+
+IMPORTANT: Return results for ALL Bra Joe checklist items that can be evaluated from the plan text. If the text does not contain enough information to evaluate a specific item, set status to NEED_INFO with a clear explanation of what information is needed.
 - BC (Building Control): Structural, foundation, room sizes, ceiling height, site coverage
 - RSP (Regional Spatial Planning): Land use, zoning compliance, site coverage, height limits
 - FS (Fire Safety): Fire resistance, means of egress, occupancy classification, detection systems

@@ -51,6 +51,16 @@
 | [[precedents/erf-7721]] | 7721 Garsfontein | Rejected (coverage 68%) | 2025-01-10 |
 | [[precedents/erf-8834]] | 8834 Moreleta | Rejected (coverage) | 2024-09-22 |
 | [[precedents/erf-2219]] | 2219 Centurion | Approved | 2024-11-05 |
+| [[precedents/erf-1001]] | 1001 Pretoria North | Approved (straightforward) | 2026-03-15 |
+| [[precedents/erf-1002]] | 1002 Silverton | Conditional approval (coverage redesign) | 2026-03-20 |
+| [[precedents/erf-1003]] | 1003 Mountain View | Rejected (coverage 69.7%) | 2026-03-22 |
+| [[precedents/erf-1004]] | 1004 Queenswood | Conditional approval (parking relaxation) | 2026-03-18 |
+| [[precedents/erf-1005]] | 1005 Claremont | Rejected (illegal 2nd dwelling + structural) | 2026-03-25 |
+| [[precedents/erf-1006]] | 1006 Arcadia | Approved (commercial change of use) | 2026-03-28 |
+| [[precedents/erf-1007]] | 1007 Pretoria West | Conditional approval (fire wall correction) | 2026-03-30 |
+| [[precedents/erf-1008]] | 1008 Danville | Rejected (stair width H4 non-compliant) | 2026-04-02 |
+| [[precedents/erf-1009]] | 1009 Lynnwood | Conditional approval (XA1 late submission) | 2026-04-05 |
+| [[precedents/erf-1010]] | 1010 Waterkloof | Approved (boundary wall relaxation) | 2026-04-08 |
 
 ## Queries
 | Page | Question | Summary |

@@ -8,195 +8,1010 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Droid+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
+    /* ============================================
+       DESIGN TOKENS — ZINC BASE + AMBER ACCENT
+       Accent: #f59e0b (amber-500, saturation 79%)
+    ============================================ */
     :root {
-      --tshwane-blue: #2E7D32;
-      --tshwane-dark: #1B5E20;
-      --sans-red: #ef3636;
-      --sans-yellow: #f57c00;
-      --ink: #1a1a1a;
-      --steel: #666666;
-      --paper: #f5f5f5;
+      --accent: #f59e0b;
+      --accent-dark: #d97706;
+      --accent-light: #fbbf24;
+      --accent-muted: rgba(245, 158, 11, 0.1);
+      --accent-muted-border: rgba(245, 158, 11, 0.2);
+      --zinc-50:  #fafafa;
+      --zinc-100: #f4f4f5;
+      --zinc-200: #e4e4e7;
+      --zinc-300: #d4d4d8;
+      --zinc-400: #a1a1aa;
+      --zinc-500: #71717a;
+      --zinc-600: #52525b;
+      --zinc-700: #3f3f46;
+      --zinc-800: #27272a;
+      --zinc-900: #18181b;
+      --zinc-950: #09090b;
       --white: #ffffff;
-      --success: #2e7d32;
-      --warning: #f57c00;
-      --danger: #ef3636;
-      --font-body: 'Droid Sans', 'Segoe UI', sans-serif;
-      --font-mono: 'IBM Plex Mono', monospace;
-      --space-xs: 4px;
-      --space-sm: 8px;
-      --space-md: 16px;
-      --space-lg: 24px;
-      --space-xl: 32xl;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #ef4444;
+      --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
+      --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05);
+      --shadow-xl: 0 8px 32px rgba(0,0,0,0.12);
+      --glass-bg: rgba(255, 255, 255, 0.6);
+      --glass-border: rgba(255, 255, 255, 0.8);
+      --glass-inner: inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(0,0,0,0.04);
+      --transition-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: var(--font-body); background: var(--paper); color: var(--ink); min-height: 100vh; }
 
-    /* === LAYOUT === */
-    .app-container { display: flex; min-height: 100vh; }
-    .sidebar { width: 320px; background: var(--white); border-right: 1px solid #ddd; display: flex; flex-direction: column; }
-    .main-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* === HEADER === */
-    .sidebar-header { padding: var(--space-lg); background: linear-gradient(135deg, var(--tshwane-blue) 0%, var(--tshwane-dark) 100%); color: white; }
-    .sidebar-header h1 { font-size: 1.2rem; font-weight: 700; margin-bottom: 4px; }
-    .sidebar-header p { font-size: 0.8rem; opacity: 0.8; }
-    .back-link { color: white; opacity: 0.8; font-size: 0.85rem; text-decoration: none; display: block; margin-bottom: 8px; }
-    .back-link:hover { opacity: 1; }
+    html { scroll-behavior: smooth; }
 
-    /* === SEARCH === */
-    .search-box { padding: var(--space-md); border-bottom: 1px solid #eee; }
-    .search-input { width: 100%; padding: var(--space-sm) var(--space-md); border: 1px solid #ddd; border-radius: 4px; font-size: 0.9rem; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--zinc-100);
+      color: var(--zinc-800);
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+    }
 
-    /* === FILTERS === */
-    .filters { padding: var(--space-sm) var(--space-md); border-bottom: 1px solid #eee; display: flex; gap: var(--space-xs); flex-wrap: wrap; }
-    .filter-btn { padding: 4px 12px; font-size: 0.75rem; background: #f5f5f5; border: 1px solid #ddd; border-radius: 20px; cursor: pointer; }
-    .filter-btn:hover { background: #eee; }
-    .filter-btn.active { background: var(--tshwane-blue); color: white; border-color: var(--tshwane-blue); }
+    ::selection { background: var(--accent); color: var(--white); }
 
-    /* === APPLICATIONS LIST === */
-    .apps-list { flex: 1; overflow-y: auto; padding: var(--space-sm); }
-    .app-item { padding: var(--space-md); border: 1px solid #eee; border-radius: 6px; margin-bottom: var(--space-sm); cursor: pointer; transition: all 0.2s; }
-    .app-item:hover { border-color: var(--tshwane-blue); background: #f8fcf8; }
-    .app-item.active { border-color: var(--tshwane-blue); background: #e8f5e9; }
-    .app-ref { font-family: var(--font-mono); font-weight: 600; color: var(--tshwane-blue); font-size: 0.95rem; }
-    .app-meta { font-size: 0.8rem; color: var(--steel); margin: 4px 0; }
-    .app-status { display: inline-block; padding: 2px 8px; font-size: 0.7rem; font-weight: 600; border-radius: 10px; margin-top: 4px; }
-    .status-DRAFT { background: #eee; color: #666; }
-    .status-SUBMITTED { background: #e3f2fd; color: #1565c0; }
-    .status-IN_REVIEW { background: #fff3cd; color: #856404; }
-    .status-REVISION { background: #fce4ec; color: #c2185b; }
-    .status-APPROVED { background: #e8f5e9; color: #2e7d32; }
-    .status-REJECTED { background: #ffebee; color: #c62828; }
-    .app-updated { font-size: 0.75rem; color: var(--steel); margin-top: 4px; }
+    /* ============================================
+       ANIMATIONS — STAGGERED LOAD + SKELETON
+    ============================================ */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
 
-    /* === NEW APPLICATION BUTTON === */
-    .new-app-btn { margin: var(--space-md); padding: var(--space-md); background: var(--tshwane-blue); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; text-align: center; }
-    .new-app-btn:hover { background: var(--tshwane-dark); }
+    @keyframes shimmer {
+      0%   { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
 
-    /* === MAIN PANEL === */
-    .main-header { padding: var(--space-lg); background: var(--white); border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
-    .main-header h2 { font-size: 1.3rem; color: var(--tshwane-dark); }
-    .header-actions { display: flex; gap: var(--space-sm); }
-    .header-actions button, .header-actions a { padding: var(--space-sm) var(--space-md); border-radius: 4px; font-size: 0.9rem; cursor: pointer; text-decoration: none; }
-    .btn-primary { background: var(--tshwane-blue); color: white; border: none; }
-    .btn-secondary { background: #eee; color: var(--ink); border: 1px solid #ddd; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.5; }
+    }
 
-    /* === TABS === */
-    .panel-tabs { display: flex; background: var(--white); border-bottom: 1px solid #ddd; }
-    .panel-tab { padding: var(--space-md) var(--space-lg); border: none; background: transparent; cursor: pointer; font-size: 0.9rem; font-weight: 500; color: var(--steel); border-bottom: 2px solid transparent; }
-    .panel-tab:hover { color: var(--tshwane-blue); }
-    .panel-tab.active { color: var(--tshwane-blue); border-bottom-color: var(--tshwane-blue); }
+    .animate-in {
+      animation: fadeSlideUp 0.45s var(--transition-spring) both;
+    }
+    .animate-delay-1 { animation-delay: 0.06s; }
+    .animate-delay-2 { animation-delay: 0.12s; }
+    .animate-delay-3 { animation-delay: 0.18s; }
+    .animate-delay-4 { animation-delay: 0.24s; }
 
-    /* === CONTENT === */
-    .panel-content { flex: 1; overflow-y: auto; padding: var(--space-lg); }
+    /* ============================================
+       APP SHELL — CSS GRID SPLIT LAYOUT
+    ============================================ */
+    .app-container {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      min-height: 100dvh;
+    }
+
+    /* ============================================
+       SIDEBAR
+    ============================================ */
+    .sidebar {
+      background: var(--white);
+      border-right: 1px solid var(--zinc-200);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      padding: 24px 24px 20px;
+      background: var(--zinc-900);
+      color: var(--white);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--zinc-400);
+      font-size: 12.5px;
+      text-decoration: none;
+      margin-bottom: 10px;
+      transition: color 0.2s, gap 0.2s;
+    }
+
+    .back-link:hover { color: var(--accent); gap: 10px; }
+
+    .sidebar-header h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 2px;
+    }
+
+    .sidebar-header p {
+      font-size: 0.78rem;
+      color: var(--zinc-500);
+    }
+
+    #logoutBtn {
+      margin-top: 10px;
+      padding: 5px 12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius);
+      color: var(--zinc-400);
+      font-size: 11.5px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font-sans);
+    }
+
+    #logoutBtn:hover {
+      background: rgba(255,255,255,0.15);
+      color: var(--white);
+    }
+
+    /* Search */
+    .search-box {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--zinc-200);
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--zinc-300);
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-family: var(--font-sans);
+      background: var(--zinc-50);
+      color: var(--zinc-800);
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      box-shadow: var(--glass-inner);
+    }
+
+    .search-input::placeholder { color: var(--zinc-400); }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: var(--white);
+      box-shadow: 0 0 0 3px rgba(245,158,11,0.12), var(--glass-inner);
+    }
+
+    /* Filters */
+    .filters {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--zinc-200);
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 4px 12px;
+      font-size: 11.5px;
+      font-weight: 600;
+      background: var(--zinc-100);
+      border: 1px solid var(--zinc-300);
+      border-radius: 20px;
+      cursor: pointer;
+      color: var(--zinc-600);
+      transition: all 0.25s var(--transition-spring);
+      font-family: var(--font-sans);
+    }
+
+    .filter-btn:hover {
+      background: var(--zinc-200);
+      transform: translateY(-1px);
+    }
+
+    .filter-btn:active { transform: scale(0.97); }
+
+    .filter-btn.active {
+      background: var(--accent);
+      color: var(--zinc-900);
+      border-color: var(--accent);
+    }
+
+    /* Applications list */
+    .apps-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .apps-list::-webkit-scrollbar { width: 4px; }
+    .apps-list::-webkit-scrollbar-thumb { background: var(--zinc-300); border-radius: 4px; }
+
+    .app-item {
+      padding: 14px 16px;
+      border: 1px solid var(--zinc-200);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all 0.25s var(--transition-spring);
+      background: var(--white);
+      box-shadow: var(--glass-inner);
+    }
+
+    .app-item:hover {
+      border-color: var(--zinc-400);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-card), var(--glass-inner);
+    }
+
+    .app-item:active { transform: scale(0.99); }
+
+    .app-item.active {
+      border-color: var(--accent);
+      background: var(--accent-muted);
+      box-shadow: 0 0 0 3px rgba(245,158,11,0.12), var(--glass-inner);
+    }
+
+    .app-ref {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--zinc-900);
+      font-size: 0.9rem;
+    }
+
+    .app-meta {
+      font-size: 12px;
+      color: var(--zinc-500);
+      margin: 5px 0 4px;
+    }
+
+    .app-status {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 9px;
+      font-size: 10.5px;
+      font-weight: 700;
+      border-radius: 12px;
+      letter-spacing: 0.3px;
+    }
+
+    .status-DRAFT         { background: var(--zinc-100); color: var(--zinc-500); border: 1px solid var(--zinc-300); }
+    .status-SUBMITTED     { background: #dbeafe; color: #1d4ed8; }
+    .status-ANALYZING     { background: #fef9c3; color: #a16207; }
+    .status-IN_REVIEW     { background: #fef9c3; color: #a16207; }
+    .status-REVISION      { background: #fce7f3; color: #be185d; }
+    .status-REVISION_REQUESTED { background: #fce7f3; color: #be185d; }
+    .status-APPROVED      { background: #dcfce7; color: #15803d; }
+    .status-REJECTED      { background: #fee2e2; color: #b91c1c; }
+
+    .app-updated {
+      font-size: 11px;
+      color: var(--zinc-400);
+      margin-top: 6px;
+    }
+
+    /* New application button */
+    .new-app-btn {
+      margin: 12px;
+      padding: 12px;
+      background: var(--accent);
+      color: var(--zinc-900);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.25s var(--transition-spring);
+      font-family: var(--font-sans);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .new-app-btn:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(245,158,11,0.4);
+    }
+
+    .new-app-btn:active { transform: scale(0.98); }
+
+    /* ============================================
+       MAIN PANEL
+    ============================================ */
+    .main-panel {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--zinc-100);
+    }
+
+    .main-header {
+      padding: 24px 32px;
+      background: var(--white);
+      border-bottom: 1px solid var(--zinc-200);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .main-header h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--zinc-900);
+      margin-bottom: 4px;
+    }
+
+    .main-header p { font-size: 13px; color: var(--zinc-500); }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.25s var(--transition-spring);
+      font-family: var(--font-sans);
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--zinc-900);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(245,158,11,0.35);
+    }
+
+    .btn-secondary {
+      background: var(--white);
+      color: var(--zinc-700);
+      border: 1px solid var(--zinc-300);
+    }
+
+    .btn-secondary:hover {
+      background: var(--zinc-50);
+      border-color: var(--zinc-400);
+      transform: translateY(-1px);
+    }
+
+    /* Tabs */
+    .panel-tabs {
+      display: flex;
+      background: var(--white);
+      border-bottom: 1px solid var(--zinc-200);
+    }
+
+    .panel-tab {
+      padding: 14px 24px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--zinc-500);
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      font-family: var(--font-sans);
+    }
+
+    .panel-tab:hover { color: var(--zinc-800); }
+
+    .panel-tab.active {
+      color: var(--accent-dark);
+      border-bottom-color: var(--accent);
+    }
+
+    /* Content */
+    .panel-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 32px;
+    }
+
+    .panel-content::-webkit-scrollbar { width: 6px; }
+    .panel-content::-webkit-scrollbar-thumb { background: var(--zinc-300); border-radius: 6px; }
+
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* === DETAILS SECTION === */
-    .detail-section { margin-bottom: var(--space-lg); }
-    .detail-section h4 { font-size: 0.85rem; color: var(--steel); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-sm); }
-    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
-    .detail-item label { font-size: 0.8rem; color: var(--steel); display: block; }
-    .detail-item div { font-weight: 500; }
+    /* Detail sections */
+    .detail-section {
+      margin-bottom: 28px;
+    }
 
-    /* === COMMENTS === */
-    .comments-section { margin-top: var(--space-lg); }
-    .comment-card { border: 1px solid #eee; border-radius: 6px; margin-bottom: var(--space-md); overflow: hidden; }
-    .comment-main { padding: var(--space-md); background: var(--white); }
-    .comment-header { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-sm); }
-    .comment-pin-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; }
-    .comment-pin-icon.violation { background: var(--sans-red); }
-    .comment-pin-icon.warning { background: var(--sans-yellow); }
-    .comment-pin-icon.suggestion { background: var(--tshwane-blue); }
-    .comment-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
-    .comment-badge.violation { background: #ffebee; color: #c62828; }
-    .comment-badge.warning { background: #fff3e0; color: #e65100; }
-    .comment-badge.suggestion { background: #e3f2fd; color: #1565c0; }
-    .comment-text { font-size: 0.95rem; line-height: 1.5; margin-bottom: var(--space-sm); }
-    .comment-location { font-size: 0.8rem; color: var(--steel); font-family: var(--font-mono); }
-    .comment-replies { background: #fafafa; padding: var(--space-md); border-top: 1px solid #eee; }
-    .reply-item { padding: var(--space-sm); background: var(--white); border-radius: 4px; margin-bottom: var(--space-xs); font-size: 0.85rem; }
-    .reply-form { margin-top: var(--space-md); }
-    .reply-form textarea { width: 100%; padding: var(--space-sm); border: 1px solid #ddd; border-radius: 4px; min-height: 60px; font-family: var(--font-body); resize: vertical; }
-    .reply-form button { margin-top: var(--space-sm); padding: var(--space-sm) var(--space-lg); background: var(--tshwane-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
+    .detail-section h4 {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--zinc-500);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--zinc-200);
+    }
 
-    /* === REVISION === */
-    .revision-card { border: 1px solid #eee; border-radius: 6px; padding: var(--space-md); margin-bottom: var(--space-sm); }
-    .revision-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm); }
-    .revision-number { font-weight: 600; color: var(--tshwane-blue); }
-    .revision-date { font-size: 0.8rem; color: var(--steel); }
-    .revision-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
-    .revision-changes { font-size: 0.85rem; color: var(--steel); }
-    .revision-status { font-size: 0.75rem; margin-top: 4px; }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
 
-    /* === UPLOAD === */
-    .upload-area { border: 2px dashed var(--tshwane-blue); border-radius: 8px; padding: var(--space-xl); text-align: center; cursor: pointer; transition: all 0.2s; }
-    .upload-area:hover { background: #f8fcf8; }
-    .upload-icon { font-size: 3rem; margin-bottom: var(--space-md); }
-    .upload-area h3 { color: var(--tshwane-dark); margin-bottom: var(--space-sm); }
-    .upload-area p { color: var(--steel); font-size: 0.9rem; }
-    .file-input { display: none; }
-    .change-log { margin-top: var(--space-md); }
-    .change-log textarea { width: 100%; padding: var(--space-sm); border: 1px solid #ddd; border-radius: 4px; min-height: 80px; }
+    .detail-item label {
+      font-size: 11.5px;
+      color: var(--zinc-500);
+      font-weight: 500;
+      display: block;
+      margin-bottom: 3px;
+    }
 
-    /* === EMPTY STATE === */
-    .empty-state { text-align: center; padding: var(--space-xl); color: var(--steel); }
-    .empty-icon { font-size: 3rem; margin-bottom: var(--space-md); opacity: 0.5; }
+    .detail-item div {
+      font-weight: 600;
+      color: var(--zinc-900);
+      font-size: 13.5px;
+    }
 
-    /* === PDF VIEWER === */
-    .pdf-viewer { background: #525659; padding: var(--space-lg); display: flex; justify-content: center; overflow: auto; min-height: 400px; }
-    .pdf-page { background: white; box-shadow: 0 4px 16px rgba(0,0,0,0.3); position: relative; }
+    .detail-item .mono {
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
+    /* Comments */
+    .comments-section { margin-top: 0; }
+
+    .comment-card {
+      border: 1px solid var(--zinc-200);
+      border-radius: var(--radius-lg);
+      margin-bottom: 12px;
+      overflow: hidden;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-card), var(--glass-inner);
+      transition: all 0.25s var(--transition-spring);
+    }
+
+    .comment-card:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-xl), var(--glass-inner);
+    }
+
+    .comment-main { padding: 16px 18px; background: var(--white); }
+
+    .comment-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .comment-pin-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-weight: 700;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .comment-pin-icon.violation { background: var(--danger); }
+    .comment-pin-icon.warning   { background: var(--warning); }
+    .comment-pin-icon.suggestion { background: var(--zinc-600); }
+
+    .comment-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    .comment-badge.violation { background: #fee2e2; color: #b91c1c; }
+    .comment-badge.warning   { background: #fef3c7; color: #92400e; }
+    .comment-badge.suggestion { background: var(--zinc-100); color: var(--zinc-600); }
+
+    .comment-text {
+      font-size: 13.5px;
+      line-height: 1.65;
+      margin-bottom: 10px;
+      color: var(--zinc-800);
+    }
+
+    .comment-location {
+      font-size: 11.5px;
+      color: var(--zinc-500);
+      font-family: var(--font-mono);
+    }
+
+    .comment-replies {
+      background: var(--zinc-50);
+      padding: 12px 18px;
+      border-top: 1px solid var(--zinc-200);
+    }
+
+    .reply-item {
+      padding: 8px 10px;
+      background: var(--white);
+      border-radius: var(--radius);
+      margin-bottom: 6px;
+      font-size: 12.5px;
+      border: 1px solid var(--zinc-200);
+    }
+
+    .reply-item:last-child { margin-bottom: 0; }
+
+    .reply-box {
+      margin-top: 12px;
+      display: flex;
+      gap: 6px;
+      padding: 12px 18px;
+      background: var(--zinc-50);
+      border-top: 1px solid var(--zinc-200);
+    }
+
+    .reply-box input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--zinc-300);
+      border-radius: var(--radius);
+      font-size: 12.5px;
+      font-family: var(--font-sans);
+      background: var(--white);
+      box-shadow: var(--glass-inner);
+    }
+
+    .reply-box input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .reply-box button {
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s var(--transition-spring);
+      font-family: var(--font-sans);
+    }
+
+    .reply-send {
+      background: var(--zinc-800);
+      color: var(--white);
+    }
+
+    .reply-send:hover { background: var(--zinc-700); transform: translateY(-1px); }
+
+    .reply-fixed {
+      background: var(--success);
+      color: var(--white);
+    }
+
+    .reply-fixed:hover { background: #15803d; transform: translateY(-1px); }
+
+    /* Revisions */
+    .revision-card {
+      border: 1px solid var(--zinc-200);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      margin-bottom: 10px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-card), var(--glass-inner);
+      transition: all 0.25s var(--transition-spring);
+    }
+
+    .revision-card:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-xl), var(--glass-inner);
+    }
+
+    .revision-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .revision-number { font-weight: 700; color: var(--zinc-900); }
+    .revision-date { font-size: 12px; color: var(--zinc-500); }
+    .revision-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
+    .revision-changes { font-size: 13px; color: var(--zinc-600); line-height: 1.6; }
+    .revision-status { font-size: 11px; margin-top: 6px; font-weight: 600; }
+
+    /* Upload area */
+    .upload-area {
+      border: 2px dashed var(--zinc-300);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s var(--transition-spring);
+      background: var(--zinc-50);
+    }
+
+    .upload-area:hover {
+      border-color: var(--accent);
+      background: var(--accent-muted);
+      transform: translateY(-2px);
+    }
+
+    .upload-icon { font-size: 2.8rem; margin-bottom: 14px; }
+
+    .upload-area h3 { color: var(--zinc-800); margin-bottom: 6px; font-size: 15px; }
+    .upload-area p { color: var(--zinc-500); font-size: 13px; }
+
+    /* ============================================
+       STATES — LOADING / EMPTY / ERROR
+    ============================================ */
+    .skeleton {
+      background: linear-gradient(90deg, var(--zinc-200) 25%, var(--zinc-100) 50%, var(--zinc-200) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: var(--radius);
+    }
+
+    .skeleton-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 12px;
+    }
+
+    .skeleton-line { height: 12px; margin-bottom: 10px; border-radius: 4px; }
+    .skeleton-line.short { width: 50%; }
+    .skeleton-line.medium { width: 75%; }
+    .skeleton-line.long { width: 90%; }
+    .skeleton-circle { width: 44px; height: 44px; border-radius: 50%; }
+
+    /* Empty state */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    .empty-icon-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--zinc-100);
+      border: 1px solid var(--zinc-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+
+    .empty-icon { font-size: 32px; }
+
+    .empty-state h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--zinc-700);
+      margin-bottom: 6px;
+    }
+
+    .empty-state p {
+      font-size: 13px;
+      color: var(--zinc-500);
+      max-width: 280px;
+      line-height: 1.6;
+    }
+
+    /* Error state */
+    .error-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 24px;
+      text-align: center;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-card), var(--glass-inner);
+    }
+
+    .error-state i { font-size: 36px; color: var(--danger); margin-bottom: 16px; }
+
+    .error-state h3 { font-size: 15px; font-weight: 700; color: var(--zinc-800); margin-bottom: 6px; }
+    .error-state p { font-size: 13px; color: var(--zinc-500); max-width: 280px; }
+
+    /* Loading spinner */
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 11px 20px;
+      border-radius: var(--radius);
+      color: var(--white);
+      font-weight: 600;
+      font-size: 13px;
+      z-index: 9999;
+      animation: fadeSlideUp 0.3s var(--transition-spring);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-xl);
+    }
+
+    .toast-success { background: var(--success); }
+    .toast-error   { background: var(--danger); }
+    .toast-info    { background: var(--zinc-700); }
+
+    /* ============================================
+       PDF VIEWER
+    ============================================ */
+    .pdf-viewer {
+      background: var(--zinc-900);
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+      overflow: auto;
+      min-height: 450px;
+      border-radius: var(--radius-xl);
+    }
+
+    .pdf-page {
+      position: relative;
+      background: var(--white);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    }
+
     .pdf-canvas { display: block; }
-    .pdf-comment-pin { position: absolute; width: 24px; height: 24px; background: var(--sans-red); border: 2px solid white; border-radius: 50%; cursor: pointer; transform: translate(-50%, -50%); box-shadow: 0 2px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; }
-    .pdf-comment-pin.violation { background: var(--sans-red); }
-    .pdf-comment-pin.warning { background: var(--sans-yellow); }
-    .pdf-comment-pin.suggestion { background: var(--tshwane-blue); }
+
+    .pdf-comment-pin {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      border: 2px solid var(--white);
+      border-radius: 50%;
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-weight: 700;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      transition: transform 0.2s var(--transition-spring);
+    }
+
+    .pdf-comment-pin:hover { transform: translate(-50%, -50%) scale(1.3); }
+    .pdf-comment-pin.violation { background: var(--danger); }
+    .pdf-comment-pin.warning   { background: var(--warning); }
+    .pdf-comment-pin.suggestion { background: var(--zinc-600); }
+
+    /* ============================================
+       MODAL — REVISION SUBMIT
+    ============================================ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5000;
+      padding: 20px;
+    }
+
+    .modal {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: var(--shadow-xl);
+    }
+
+    .modal h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--zinc-900);
+      margin-bottom: 8px;
+    }
+
+    .modal textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--zinc-300);
+      border-radius: var(--radius);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      resize: vertical;
+      min-height: 120px;
+      background: var(--zinc-50);
+      box-shadow: var(--glass-inner);
+    }
+
+    .modal textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .modal-buttons .cancel {
+      padding: 9px 18px;
+      background: var(--zinc-100);
+      border: 1px solid var(--zinc-300);
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--zinc-700);
+      transition: all 0.2s;
+      font-family: var(--font-sans);
+    }
+
+    .modal-buttons .cancel:hover { background: var(--zinc-200); }
+
+    .modal-buttons .confirm {
+      padding: 9px 18px;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--zinc-900);
+      transition: all 0.25s var(--transition-spring);
+      font-family: var(--font-sans);
+    }
+
+    .modal-buttons .confirm:hover {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+    }
+
+    .file-upload {
+      display: block;
+      margin-top: 12px;
+    }
+
+    .file-upload input { display: none; }
+
+    .file-upload-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--zinc-50);
+      border: 1.5px dashed var(--zinc-300);
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--zinc-600);
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .file-upload-label:hover {
+      border-color: var(--accent);
+      color: var(--accent-dark);
+      background: var(--accent-muted);
+    }
 
     .hidden { display: none !important; }
+
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (max-width: 900px) {
+      .app-container { grid-template-columns: 1fr; }
+      .sidebar { position: relative; height: auto; max-height: 60vh; }
+      .main-header { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .detail-grid { grid-template-columns: 1fr; }
+      .panel-content { padding: 16px; }
+      .main-header { padding: 16px; }
+    }
   </style>
 </head>
 <body>
+
   <!-- LOGIN OVERLAY -->
-  <div id="loginOverlay" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;">
-    <div style="background:white;border-radius:12px;padding:32px;max-width:400px;width:90%;text-align:center;">
-      <h2 style="color:var(--tshwane-dark);margin-bottom:16px;">Sign In</h2>
-      <p style="color:var(--steel);margin-bottom:24px;">Sign in to view your applications</p>
-      <input type="email" id="loginEmail" placeholder="Email" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;margin-bottom:12px;">
-      <input type="password" id="loginPassword" placeholder="Password" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;margin-bottom:16px;">
-      <button onclick="doLogin()" style="width:100%;padding:12px;background:var(--tshwane-blue);color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer;margin-bottom:12px;">Sign In</button>
-      <p style="font-size:0.85rem;color:var(--steel);">Don't have an account? <a href="#" onclick="showSignup()" style="color:var(--tshwane-blue);">Sign up</a></p>
+  <div id="loginOverlay" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div class="modal animate-in" style="max-width:400px;text-align:center;">
+      <h3 style="font-size:20px;font-weight:700;color:var(--zinc-900);margin-bottom:6px;">Sign In</h3>
+      <p style="color:var(--zinc-500);margin-bottom:24px;font-size:13.5px;">Access your building plan applications</p>
+      <input type="email" id="loginEmail" placeholder="Email address" style="width:100%;padding:12px;border:1px solid var(--zinc-300);border-radius:var(--radius);font-size:14px;font-family:var(--font-sans);margin-bottom:12px;background:var(--zinc-50);box-shadow:var(--glass-inner);">
+      <input type="password" id="loginPassword" placeholder="Password" style="width:100%;padding:12px;border:1px solid var(--zinc-300);border-radius:var(--radius);font-size:14px;font-family:var(--font-sans);margin-bottom:18px;background:var(--zinc-50);box-shadow:var(--glass-inner);">
+      <button onclick="doLogin()" style="width:100%;padding:12px;background:var(--accent);color:var(--zinc-900);border:none;border-radius:var(--radius);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font-sans);transition:all 0.25s var(--transition-spring);">Sign In</button>
+      <p style="font-size:12.5px;color:var(--zinc-500);margin-top:14px;">No account? <a href="#" onclick="showSignup();return false;" style="color:var(--accent-dark);font-weight:600;">Sign up</a></p>
     </div>
   </div>
 
   <!-- SIGNUP OVERLAY -->
-  <div id="signupOverlay" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;">
-    <div style="background:white;border-radius:12px;padding:32px;max-width:400px;width:90%;text-align:center;">
-      <h2 style="color:var(--tshwane-dark);margin-bottom:16px;">Create Account</h2>
-      <input type="text" id="signupName" placeholder="Full Name" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;margin-bottom:12px;">
-      <input type="email" id="signupEmail" placeholder="Email" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;margin-bottom:12px;">
-      <input type="password" id="signupPassword" placeholder="Password" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;margin-bottom:16px;">
-      <button onclick="doSignup()" style="width:100%;padding:12px;background:var(--tshwane-blue);color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer;">Create Account</button>
-      <p style="font-size:0.85rem;color:var(--steel);margin-top:12px;"><a href="#" onclick="showLogin()" style="color:var(--tshwane-blue);">Already have account? Sign in</a></p>
+  <div id="signupOverlay" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div class="modal animate-in" style="max-width:400px;text-align:center;">
+      <h3 style="font-size:20px;font-weight:700;color:var(--zinc-900);margin-bottom:6px;">Create Account</h3>
+      <p style="color:var(--zinc-500);margin-bottom:24px;font-size:13.5px;">Register to submit building plans</p>
+      <input type="text" id="signupName" placeholder="Full Name" style="width:100%;padding:12px;border:1px solid var(--zinc-300);border-radius:var(--radius);font-size:14px;font-family:var(--font-sans);margin-bottom:12px;background:var(--zinc-50);box-shadow:var(--glass-inner);">
+      <input type="email" id="signupEmail" placeholder="Email address" style="width:100%;padding:12px;border:1px solid var(--zinc-300);border-radius:var(--radius);font-size:14px;font-family:var(--font-sans);margin-bottom:12px;background:var(--zinc-50);box-shadow:var(--glass-inner);">
+      <input type="password" id="signupPassword" placeholder="Password" style="width:100%;padding:12px;border:1px solid var(--zinc-300);border-radius:var(--radius);font-size:14px;font-family:var(--font-sans);margin-bottom:18px;background:var(--zinc-50);box-shadow:var(--glass-inner);">
+      <button onclick="doSignup()" style="width:100%;padding:12px;background:var(--accent);color:var(--zinc-900);border:none;border-radius:var(--radius);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font-sans);transition:all 0.25s var(--transition-spring);">Create Account</button>
+      <p style="font-size:12.5px;color:var(--zinc-500);margin-top:14px;"><a href="#" onclick="showLogin();return false;" style="color:var(--accent-dark);font-weight:600;">Already have account? Sign in</a></p>
     </div>
   </div>
 
   <div class="app-container">
     <!-- SIDEBAR -->
     <div class="sidebar">
-      <div class="sidebar-header">
-        <a href="../../index.html" class="back-link">← Back to Home</a>
+      <div class="sidebar-header animate-in">
+        <a href="../../index.html" class="back-link">
+          <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
         <h1 id="headerTitle">My Applications</h1>
         <p id="headerUser">SANS Plan Examiner</p>
-        <button id="logoutBtn" class="hidden" onclick="doLogout()" style="margin-top:8px;padding:4px 12px;background:rgba(255,255,255,0.2);border:none;border-radius:4px;color:white;font-size:0.75rem;cursor:pointer;">Sign Out</button>
+        <button id="logoutBtn" class="hidden" onclick="doLogout()">Sign Out</button>
       </div>
 
-      <div class="search-box">
-        <input type="text" class="search-input" id="searchInput" placeholder="Search by ref, ERF, address...">
+      <div class="search-box animate-in animate-delay-1">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search ref, ERF, address...">
       </div>
 
-      <div class="filters">
+      <div class="filters animate-in animate-delay-2">
         <button class="filter-btn active" onclick="filterApps('all')">All</button>
         <button class="filter-btn" onclick="filterApps('SUBMITTED')">Submitted</button>
         <button class="filter-btn" onclick="filterApps('IN_REVIEW')">In Review</button>
@@ -206,34 +1021,46 @@
 
       <div class="apps-list" id="appsList">
         <div class="empty-state">
-          <div class="empty-icon">📋</div>
-          <p>No applications found</p>
+          <div class="empty-icon-wrap"><span class="empty-icon">📋</span></div>
+          <h3>No Applications</h3>
+          <p>Your submitted applications will appear here</p>
         </div>
       </div>
 
-      <button class="new-app-btn" onclick="showUpload()">+ New Application</button>
+      <button class="new-app-btn animate-in animate-delay-3" onclick="showUpload()">
+        <i class="fas fa-plus"></i> New Application
+      </button>
     </div>
 
     <!-- MAIN PANEL -->
     <div class="main-panel">
-      <!-- Welcome / No Selection -->
-      <div id="welcomeView" class="main-header">
+      <!-- Welcome -->
+      <div id="welcomeView" class="main-header animate-in animate-delay-1">
         <div>
           <h2>Welcome to My Applications</h2>
-          <p style="color: var(--steel);">Select an application from the list to view details, comments, and download approval letters.</p>
+          <p>Select an application from the list to view details, examiner comments, and download approval letters.</p>
+        </div>
+        <div class="header-actions">
+          <a href="apply.html" class="btn btn-primary">
+            <i class="fas fa-plus"></i> New Application
+          </a>
         </div>
       </div>
 
       <!-- Detail View -->
       <div id="detailView" class="hidden">
-        <div class="main-header">
+        <div class="main-header animate-in">
           <div>
-            <h2 id="detailRef">-</h2>
-            <span class="app-status" id="detailStatus">-</span>
+            <h2 id="detailRef" style="font-family:var(--font-mono);">—</h2>
+            <span class="app-status" id="detailStatus">—</span>
           </div>
           <div class="header-actions">
-            <button class="btn-secondary" onclick="contactExaminer()">💬 Contact</button>
-            <button class="btn-primary" id="btnDownload" onclick="downloadApproval()">📥 Download</button>
+            <button class="btn btn-secondary" onclick="contactExaminer()">
+              <i class="fas fa-envelope"></i> Contact
+            </button>
+            <button class="btn btn-primary" id="btnDownload" onclick="downloadApproval()">
+              <i class="fas fa-download"></i> Approval Letter
+            </button>
           </div>
         </div>
 
@@ -245,58 +1072,89 @@
         </div>
 
         <div class="panel-content">
-          <!-- DETAILS TAB -->
+          <!-- DETAILS -->
           <div id="panel-details" class="tab-content active">
-            <div class="detail-section">
+            <div class="detail-section animate-in animate-delay-1">
               <h4>Property</h4>
               <div class="detail-grid">
-                <div class="detail-item"><label>ERF Number</label><div id="detailErf">-</div></div>
-                <div class="detail-item"><label>Zoning</label><div id="detailZoning">-</div></div>
-                <div class="detail-item"><label>Address</label><div id="detailAddress">-</div></div>
-                <div class="detail-item"><label>Description</label><div id="detailDesc">-</div></div>
+                <div class="detail-item">
+                  <label>ERF Number</label>
+                  <div class="mono" id="detailErf">—</div>
+                </div>
+                <div class="detail-item">
+                  <label>Zoning</label>
+                  <div id="detailZoning">—</div>
+                </div>
+                <div class="detail-item">
+                  <label>Address</label>
+                  <div id="detailAddress">—</div>
+                </div>
+                <div class="detail-item">
+                  <label>Description</label>
+                  <div id="detailDesc">—</div>
+                </div>
               </div>
             </div>
-            <div class="detail-section">
+            <div class="detail-section animate-in animate-delay-2">
               <h4>Submission</h4>
               <div class="detail-grid">
-                <div class="detail-item"><label>Submitted</label><div id="detailDate">-</div></div>
-                <div class="detail-item"><label>Last Updated</label><div id="detailUpdated">-</div></div>
+                <div class="detail-item">
+                  <label>Submitted</label>
+                  <div id="detailDate">—</div>
+                </div>
+                <div class="detail-item">
+                  <label>Last Updated</label>
+                  <div id="detailUpdated">—</div>
+                </div>
               </div>
             </div>
-            <div class="detail-section">
+            <div class="detail-section animate-in animate-delay-3">
               <h4>Documents</h4>
               <div id="detailDocs"></div>
             </div>
           </div>
 
-          <!-- COMMENTS TAB -->
+          <!-- COMMENTS -->
           <div id="panel-comments" class="tab-content">
-            <div class="comments-section" id="commentsList">
-              <p style="color: var(--steel);">No comments from examiner yet.</p>
-            </div>
-            <div class="reply-form">
-              <textarea id="replyText" placeholder="Reply to examiner's comments..."></textarea>
-              <button onclick="submitReply()">Send Reply</button>
-            </div>
-          </div>
-
-          <!-- REVISIONS TAB -->
-          <div id="panel-revisions" class="tab-content">
-            <button class="btn-primary" onclick="showUpload()" style="margin-bottom: 16px;">+ Submit Revision</button>
-            <div id="revisionsList">
-              <div class="empty-state">
-                <div class="empty-icon">📁</div>
-                <p>No revisions yet</p>
+            <div id="commentsList">
+              <!-- skeleton -->
+              <div class="skeleton-card">
+                <div style="display:flex;gap:12px;align-items:center;margin-bottom:14px;">
+                  <div class="skeleton skeleton-circle"></div>
+                  <div>
+                    <div class="skeleton skeleton-line short" style="margin-bottom:6px;"></div>
+                    <div class="skeleton skeleton-line medium"></div>
+                  </div>
+                </div>
+                <div class="skeleton skeleton-line long" style="margin-bottom:6px;"></div>
+                <div class="skeleton skeleton-line medium"></div>
               </div>
             </div>
           </div>
 
-          <!-- VIEW PLAN TAB -->
+          <!-- REVISIONS -->
+          <div id="panel-revisions" class="tab-content">
+            <div class="animate-in">
+              <button class="btn btn-primary" onclick="showUpload()" style="margin-bottom:20px;">
+                <i class="fas fa-upload"></i> Submit Revision
+              </button>
+              <div id="revisionsList">
+                <div class="empty-state">
+                  <div class="empty-icon-wrap"><span class="empty-icon">📁</span></div>
+                  <h3>No Revisions Yet</h3>
+                  <p>Revisions will appear here when the examiner requests changes</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW PLAN -->
           <div id="panel-view" class="tab-content">
             <div class="pdf-viewer" id="pdfViewer">
-              <div style="color: white; text-align: center; padding: 40px;">
-                <p>Plan viewer would show here.</p>
-                <p style="font-size: 0.9rem; opacity: 0.7;">Click on comment pins to see details.</p>
+              <div style="color:var(--zinc-500);text-align:center;padding:60px 24px;">
+                <div style="font-size:40px;margin-bottom:16px;opacity:0.5;">📄</div>
+                <p style="font-size:15px;font-weight:600;color:var(--zinc-700);margin-bottom:6px;">No Plan Loaded</p>
+                <p style="font-size:13px;opacity:0.7;">Select an application to view the plan PDF</p>
               </div>
             </div>
           </div>
@@ -306,10 +1164,10 @@
   </div>
 
   <script>
-    // === PDF.js Worker Setup ===
+    // PDF.js worker
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-    // === CONFIG ===
+    // Supabase config
     const SUPABASE_URL = 'https://pmhvteytflmbvolteota.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtaHZ0ZXl0ZmxtYnZvbHRlb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyODIwNTUsImV4cCI6MjA5MDg1ODA1NX0.Hhby7vx9Mq4AUnR4TJiAVCMlPRBm5xQtQM6LF0yEi_w';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -319,24 +1177,17 @@
     let currentFilter = 'all';
     let currentUser = null;
 
-    // === TOAST NOTIFICATIONS ===
+    // === TOAST ===
     function showToast(message, type = 'info') {
+      const existing = document.querySelector('.toast');
+      if (existing) existing.remove();
+
       const toast = document.createElement('div');
-      toast.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        padding: 12px 24px;
-        border-radius: 6px;
-        color: white;
-        font-weight: 500;
-        z-index: 2000;
-        animation: slideIn 0.3s ease;
-        background: ${type === 'success' ? '#2e7d32' : type === 'error' ? '#ef3636' : '#666'};
-      `;
-      toast.textContent = message;
+      toast.className = `toast toast-${type}`;
+      const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+      toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i>${message}`;
       document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 3000);
+      setTimeout(() => toast.remove(), 3500);
     }
 
     // === AUTH ===
@@ -347,7 +1198,7 @@
         showLoggedIn(session.user.email);
         loadApplications();
       } else {
-        showLoginOverlay();
+        document.getElementById('loginOverlay').classList.remove('hidden');
       }
     }
 
@@ -355,17 +1206,11 @@
       document.getElementById('loginOverlay').classList.remove('hidden');
     }
 
-    function showSignupOverlay() {
-      document.getElementById('signupOverlay').classList.remove('hidden');
-      document.getElementById('loginOverlay').classList.add('hidden');
-    }
-
     function showLoggedIn(email) {
       document.getElementById('loginOverlay').classList.add('hidden');
       document.getElementById('signupOverlay').classList.add('hidden');
       document.getElementById('headerUser').textContent = email;
       document.getElementById('logoutBtn').classList.remove('hidden');
-      document.getElementById('headerTitle').textContent = 'My Applications';
     }
 
     async function doLogin() {
@@ -400,7 +1245,6 @@
       document.getElementById('loginOverlay').classList.remove('hidden');
       document.getElementById('logoutBtn').classList.add('hidden');
       document.getElementById('headerUser').textContent = 'SANS Plan Examiner';
-      document.getElementById('headerTitle').textContent = 'My Applications';
       allApps = [];
       renderApps([]);
     }
@@ -415,10 +1259,11 @@
       document.getElementById('loginOverlay').classList.remove('hidden');
     }
 
-    // === INIT ===
-    window.addEventListener('DOMContentLoaded', checkAuth);
+    document.addEventListener('DOMContentLoaded', checkAuth);
 
+    // === LOAD APPLICATIONS ===
     async function loadApplications() {
+      renderAppsSkeleton();
       try {
         const { data: apps, error } = await supabase
           .from('applications')
@@ -428,24 +1273,49 @@
         allApps = apps || [];
         renderApps(allApps);
       } catch (e) {
-        console.error('Load error:', e);
-        renderApps([]);
+        renderAppsError();
       }
+    }
+
+    function renderAppsSkeleton() {
+      const container = document.getElementById('appsList');
+      container.innerHTML = Array(3).fill().map((_, i) => `
+        <div class="skeleton-card animate-in animate-delay-${i + 1}">
+          <div class="skeleton skeleton-line short" style="margin-bottom:8px;"></div>
+          <div class="skeleton skeleton-line medium"></div>
+          <div class="skeleton skeleton-line short" style="margin-top:10px;"></div>
+        </div>
+      `).join('');
+    }
+
+    function renderAppsError() {
+      const container = document.getElementById('appsList');
+      container.innerHTML = `
+        <div class="error-state">
+          <i class="fas fa-exclamation-triangle"></i>
+          <h3>Failed to Load</h3>
+          <p>Could not fetch applications. Check your connection.</p>
+        </div>`;
     }
 
     function renderApps(apps) {
       const container = document.getElementById('appsList');
 
       if (!apps || apps.length === 0) {
-        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><p>No applications</p></div>';
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon-wrap"><span class="empty-icon">📋</span></div>
+            <h3>No Applications</h3>
+            <p>Submit a new building plan application to get started</p>
+          </div>`;
         return;
       }
 
-      container.innerHTML = apps.map(app => `
-        <div class="app-item ${currentApp?.id === app.id ? 'active' : ''}" onclick="selectApp('${app.id}')">
-          <div class="app-ref">${app.reference}</div>
-          <div class="app-meta">ERF ${app.erf_number || '-'} • ${app.owner_name}</div>
-          <span class="app-status status-${app.status}">${formatStatus(app.status)}</span>
+      container.innerHTML = apps.map((app, i) => `
+        <div class="app-item animate-in animate-delay-${Math.min(i + 1, 4)} ${currentApp?.id === app.id ? 'active' : ''}" onclick="selectApp('${app.id}')">
+          <div class="app-ref">${app.reference || '—'}</div>
+          <div class="app-meta">ERF ${app.erf_number || '—'} · ${app.owner_name || '—'}</div>
+          <span class="app-status status-${app.status === 'PENDING' ? 'SUBMITTED' : app.status}">${formatStatus(app.status)}</span>
           <div class="app-updated">Updated ${new Date(app.updated_at || app.created_at).toLocaleDateString()}</div>
         </div>
       `).join('');
@@ -453,6 +1323,7 @@
 
     function formatStatus(status) {
       const map = {
+        'DRAFT': 'Draft',
         'PENDING': 'Submitted',
         'SUBMITTED': 'Submitted',
         'ANALYZING': 'In Review',
@@ -463,75 +1334,68 @@
         'APPROVED': 'Approved',
         'REJECTED': 'Rejected'
       };
-      return map[status] || status;
+      return map[status] || status || '—';
     }
 
     // === FILTER ===
     function filterApps(status) {
       currentFilter = status;
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
+      event.currentTarget.classList.add('active');
 
       if (status === 'all') {
         renderApps(allApps);
       } else {
-        const filtered = allApps.filter(a => a.status === status);
-        renderApps(filtered);
+        renderApps(allApps.filter(a => a.status === status));
       }
     }
 
     // === SELECT APPLICATION ===
     async function selectApp(id) {
+      const app = allApps.find(a => a.id === id);
+      if (!app) return;
+
+      currentApp = app;
+      renderApps(currentFilter === 'all' ? allApps : allApps.filter(a => a.status === currentFilter));
+
+      document.getElementById('welcomeView').classList.add('hidden');
+      document.getElementById('detailView').classList.remove('hidden');
+
+      document.getElementById('detailRef').textContent = app.reference || '—';
+      const statusEl = document.getElementById('detailStatus');
+      statusEl.textContent = formatStatus(app.status);
+      statusEl.className = `app-status status-${app.status === 'PENDING' ? 'SUBMITTED' : app.status}`;
+      document.getElementById('detailErf').textContent = app.erf_number || '—';
+      document.getElementById('detailZoning').textContent = app.zoning || '—';
+      document.getElementById('detailAddress').textContent = app.street_address || '—';
+      document.getElementById('detailDesc').textContent = app.description || '—';
+      document.getElementById('detailDate').textContent = new Date(app.created_at).toLocaleDateString();
+      document.getElementById('detailUpdated').textContent = new Date(app.updated_at || app.created_at).toLocaleString();
+
+      const docs = app.application_documents || [];
+      document.getElementById('detailDocs').innerHTML = docs.length
+        ? docs.map(d => `<div class="detail-item"><label>${d.doc_type || 'Document'}</label><div>${d.file_name || '—'}</div></div>`).join('')
+        : '<p style="color:var(--zinc-500);font-size:13px;">No documents uploaded</p>';
+
+      document.getElementById('btnDownload').style.display = app.status === 'APPROVED' ? 'flex' : 'none';
+
+      // Render comments with skeleton
+      const commentsContainer = document.getElementById('commentsList');
+      commentsContainer.innerHTML = `
+        <div class="skeleton-card"><div class="skeleton skeleton-line long" style="margin-bottom:8px;"></div><div class="skeleton skeleton-line medium"></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-line long" style="margin-bottom:8px;"></div><div class="skeleton skeleton-line medium"></div></div>`;
+
       try {
-        let app = allApps.find(a => a.id === id);
-        if (!app) {
-          const res = await fetch(`/api/applications/${id}`);
-          app = await res.json();
-        }
-
-        let comments = [];
-        try {
-          const cRes = await fetch(`/api/applications/${id}/comments`);
-          comments = await cRes.json();
-        } catch (e) { comments = []; }
-
-        let revisions = [];
-        try {
-          const rRes = await fetch(`/api/applications/${id}/revisions`);
-          revisions = await rRes.json();
-        } catch (e) { revisions = []; }
-
-        currentApp = app;
-        currentApp.comments = comments;
-        currentApp.revisions = revisions;
-
-        renderApps(currentFilter === 'all' ? allApps : allApps.filter(a => a.status === currentFilter));
-
-        document.getElementById('welcomeView').classList.add('hidden');
-        document.getElementById('detailView').classList.remove('hidden');
-
-        document.getElementById('detailRef').textContent = app.reference;
-        document.getElementById('detailStatus').textContent = formatStatus(app.status);
-        document.getElementById('detailStatus').className = 'app-status status-' + (app.status === 'PENDING' ? 'SUBMITTED' : app.status);
-        document.getElementById('detailErf').textContent = app.erf_number || '-';
-        document.getElementById('detailZoning').textContent = app.zoning || '-';
-        document.getElementById('detailAddress').textContent = app.street_address || '-';
-        document.getElementById('detailDesc').textContent = app.description || '-';
-        document.getElementById('detailDate').textContent = new Date(app.created_at).toLocaleDateString();
-        document.getElementById('detailUpdated').textContent = new Date(app.updated_at || app.created_at).toLocaleString();
-
-        const docs = app.application_documents || [];
-        document.getElementById('detailDocs').innerHTML = docs.map(d => `
-          <div class="detail-item"><label>${d.doc_type}</label><div>${d.file_name}</div></div>
-        `).join('') || '<p>No documents</p>';
-
+        const cRes = await fetch(`/api/applications/${id}/comments`);
+        const comments = await cRes.json();
         renderComments(comments);
-        renderRevisions(revisions);
-
-        document.getElementById('btnDownload').style.display = app.status === 'APPROVED' ? 'block' : 'none';
-
       } catch (e) {
-        console.error('Select error:', e);
+        commentsContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon-wrap"><span class="empty-icon">💬</span></div>
+            <h3>No Comments Yet</h3>
+            <p>Examiner comments will appear here once reviewed</p>
+          </div>`;
       }
     }
 
@@ -539,72 +1403,68 @@
       const container = document.getElementById('commentsList');
 
       if (!comments || comments.length === 0) {
-        container.innerHTML = '<p style="color: var(--steel);">No comments from examiner yet.</p>';
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon-wrap"><span class="empty-icon">💬</span></div>
+            <h3>No Comments Yet</h3>
+            <p>Examiner comments will appear here once your application is reviewed</p>
+          </div>`;
         return;
       }
 
-      container.innerHTML = comments.map((c, i) => {
-        const typeIcon = { 'violation': '🔴', 'warning': '⚠️', 'suggestion': '💡', 'approved': '✅' }[c.comment_type] || '📍';
-        const typeLabel = c.comment_type.toUpperCase();
-
-        return `
-        <div class="comment-card" data-comment-id="${c.id}" onclick="showCommentDetail('${c.id}', ${c.x_position}, ${c.y_position})">
+      const icons = { violation: '🔴', warning: '⚠️', suggestion: '💡', approved: '✅' };
+      container.innerHTML = comments.map((c, i) => `
+        <div class="comment-card animate-in animate-delay-${Math.min(i + 1, 4)}" data-comment-id="${c.id}">
           <div class="comment-main">
             <div class="comment-header">
-              <div class="comment-pin-icon ${c.comment_type}">${typeIcon}</div>
-              <span class="comment-badge ${c.comment_type}">${typeLabel}</span>
-              <span style="margin-left: auto; font-size: 0.75rem; color: var(--steel);">Page ${c.page_number || 1}</span>
+              <div class="comment-pin-icon ${c.comment_type || 'violation'}">${icons[c.comment_type] || '📍'}</div>
+              <span class="comment-badge ${c.comment_type || 'violation'}">${(c.comment_type || 'comment').toUpperCase()}</span>
+              <span style="margin-left:auto;font-size:11.5px;color:var(--zinc-500);">Page ${c.page_number || 1}</span>
             </div>
-            <div class="comment-text">${c.comment_text}</div>
+            <div class="comment-text">${c.comment_text || '—'}</div>
             ${c.clause_id ? `<div class="comment-location">Clause: ${c.clause_id}</div>` : ''}
-            <div style="margin-top: 8px; font-size: 0.75rem; color: var(--steel);">
-              ${c.comment_replies?.length || 0} replies
-            </div>
           </div>
-          ${c.comment_replies && c.comment_replies.length > 0 ? `
+          ${(c.comment_replies && c.comment_replies.length > 0) ? `
             <div class="comment-replies">
               ${c.comment_replies.map(r => `<div class="reply-item"><strong>${r.author_type}:</strong> ${r.reply_text}</div>`).join('')}
-            </div>
-          ` : ''}
-          <div class="reply-box" style="margin-top: 12px;">
-            <input type="text" class="search-input" id="reply-${c.id}" placeholder="Reply or mark fixed..." style="width: 70%;">
-            <button onclick="replyToComment('${c.id}')" style="padding: 8px 12px;">Send</button>
-            <button onclick="markFixed('${c.id}')" style="padding: 8px 12px; margin-left: 4px; background: var(--success); color: white;">✓ Fixed</button>
+            </div>` : ''}
+          <div class="reply-box">
+            <input type="text" id="reply-${c.id}" placeholder="Reply or mark fixed...">
+            <button class="reply-send" onclick="replyToComment('${c.id}')">Send</button>
+            <button class="reply-fixed" onclick="markFixed('${c.id}')">✓ Fixed</button>
           </div>
         </div>
-      `}).join('');
+      `).join('');
     }
 
     function renderRevisions(revisions) {
       const container = document.getElementById('revisionsList');
-
       if (!revisions || revisions.length === 0) {
-        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📁</div><p>No revisions yet</p></div>';
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon-wrap"><span class="empty-icon">📁</span></div>
+            <h3>No Revisions Yet</h3>
+            <p>Revisions will appear here when the examiner requests changes</p>
+          </div>`;
         return;
       }
-
-      container.innerHTML = revisions.map(r => `
-        <div class="revision-card">
+      container.innerHTML = revisions.map((r, i) => `
+        <div class="revision-card animate-in animate-delay-${Math.min(i + 1, 4)}">
           <div class="revision-header">
-            <span class="revision-number">Revision ${r.revision_number}</span>
-            <span class="revision-date">${new Date(r.submitted_at).toLocaleDateString()}</span>
+            <span class="revision-number">Revision ${r.revision_number || '—'}</span>
+            <span class="revision-date">${r.submitted_at ? new Date(r.submitted_at).toLocaleDateString() : '—'}</span>
           </div>
           <div class="revision-changes">${r.change_log || 'No change log provided'}</div>
-          <div class="revision-status status-${r.status}">${r.status}</div>
+          <div class="revision-status" style="color:${r.status === 'APPROVED' ? 'var(--success)' : 'var(--warning)'}">${r.status || '—'}</div>
         </div>
       `).join('');
     }
 
     // === COMMENT ACTIONS ===
-    function showCommentDetail(id, x, y) {
-      // Show comment pin on PDF viewer - in full implementation
-    }
-
     async function replyToComment(commentId) {
       const input = document.getElementById('reply-' + commentId);
-      const text = input.value.trim();
+      const text = input?.value.trim();
       if (!text) return;
-
       try {
         const res = await fetch(`/api/comments/${commentId}/reply`, {
           method: 'POST',
@@ -614,7 +1474,7 @@
         const data = await res.json();
         if (data.id) {
           showToast('Reply sent!', 'success');
-          input.value = '';
+          if (input) input.value = '';
           selectApp(currentApp.id);
         }
       } catch (e) {
@@ -623,12 +1483,11 @@
     }
 
     async function markFixed(commentId) {
-      const input = document.getElementById('reply-' + commentId);
       try {
         const res = await fetch(`/api/comments/${commentId}/fix`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ comment_text: 'Marked as fixed' })
+          body: JSON.stringify({})
         });
         const data = await res.json();
         if (data.success) {
@@ -640,85 +1499,71 @@
       }
     }
 
-    async function submitReply() {
-      if (!currentApp) return;
-      showToast('Please click on a specific comment to reply.', 'error');
-    }
-
     // === TABS ===
     function switchPanelTab(tab) {
       document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-
-      event.target.classList.add('active');
+      event.currentTarget.classList.add('active');
       document.getElementById('panel-' + tab).classList.add('active');
-
-      // Load PDF when view tab is selected
-      if (tab === 'view' && currentApp) {
-        loadApplicantPdf();
-      }
+      if (tab === 'view') loadApplicantPdf();
     }
 
-    // === PDF VIEWER FOR APPLICANTS ===
+    // === PDF VIEWER ===
     let applicantPdfDoc = null;
-    let applicantPdfPage = 1;
 
     async function loadApplicantPdf() {
       const container = document.getElementById('pdfViewer');
       if (!currentApp || !currentApp.application_documents || currentApp.application_documents.length === 0) {
-        container.innerHTML = '<div style="color: white; text-align: center; padding: 40px;"><p>No documents available</p></div>';
+        container.innerHTML = `
+          <div style="text-align:center;padding:60px;color:var(--zinc-400);">
+            <div style="font-size:40px;margin-bottom:16px;opacity:0.5;">📄</div>
+            <p style="font-size:15px;font-weight:600;">No Documents</p>
+            <p style="font-size:13px;opacity:0.7;margin-top:6px;">Upload a plan to view it here</p>
+          </div>`;
         return;
       }
-
       const doc = currentApp.application_documents[0];
       try {
-        // Get document URL
         const res = await fetch(`/api/documents/${currentApp.id}/${doc.id}`);
         const data = await res.json();
-
-        // Load PDF using PDF.js
         const loadingTask = pdfjsLib.getDocument(data.url);
         applicantPdfDoc = await loadingTask.promise;
-
-        await renderApplicantPage(1);
+        await renderPage(1);
       } catch (e) {
-        console.error('PDF load error:', e);
-        container.innerHTML = '<div style="color: white; text-align: center; padding: 40px;"><p>Unable to load PDF</p><p style="font-size: 0.8rem; opacity: 0.7;">' + e.message + '</p></div>';
+        container.innerHTML = `
+          <div style="text-align:center;padding:60px;color:var(--zinc-400);">
+            <i class="fas fa-exclamation-triangle" style="font-size:40px;margin-bottom:16px;"></i>
+            <p style="font-size:15px;font-weight:600;">Unable to load PDF</p>
+            <p style="font-size:13px;opacity:0.7;margin-top:6px;">${e.message}</p>
+          </div>`;
       }
     }
 
-    async function renderApplicantPage(pageNum) {
+    async function renderPage(pageNum) {
       if (!applicantPdfDoc) return;
-
       const container = document.getElementById('pdfViewer');
       const page = await applicantPdfDoc.getPage(pageNum);
-      const viewport = page.getViewport({ scale: 1.2 });
-
-      // Create canvas
+      const viewport = page.getViewport({ scale: 1.3 });
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       canvas.height = viewport.height;
       canvas.width = viewport.width;
       canvas.style.display = 'block';
+      await page.render({ canvasContext: ctx, viewport }).promise;
 
-      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-
-      // Build page container with pins
       const pageContainer = document.createElement('div');
       pageContainer.className = 'pdf-page';
       pageContainer.appendChild(canvas);
 
-      // Add comment pins
-      if (comments && comments.length > 0) {
-        comments.forEach((c, i) => {
+      if (currentApp?.comments?.length) {
+        currentApp.comments.forEach((c, i) => {
           if (c.x_position && c.y_position) {
             const pin = document.createElement('div');
             pin.className = `pdf-comment-pin ${c.comment_type || 'violation'}`;
             pin.style.left = (c.x_position * 100) + '%';
-            pin.style.top = (c.y_position * 100) + '%';
+            pin.style.top  = (c.y_position * 100) + '%';
             pin.textContent = i + 1;
             pin.title = c.comment_text || 'Comment';
-            pin.onclick = (e) => { e.stopPropagation(); showCommentDetail(c.id, c.x_position, c.y_position); };
             pageContainer.appendChild(pin);
           }
         });
@@ -726,95 +1571,48 @@
 
       container.innerHTML = '';
       container.appendChild(pageContainer);
-      applicantPdfPage = pageNum;
     }
 
     // === ACTIONS ===
     function downloadApproval() {
       if (!currentApp) return;
       if (currentApp.status !== 'APPROVED') {
-        showToast('Approval letter only available for approved applications', 'error');
+        showToast('Approval letter only for approved applications', 'error');
         return;
       }
-
-      const letterHtml = `
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Approval Letter - ${currentApp.reference}</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
-    .header { text-align: center; border-bottom: 3px solid #2E7D32; padding-bottom: 20px; margin-bottom: 30px; }
-    .logo { font-size: 24px; }
-    .title { font-size: 28px; font-weight: bold; color: #1B5E20; margin: 10px 0; }
-    .ref { font-size: 14px; color: #666; }
-    .content { margin: 30px 0; line-height: 1.8; }
-    .details { background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0; }
-    .details p { margin: 8px 0; }
-    .label { font-weight: bold; color: #333; }
-    .stamp {
-      border: 4px solid #2E7D32;
-      color: #2E7D32;
-      font-size: 48px;
-      font-weight: bold;
-      transform: rotate(-15deg);
-      text-align: center;
-      padding: 20px;
-      margin: 40px auto;
-      width: 200px;
-    }
-    .footer { text-align: center; margin-top: 40px; font-size: 12px; color: #999; border-top: 1px solid #ddd; padding-top: 20px; }
-    @media print { body { margin: 0; } }
-  </style>
-</head>
+      const letterHtml = `<!DOCTYPE html>
+<html><head><title>Approval ${currentApp.reference}</title>
+<style>
+  body{font-family:Arial,sans-serif;max-width:800px;margin:40px auto;padding:20px;line-height:1.7}
+  .header{text-align:center;border-bottom:3px solid #f59e0b;padding-bottom:20px;margin-bottom:30px}
+  h1{color:#18181b;font-size:28px;margin:10px 0}
+  .ref{color:#71717a;font-size:13px}
+  .details{background:#f4f4f5;padding:20px;border-radius:8px;margin:20px 0}
+  .label{font-weight:bold;color:#18181b}
+  .stamp{border:4px solid #f59e0b;color:#f59e0b;font-size:48px;font-weight:bold;transform:rotate(-12deg);text-align:center;padding:20px;margin:40px auto;width:220px}
+  .footer{text-align:center;margin-top:40px;font-size:12px;color:#a1a1aa;border-top:1px solid #e4e4e7;padding-top:20px}
+</style></head>
 <body>
   <div class="header">
-    <div class="logo">🏛️ SANS Plan Examiner Municipality</div>
-    <div class="title">BUILDING PLAN APPROVAL</div>
-    <div class="ref">Reference: ${currentApp.reference}</div>
+    <div style="font-size:22px;">🏛️ SANS Plan Examiner</div>
+    <h1>BUILDING PLAN APPROVAL</h1>
+    <div class="ref">Ref: ${currentApp.reference}</div>
   </div>
-
-  <div class="content">
-    <p>Date: ${new Date().toLocaleDateString()}</p>
-    <p>To: ${currentApp.owner_name}</p>
-    <p>Email: ${currentApp.owner_email}</p>
-    <br>
-    <p><strong>Re: Building Plan Approval - ${currentApp.street_address}</strong></p>
-    <p>ERF Number: ${currentApp.erf_number}</p>
-    <p>Zoning: ${currentApp.zoning}</p>
-    <br>
-    <p>Your building plan application has been <strong>APPROVED</strong> by the SANS Plan Examiner Building Control Department.</p>
-    <p>This approval is subject to compliance with SANS 10400 requirements and all applicable municipal regulations.</p>
-  </div>
-
+  <p>Date: ${new Date().toLocaleDateString()}</p>
+  <p>To: ${currentApp.owner_name || '—'} &lt;${currentApp.owner_email || '—'}&gt;</p>
+  <p><strong>Re: Building Plan Approval — ${currentApp.street_address || '—'}</strong></p>
+  <p>ERF: ${currentApp.erf_number || '—'} · Zoning: ${currentApp.zoning || '—'}</p>
+  <p>Your building plan application has been <strong>APPROVED</strong> subject to SANS 10400 compliance.</p>
   <div class="details">
-    <p><span class="label">Application Reference:</span> ${currentApp.reference}</p>
-    <p><span class="label">Property Address:</span> ${currentApp.street_address}</p>
-    <p><span class="label">ERF Number:</span> ${currentApp.erf_number}</p>
-    <p><span class="label">Zoning:</span> ${currentApp.zoning}</p>
-    <p><span class="label">Owner:</span> ${currentApp.owner_name}</p>
-    <p><span class="label">Submission Date:</span> ${new Date(currentApp.created_at).toLocaleDateString()}</p>
+    <p><span class="label">Reference:</span> ${currentApp.reference}</p>
+    <p><span class="label">Property:</span> ${currentApp.street_address || '—'}</p>
+    <p><span class="label">ERF Number:</span> ${currentApp.erf_number || '—'}</p>
+    <p><span class="label">Zoning:</span> ${currentApp.zoning || '—'}</p>
+    <p><span class="label">Owner:</span> ${currentApp.owner_name || '—'}</p>
   </div>
-
   <div class="stamp">✓ APPROVED</div>
-
-  <div class="content">
-    <p><strong>Conditions of Approval:</strong></p>
-    <ul>
-      <li>Building must comply with all SANS 10400 requirements</li>
-      <li>All dimensions must be verified on site</li>
-      <li>Professional engineer must certify structural elements</li>
-      <li>Final inspection required before occupancy</li>
-    </ul>
-  </div>
-
-  <div class="footer">
-    <p>SANS Plan Examiner Municipality | Building Control</p>
-    <p>012 358 9999 | building.control@tshwane.gov.za</p>
-    <p>This document is digitally generated. Verify at: https://tshwane.gov.za/verify</p>
-  </div>
-</body>
-</html>`;
+  <div class="footer">SANS Plan Examiner | building.control@tshwane.gov.za | 012 358 2255</div>
+</body></html>`;
 
       const blob = new Blob([letterHtml], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
@@ -827,78 +1625,55 @@
 
     function contactExaminer() {
       if (!currentApp) return;
-      window.location.href = `mailto:building.control@tshwane.gov.za?subject=Inquiry: ${currentApp.reference}`;
+      window.location.href = `mailto:building.control@tshwane.gov.za?subject=Application: ${currentApp.reference}`;
     }
 
+    // === REVISION MODAL ===
     function showUpload() {
-      if (!currentApp) {
-        showToast('Select an application first', 'error');
-        return;
-      }
-      // Open revision modal instead of prompt
       const modal = document.createElement('div');
       modal.id = 'revisionModal';
       modal.className = 'modal-overlay';
       modal.innerHTML = `
-        <div class="modal" style="max-width: 450px;">
+        <div class="modal animate-in">
           <h3>Submit Revision</h3>
-          <p style="color: var(--steel); font-size: 0.9rem; margin-bottom: 16px;">Describe the changes made in this revision:</p>
-          <textarea id="revisionChangeLog" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; min-height: 120px; resize: vertical;" placeholder="Describe changes..."></textarea>
-          <div style="margin-top: 16px;">
-            <label class="file-upload" style="display: block;">
-              <input type="file" id="revisionFile" accept=".pdf">
-              <span class="file-upload-label">Click to upload revised plans (PDF)</span>
+          <p style="color:var(--zinc-500);font-size:13px;margin-bottom:16px;">Describe the changes made in this revision:</p>
+          <textarea id="revisionChangeLog" placeholder="Describe changes made..."></textarea>
+          <div class="file-upload">
+            <input type="file" id="revisionFile" accept=".pdf">
+            <label for="revisionFile" class="file-upload-label">
+              <i class="fas fa-cloud-upload-alt"></i> Click to upload revised plans (PDF)
             </label>
           </div>
           <div class="modal-buttons">
             <button class="cancel" onclick="closeRevisionModal()">Cancel</button>
             <button class="confirm" onclick="submitRevisionModal()">Submit Revision</button>
           </div>
-        </div>
-      `;
+        </div>`;
       document.body.appendChild(modal);
     }
 
     function closeRevisionModal() {
-      const modal = document.getElementById('revisionModal');
-      if (modal) modal.remove();
+      const m = document.getElementById('revisionModal');
+      if (m) m.remove();
     }
 
     async function submitRevisionModal() {
       const changeLog = document.getElementById('revisionChangeLog').value.trim();
-      const fileInput = document.getElementById('revisionFile');
-      const file = fileInput?.files[0];
-
-      if (!changeLog) {
-        showToast('Please enter change description', 'error');
-        return;
-      }
-
-      if (!file) {
-        showToast('Please upload revised plans', 'error');
-        return;
-      }
-
+      const file = document.getElementById('revisionFile')?.files[0];
+      if (!changeLog) { showToast('Please describe the changes', 'error'); return; }
+      if (!file)      { showToast('Please upload revised plans', 'error'); return; }
       closeRevisionModal();
-
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('application_id', currentApp.id);
-      formData.append('doc_type', 'building_plans');
-      formData.append('change_log', changeLog);
-
+      showToast('Submitting revision...', 'info');
       try {
-        const res = await fetch('/api/applications/revision', {
-          method: 'POST',
-          body: formData
-        });
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('application_id', currentApp?.id || '');
+        formData.append('doc_type', 'building_plans');
+        formData.append('change_log', changeLog);
+        const res = await fetch('/api/applications/revision', { method: 'POST', body: formData });
         const data = await res.json();
-        if (data.success) {
-          showToast('Revision submitted!', 'success');
-          selectApp(currentApp.id);
-        } else {
-          showToast('Error: ' + data.error, 'error');
-        }
+        if (data.success) { showToast('Revision submitted!', 'success'); }
+        else              { showToast('Error: ' + (data.error || 'unknown'), 'error'); }
       } catch (err) {
         showToast('Upload failed', 'error');
       }
@@ -906,18 +1681,14 @@
 
     // === SEARCH ===
     document.getElementById('searchInput').addEventListener('input', function(e) {
-      const query = e.target.value.toLowerCase();
-      if (!query) {
-        renderApps(allApps);
-        return;
-      }
-      const filtered = allApps.filter(a =>
-        a.reference?.toLowerCase().includes(query) ||
-        a.erf_number?.toLowerCase().includes(query) ||
-        a.street_address?.toLowerCase().includes(query) ||
-        a.owner_name?.toLowerCase().includes(query)
-      );
-      renderApps(filtered);
+      const q = e.target.value.toLowerCase();
+      if (!q) { renderApps(allApps); return; }
+      renderApps(allApps.filter(a =>
+        a.reference?.toLowerCase().includes(q) ||
+        a.erf_number?.toLowerCase().includes(q) ||
+        a.street_address?.toLowerCase().includes(q) ||
+        a.owner_name?.toLowerCase().includes(q)
+      ));
     });
   </script>
 </body>

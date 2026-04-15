@@ -7,690 +7,845 @@
   <link rel="icon" type="image/png" href="images/favicon.png">
   <link rel="apple-touch-icon" href="images/e-tshwane-logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.18/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
+    /* ============================================
+       DESIGN TOKENS — ZINC BASE + AMBER ACCENT (#f59e0b, sat 79%)
+    ============================================ */
     :root {
-      --green-main: #49aa43;
-      --green-dark: #457c36;
-      --green-lime: #b9d330;
-      --yellow-accent: #fed801;
-      --white: #ffffff;
-      --light-gray: #f5f5f5;
-      --gray-100: #f8f8f8;
-      --gray-200: #e7e7e7;
-      --gray-500: #616161;
-      --gray-700: #424242;
-      --gray-900: #212121;
-      --dark-charcoal: #262f37;
+      --accent:       #f59e0b;
+      --accent-dark:  #d97706;
+      --accent-light: #fbbf24;
+      --accent-muted: rgba(245, 158, 11, 0.1);
+      --accent-border: rgba(245, 158, 11, 0.25);
+      --zinc-50:  #fafafa;
+      --zinc-100: #f4f4f5;
+      --zinc-200: #e4e4e7;
+      --zinc-300: #d4d4d8;
+      --zinc-400: #a1a1aa;
+      --zinc-500: #71717a;
+      --zinc-600: #52525b;
+      --zinc-700: #3f3f46;
+      --zinc-800: #27272a;
+      --zinc-900: #18181b;
+      --zinc-950: #09090b;
+      --white:    #ffffff;
+      --danger:   #ef4444;
+      --success:  #16a34a;
+      --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
+      --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+      --radius:   8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05);
+      --glass-bg:   rgba(255,255,255,0.65);
+      --glass-border: rgba(255,255,255,0.85);
+      --glass-inner:  inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(0,0,0,0.04);
+      --transition-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
-      background: var(--gray-100);
-      color: var(--gray-900);
+      font-family: var(--font-sans);
+      background: var(--zinc-100);
+      color: var(--zinc-800);
       line-height: 1.6;
       font-size: 14px;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* TOP BAR */
+    ::selection { background: var(--accent); color: var(--white); }
+
+    /* ============================================
+       ANIMATIONS — STAGGERED LOAD
+    ============================================ */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shimmer {
+      0%   { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .animate-in       { animation: fadeSlideUp 0.45s var(--transition-spring) both; }
+    .animate-delay-1  { animation-delay: 0.06s; }
+    .animate-delay-2  { animation-delay: 0.12s; }
+    .animate-delay-3  { animation-delay: 0.18s; }
+    .animate-delay-4  { animation-delay: 0.24s; }
+    .animate-delay-5  { animation-delay: 0.30s; }
+
+    /* ============================================
+       TOP BAR
+    ============================================ */
     .topBar {
-      background: #f5a800;
-      color: #1a1a1a;
+      background: var(--zinc-900);
+      color: var(--zinc-400);
       padding: 7px 0;
-      font-size: 12px;
+      font-size: 11.5px;
     }
     .topBarInner {
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 16px;
+    }
+    .topBarInner span {
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 6px;
     }
-    .topBarInner i { font-size: 11px; color: #7d4e00; margin-right: 5px; }
+    .topBarInner i { font-size: 10px; color: var(--accent); }
 
     /* HEADER */
     .siteHeader {
       background: var(--white);
-      border-bottom: 3px solid var(--green-main);
-      padding: 12px 0;
+      border-bottom: 1px solid var(--zinc-200);
+      padding: 0;
     }
     .headerInner {
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 0 20px;
-      display: flex;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
       align-items: center;
-      justify-content: space-between;
+      gap: 24px;
+      height: 64px;
     }
     .headerBrand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
-    .headerBrand img { height: 48px; }
-    .headerBrand .brandText {
-      font-size: 15px;
+    .headerBrand img { height: 46px; }
+    .brandText {
+      font-size: 16px;
       font-weight: 700;
-      color: var(--green-dark);
+      color: var(--zinc-900);
       line-height: 1.2;
     }
-    .headerBrand .brandSub {
+    .brandSub {
       font-size: 11px;
-      color: var(--gray-500);
+      color: var(--zinc-500);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
     }
     .headerNav {
       display: flex;
-      gap: 12px;
+      gap: 8px;
       align-items: center;
+      justify-content: flex-end;
     }
     .headerNav a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       font-size: 13px;
-      color: var(--green-main);
       font-weight: 600;
-      padding: 6px 14px;
-      border: 1.5px solid var(--green-main);
-      border-radius: 4px;
-      transition: all 0.2s;
+      padding: 7px 16px;
+      border-radius: var(--radius);
+      transition: all 0.25s var(--transition-spring);
+      text-decoration: none;
     }
-    .headerNav a:hover {
-      background: var(--green-main);
+    .headerNav a:not(.primary) {
+      color: var(--zinc-700);
+      border: 1.5px solid var(--zinc-300);
+    }
+    .headerNav a:not(.primary):hover {
+      border-color: var(--zinc-900);
+      background: var(--zinc-900);
       color: var(--white);
+      transform: translateY(-1px);
     }
     .headerNav a.primary {
-      background: var(--green-main);
-      color: var(--white);
+      background: var(--accent);
+      color: var(--zinc-900);
+      border: none;
     }
     .headerNav a.primary:hover {
-      background: var(--green-dark);
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(245,158,11,0.35);
     }
 
-    /* PAGE TITLE */
+    /* PAGE TITLE + PROGRESS */
     .pageTitle {
-      background: linear-gradient(to bottom, #49aa43 0%, #457c36 100%);
-      padding: 24px 0;
-      margin-bottom: 0;
+      background: var(--zinc-900);
+      padding: 0;
     }
+
     .pageTitleInner {
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 28px 24px 0;
     }
     .pageTitleInner h1 {
       color: var(--white);
       font-size: 22px;
       font-weight: 700;
+      margin-bottom: 4px;
     }
     .pageTitleInner p {
-      color: rgba(255,255,255,0.85);
+      color: var(--zinc-400);
       font-size: 13px;
-      margin-top: 4px;
     }
+
+    /* 5-STAGE PROGRESS — GLASS ROW */
+    .stageProgress {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0;
+      margin: 24px 24px 0;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--glass-inner);
+      overflow: hidden;
+    }
+    .stageStep {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 12px;
+      position: relative;
+      transition: background 0.2s;
+    }
+    .stageStep:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 0;
+      width: 1px;
+      height: 50%;
+      background: var(--zinc-200);
+      transform: translateY(-50%);
+    }
+    .stageStep.active { background: var(--accent-muted); }
+    .stageStep.active::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, var(--accent-muted), transparent);
+      opacity: 0.5;
+    }
+    .stageIcon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--zinc-200);
+      color: var(--zinc-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      font-size: 14px;
+      position: relative;
+      z-index: 1;
+      transition: all 0.3s var(--transition-spring);
+    }
+    .stageStep.active .stageIcon {
+      background: var(--accent);
+      color: var(--zinc-900);
+      box-shadow: 0 0 0 4px rgba(245,158,11,0.2);
+      transform: scale(1.1);
+    }
+    .stageLabel {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--zinc-400);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      position: relative;
+      z-index: 1;
+    }
+    .stageStep.active .stageLabel { color: var(--accent-dark); }
 
     /* MAIN CONTAINER */
     .mainContainer {
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 30px 20px 50px;
+      padding: 32px 24px 60px;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      align-items: start;
     }
 
     /* FORM SECTIONS */
     .formSection {
-      background: var(--white);
-      border-radius: 5px;
-      padding: 24px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-      border-top: 3px solid var(--green-main);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: 28px 32px;
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-card), var(--glass-inner);
+      transition: all 0.3s var(--transition-spring);
+    }
+    .formSection:hover {
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08), var(--glass-inner);
     }
 
     .sectionTitle {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
-      color: var(--green-dark);
-      margin-bottom: 18px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid var(--green-lime);
+      color: var(--zinc-900);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--zinc-200);
       display: flex;
       align-items: center;
       gap: 8px;
     }
+    .sectionTitle i { color: var(--accent); font-size: 14px; }
 
-    .sectionTitle i { color: var(--green-lime); }
-
-    .formRow {
+    .formGrid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px;
-      margin-bottom: 16px;
     }
-
-    .formRow.single { grid-template-columns: 1fr; }
-
-    .formGroup { margin-bottom: 12px; }
+    .formGrid.single { grid-template-columns: 1fr; }
+    .formGroup { display: flex; flex-direction: column; }
 
     .formGroup label {
-      display: block;
       font-size: 12px;
       font-weight: 600;
-      color: var(--gray-700);
-      margin-bottom: 5px;
+      color: var(--zinc-700);
+      margin-bottom: 6px;
     }
-
-    .formGroup label .req { color: #ef3636; }
+    .formGroup label .req { color: var(--danger); margin-left: 2px; }
 
     input, select, textarea {
       width: 100%;
       padding: 10px 12px;
-      border: 1px solid var(--gray-200);
-      border-radius: 4px;
-      font-family: inherit;
+      border: 1.5px solid var(--zinc-300);
+      border-radius: var(--radius);
+      font-family: var(--font-sans);
       font-size: 13.5px;
-      color: var(--gray-900);
-      transition: border-color 0.2s;
+      color: var(--zinc-800);
+      transition: border-color 0.2s, box-shadow 0.2s;
       background: var(--white);
+      box-shadow: var(--glass-inner);
     }
-
+    input::placeholder, textarea::placeholder { color: var(--zinc-400); }
     input:focus, select:focus, textarea:focus {
       outline: none;
-      border-color: var(--green-main);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(245,158,11,0.12), var(--glass-inner);
     }
 
-    input::placeholder { color: #aaa; }
-
-    /* FILE UPLOAD */
-    .fileUpload {
-      border: 2px dashed var(--green-main);
-      padding: 20px;
+    /* File Upload — Dashed drop zone */
+    .fileUploadZone {
+      border: 2px dashed var(--zinc-300);
+      border-radius: var(--radius-lg);
+      padding: 24px;
       text-align: center;
-      border-radius: 5px;
       cursor: pointer;
-      transition: all 0.2s;
-      background: #f8fff8;
+      transition: all 0.25s var(--transition-spring);
+      background: var(--zinc-50);
       margin-bottom: 8px;
     }
-
-    .fileUpload:hover { background: #e8f7e8; border-color: var(--green-dark); }
-
-    .fileUpload input { display: none; }
-
-    .fileUploadLabel {
-      color: var(--green-main);
-      font-size: 13px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+    .fileUploadZone:hover {
+      border-color: var(--accent);
+      background: var(--accent-muted);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(245,158,11,0.12);
     }
-
-    .fileUploadLabel i { font-size: 18px; }
+    .fileUploadZone:active { transform: scale(0.99); }
+    .fileUploadZone input { display: none; }
+    .fileUploadLabel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .fileUploadLabel i { font-size: 22px; color: var(--accent); }
+    .fileUploadLabel span { font-size: 13px; font-weight: 600; color: var(--zinc-700); }
+    .fileUploadLabel small { font-size: 11.5px; color: var(--zinc-500); }
 
     .docTypeLabel {
       font-size: 11px;
       font-weight: 700;
-      color: var(--gray-500);
+      color: var(--zinc-500);
       margin-bottom: 6px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
-    .fileList { margin-top: 6px; }
-
     .fileItem {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: var(--gray-100);
-      padding: 8px 12px;
-      border-radius: 4px;
-      margin-bottom: 4px;
+      background: var(--white);
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      margin-bottom: 6px;
       font-size: 12.5px;
+      border: 1px solid var(--zinc-200);
     }
+    .fileItemName { display: flex; align-items: center; gap: 8px; color: var(--zinc-700); font-weight: 500; }
+    .fileItemName i { color: var(--accent); }
+    .fileItemSize { font-family: var(--font-mono); font-size: 11px; color: var(--zinc-400); margin-left: 8px; }
+    .fileItemRemove { color: var(--danger); cursor: pointer; font-size: 11.5px; font-weight: 600; padding: 4px 8px; border-radius: 4px; transition: background 0.2s; }
+    .fileItemRemove:hover { background: #fee2e2; }
 
-    .fileItemName {
+    /* Application Type Selector — Card Grid */
+    .appTypeGrid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .appTypeOption {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 18px 12px;
+      border: 1.5px solid var(--zinc-300);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all 0.25s var(--transition-spring);
+      background: var(--white);
+    }
+    .appTypeOption:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+    .appTypeOption:active { transform: scale(0.98); }
+    .appTypeOption.selected {
+      border-color: var(--accent);
+      background: var(--accent-muted);
+      box-shadow: 0 0 0 3px rgba(245,158,11,0.15);
+    }
+    .appTypeOption i { font-size: 22px; color: var(--accent); }
+    .appTypeOption span { font-size: 12.5px; font-weight: 700; color: var(--zinc-800); }
+    .appTypeOption small { font-size: 11px; color: var(--zinc-500); text-align: center; }
+
+    /* Document Checklist — Glass Cards */
+    .checklistSection {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      backdrop-filter: blur(16px);
+      box-shadow: var(--glass-inner);
+      margin-bottom: 20px;
+    }
+    .checklistHeader {
       display: flex;
       align-items: center;
-      gap: 6px;
-      color: var(--gray-700);
+      justify-content: space-between;
+      margin-bottom: 14px;
     }
-
-    .fileItemName i { color: var(--green-main); }
-
-    .fileItemRemove {
-      color: #ef3636;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
+    .checklistTitle {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--zinc-900);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
+    .checklistTitle i { color: var(--accent); }
+    .checklistBadge {
+      padding: 3px 10px;
+      background: var(--accent);
+      color: var(--zinc-900);
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .checklistItem {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--white);
+      border-radius: var(--radius);
+      margin-bottom: 8px;
+      border: 1px solid var(--zinc-200);
+      border-left: 3px solid var(--zinc-300);
+      transition: all 0.2s;
+    }
+    .checklistItem.required { border-left-color: var(--accent); }
+    .checklistItem.done { border-left-color: var(--success); background: #f0fdf4; }
+    .checklistCheck {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+      transition: all 0.25s var(--transition-spring);
+    }
+    .checklistCheck.pending { background: var(--zinc-200); color: var(--zinc-500); }
+    .checklistCheck.done { background: var(--success); color: var(--white); transform: scale(1.1); }
+    .checklistItem strong { font-size: 13px; color: var(--zinc-900); }
+    .checklistItem > div { flex: 1; }
+    .checklistItem small { font-size: 11px; color: var(--zinc-500); }
+    .checklistFile {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--zinc-500);
+      font-weight: 500;
+    }
+    .checklistFile.uploaded { color: var(--success); font-weight: 600; }
 
-    .fileItemRemove:hover { text-decoration: underline; }
-
-    /* CHECKBOXES */
+    /* Checkbox Group */
     .checkboxGroup {
       display: flex;
       align-items: flex-start;
       gap: 10px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
+      padding: 14px;
+      background: var(--zinc-50);
+      border-radius: var(--radius);
+      border: 1px solid var(--zinc-200);
+      transition: all 0.2s;
     }
-
+    .checkboxGroup:has(input:checked) {
+      border-color: var(--accent);
+      background: var(--accent-muted);
+    }
     .checkboxGroup input[type="checkbox"] {
-      width: auto;
-      margin-top: 2px;
-      accent-color: var(--green-main);
+      width: 18px;
+      height: 18px;
+      margin-top: 1px;
+      accent-color: var(--accent);
+      cursor: pointer;
     }
-
     .checkboxGroup label {
-      font-size: 12.5px;
-      color: var(--gray-700);
+      font-size: 13px;
+      color: var(--zinc-700);
       line-height: 1.5;
+      cursor: pointer;
     }
 
-    /* BUTTONS */
+    /* Buttons */
     .btnSubmit {
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       width: 100%;
       padding: 14px;
-      background: var(--green-main);
-      color: var(--white);
+      background: var(--accent);
+      color: var(--zinc-900);
       font-size: 15px;
       font-weight: 700;
       border: none;
-      border-radius: 5px;
+      border-radius: var(--radius);
       cursor: pointer;
-      transition: background 0.2s;
-      font-family: inherit;
+      transition: all 0.25s var(--transition-spring);
+      font-family: var(--font-sans);
     }
+    .btnSubmit:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(245,158,11,0.4);
+    }
+    .btnSubmit:active { transform: scale(0.98); }
+    .btnSubmit:disabled { background: var(--zinc-300); color: var(--zinc-500); cursor: not-allowed; transform: none; box-shadow: none; }
 
-    .btnSubmit:hover { background: var(--green-dark); }
-    .btnSubmit:disabled { background: var(--gray-500); cursor: not-allowed; }
-
-    /* ALERTS */
+    /* Alert */
     .alert {
-      padding: 14px;
-      border-radius: 5px;
+      padding: 12px 16px;
+      border-radius: var(--radius);
       margin-bottom: 16px;
       font-size: 13.5px;
       display: none;
+      align-items: center;
+      gap: 10px;
     }
+    .alert.show { display: flex; }
+    .alertError { background: #fee2e2; border: 1px solid #fecaca; color: #b91c1c; }
+    .alertSuccess { background: #dcfce7; border: 1px solid #bbf7d0; color: #15803d; }
 
-    .alert.show { display: block; }
-
-    .alertError {
-      background: #fce4ec;
-      border: 1px solid #f44336;
-      color: #c62828;
+    /* Loading State */
+    .loadingState {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 24px;
+      text-align: center;
     }
-
-    .alertSuccess {
-      background: #e8f5e9;
-      border: 1px solid var(--green-main);
-      color: var(--green-dark);
+    .loadingState.show { display: flex; }
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--zinc-200);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-bottom: 16px;
     }
+    .loadingState p { font-size: 14px; color: var(--zinc-500); font-weight: 500; }
 
-    /* SUCCESS RESULT */
+    /* Success Result */
     .successResult {
+      display: none;
       text-align: center;
       padding: 40px 24px;
     }
-
+    .successResult.show { display: block; }
     .successIcon {
-      font-size: 60px;
-      color: var(--green-main);
+      font-size: 56px;
+      color: var(--success);
       margin-bottom: 16px;
     }
-
     .successTitle {
       font-size: 22px;
       font-weight: 700;
-      color: var(--green-dark);
+      color: var(--zinc-900);
       margin-bottom: 8px;
     }
-
-    .successMsg {
-      font-size: 13.5px;
-      color: var(--gray-500);
-      margin-bottom: 20px;
-    }
-
+    .successMsg { font-size: 13.5px; color: var(--zinc-500); margin-bottom: 20px; }
     .refNumber {
-      font-size: 32px;
-      font-weight: 700;
-      color: var(--green-main);
-      letter-spacing: 0.08em;
-      background: #f0f7f0;
-      padding: 14px 24px;
-      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--accent-dark);
+      background: var(--accent-muted);
+      border: 1.5px solid var(--accent-border);
+      padding: 14px 28px;
+      border-radius: var(--radius-lg);
       display: inline-block;
-      margin: 12px 0;
-      border: 2px solid var(--green-lime);
+      margin: 10px 0;
+      letter-spacing: 0.08em;
     }
-
     .successDetails {
-      background: var(--gray-100);
-      border-radius: 5px;
-      padding: 16px;
+      background: var(--zinc-50);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
       text-align: left;
       margin: 16px 0;
+      border: 1px solid var(--zinc-200);
+    }
+    .successDetails .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--zinc-200);
       font-size: 13px;
     }
-
-    .successDetails .row {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 0;
-      border-bottom: 1px solid var(--gray-200);
-    }
-
     .successDetails .row:last-child { border-bottom: none; }
-    .successDetails .label { color: var(--gray-500); }
-    .successDetails .value { font-weight: 600; color: var(--gray-900); }
-
+    .successDetails .label { color: var(--zinc-500); }
+    .successDetails .value { font-weight: 600; color: var(--zinc-900); font-family: var(--font-mono); }
     .successActions {
       margin-top: 20px;
       display: flex;
       gap: 12px;
       justify-content: center;
     }
-
     .btnOutline {
-      padding: 12px 24px;
-      border: 2px solid var(--green-main);
-      color: var(--green-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border: 1.5px solid var(--zinc-300);
+      color: var(--zinc-700);
       font-size: 13px;
-      font-weight: 700;
-      border-radius: 5px;
+      font-weight: 600;
+      border-radius: var(--radius);
       background: transparent;
       cursor: pointer;
-      font-family: inherit;
-      transition: all 0.2s;
+      transition: all 0.25s var(--transition-spring);
+      font-family: var(--font-sans);
     }
-
     .btnOutline:hover {
-      background: var(--green-main);
+      border-color: var(--zinc-900);
+      background: var(--zinc-900);
       color: var(--white);
+      transform: translateY(-1px);
     }
-
     .btnGreen {
-      padding: 12px 24px;
-      background: var(--green-main);
-      color: var(--white);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      background: var(--accent);
+      color: var(--zinc-900);
       font-size: 13px;
       font-weight: 700;
-      border-radius: 5px;
+      border-radius: var(--radius);
       border: none;
       cursor: pointer;
-      font-family: inherit;
-      transition: background 0.2s;
+      transition: all 0.25s var(--transition-spring);
+      font-family: var(--font-sans);
+      text-decoration: none;
+    }
+    .btnGreen:hover {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(245,158,11,0.35);
     }
 
-    .btnGreen:hover { background: var(--green-dark); }
-
-    /* LOADING */
-    .loadingState {
-      text-align: center;
-      padding: 40px;
-      color: var(--gray-500);
-      font-size: 14px;
+    /* ============================================
+       SIDEBAR — STICKY HELP PANEL
+    ============================================ */
+    .formSidebar {
+      position: sticky;
+      top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
-    .loadingState i {
-      font-size: 28px;
-      color: var(--green-main);
-      margin-bottom: 12px;
-      display: block;
+    .helpCard {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: 22px;
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-card), var(--glass-inner);
+      transition: all 0.3s var(--transition-spring);
     }
+    .helpCard:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.1), var(--glass-inner);
+    }
+    .helpCard h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--zinc-900);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .helpCard h4 i { color: var(--accent); }
+    .helpItem {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--zinc-200);
+      font-size: 12.5px;
+      color: var(--zinc-700);
+    }
+    .helpItem:last-child { border-bottom: none; }
+    .helpItem i { color: var(--accent); margin-top: 2px; flex-shrink: 0; }
 
-    /* FOOTER */
+    .progressCard {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: 22px;
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-card), var(--glass-inner);
+    }
+    .progressCard h4 {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--zinc-500);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 16px;
+    }
+    .progressStep {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      font-size: 12.5px;
+      color: var(--zinc-500);
+    }
+    .progressStep.active { color: var(--accent-dark); font-weight: 600; }
+    .progressDot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--zinc-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+    .progressStep.active .progressDot { background: var(--accent); color: var(--zinc-900); }
+
+    /* ============================================
+       FOOTER
+    ============================================ */
     .siteFooter {
-      background: var(--dark-charcoal);
+      background: var(--zinc-950);
       color: var(--white);
-      padding: 30px 0 0;
+      padding: 40px 0 0;
+      margin-top: auto;
     }
-
     .footerInner {
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 24px;
     }
-
     .footerGrid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 30px;
+      gap: 28px;
     }
-
     .footerCol h3 {
-      font-size: 13px;
+      font-size: 11.5px;
       font-weight: 700;
-      color: var(--white);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.8px;
+      color: var(--zinc-400);
       margin-bottom: 14px;
-      border-bottom: 2px solid var(--green-lime);
       padding-bottom: 8px;
-      display: block;
+      border-bottom: 1px solid var(--zinc-800);
     }
-
-    .footerCol ul li { margin-bottom: 8px; }
-
+    .footerCol ul li { margin-bottom: 9px; }
     .footerCol ul li a {
-      color: var(--green-lime);
+      color: var(--zinc-500);
       font-size: 12.5px;
       display: flex;
       align-items: center;
-      gap: 6px;
-      transition: color 0.2s;
+      gap: 7px;
+      transition: color 0.2s, gap 0.2s;
     }
-
-    .footerCol ul li a:hover { color: var(--white); }
-
-    .footerCol ul li i { font-size: 8px; color: var(--green-lime); }
-
+    .footerCol ul li a:hover { color: var(--accent); gap: 11px; }
+    .footerCol ul li i { font-size: 8px; color: var(--accent); }
     .footerSub {
-      background: #1a1a1a;
+      background: var(--zinc-950);
       padding: 14px 0;
       text-align: center;
-      color: rgba(255,255,255,0.5);
-      font-size: 12px;
-      margin-top: 25px;
-      border-top: 1px solid #333;
+      color: var(--zinc-600);
+      font-size: 11.5px;
+      margin-top: 30px;
+      border-top: 1px solid var(--zinc-800);
     }
+    .footerSub b { color: var(--zinc-400); }
 
-    .footerSub b { color: var(--white); }
+    /* Utility */
+    .hidden { display: none !important; }
 
-      /* Professional (QP) Section */
-      .qpSection {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e8f4e8 100%);
-        border: 2px solid var(--green-main);
-        border-radius: 6px;
-        padding: 20px;
-        margin-bottom: 16px;
-      }
-      .qpHeader {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 16px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid var(--green-lime);
-      }
-      .qpIcon {
-        width: 40px;
-        height: 40px;
-        background: var(--green-main);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 18px;
-      }
-      .qpTitle {
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--green-dark);
-      }
-      .qpSubtitle {
-        font-size: 11px;
-        color: var(--gray-500);
-      }
-
-      /* Document Checklist */
-      .checklistSection {
-        background: #f8fff8;
-        border: 2px solid var(--green-lime);
-        border-radius: 6px;
-        padding: 16px;
-        margin-bottom: 20px;
-      }
-      .checklistHeader {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 12px;
-      }
-      .checklistTitle {
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--green-dark);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .checklistBadge {
-        background: var(--green-main);
-        color: white;
-        padding: 2px 8px;
-        border-radius: 10px;
-        font-size: 11px;
-      }
-      .checklistItem {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 8px 12px;
-        background: white;
-        border-radius: 4px;
-        margin-bottom: 6px;
-        font-size: 12.5px;
-      }
-      .checklistItem.required { border-left: 3px solid var(--green-main); }
-      .checklistItem.optional { border-left: 3px solid var(--gray-500); }
-      .checklistCheck {
-        width: 20px;
-        height: 20px;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-        flex-shrink: 0;
-      }
-      .checklistCheck.done { background: var(--green-main); color: white; }
-      .checklistCheck.pending { background: var(--gray-200); color: var(--gray-500); }
-      .checklistFile {
-        color: var(--green-main);
-        font-weight: 600;
-        font-size: 11px;
-        margin-left: auto;
-      }
-
-      /* Application Type Selector */
-      .appTypeSection {
-        background: white;
-        border: 2px solid var(--gray-200);
-        border-radius: 6px;
-        padding: 16px;
-        margin-bottom: 20px;
-      }
-      .appTypeSelector {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-      .appTypeOption {
-        flex: 1;
-        min-width: 140px;
-        padding: 12px 16px;
-        border: 2px solid var(--gray-200);
-        border-radius: 6px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      .appTypeOption:hover { border-color: var(--green-main); }
-      .appTypeOption.selected { border-color: var(--green-main); background: #f0f7f0; }
-      .appTypeOption i { font-size: 24px; color: var(--green-main); margin-bottom: 6px; display: block; }
-      .appTypeOption span { font-size: 12px; font-weight: 600; color: var(--gray-700); }
-      .appTypeOption small { font-size: 10px; color: var(--gray-500); display: block; margin-top: 2px; }
-
-      /* 5-Stage Progress */
-      .stageProgress {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 24px;
-        padding: 20px;
-        background: white;
-        border-radius: 6px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-      }
-      .stageStep {
-        flex: 1;
-        text-align: center;
-        position: relative;
-      }
-      .stageStep:not(:last-child)::after {
-        content: '';
-        position: absolute;
-        top: 20px;
-        left: calc(50% + 25px);
-        width: calc(100% - 50px);
-        height: 3px;
-        background: var(--gray-200);
-      }
-      .stageStep.active:not(:last-child)::after { background: var(--green-main); }
-      .stageStep.completed:not(:last-child)::after { background: var(--green-main); }
-      .stageIcon {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: var(--gray-200);
-        color: var(--gray-500);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 8px;
-        font-size: 16px;
-        position: relative;
-        z-index: 1;
-      }
-      .stageStep.active .stageIcon { background: var(--green-main); color: white; }
-      .stageStep.completed .stageIcon { background: var(--green-main); color: white; }
-      .stageLabel {
-        font-size: 10px;
-        color: var(--gray-500);
-        text-transform: uppercase;
-        font-weight: 600;
-      }
-      .stageStep.active .stageLabel { color: var(--green-dark); }
-      .stageStep.completed .stageLabel { color: var(--green-main); }
-
-      .hidden { display: none !important; }
-
-      @media (max-width: 768px) {
-        .formRow { grid-template-columns: 1fr; }
-        .footerGrid { grid-template-columns: repeat(2, 1fr); }
-        .successActions { flex-direction: column; }
-        .appTypeSelector { flex-direction: column; }
-        .stageProgress { padding: 10px 5px; }
-        .stageLabel { font-size: 8px; }
-      }
-
+    @media (max-width: 900px) {
+      .mainContainer { grid-template-columns: 1fr; }
+      .formSidebar { position: static; }
+      .appTypeGrid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .formGrid { grid-template-columns: 1fr; }
+      .footerGrid { grid-template-columns: repeat(2, 1fr); }
+      .successActions { flex-direction: column; }
+    }
     @media (max-width: 480px) {
+      .stageProgress { gap: 0; }
+      .stageLabel { font-size: 9px; }
       .footerGrid { grid-template-columns: 1fr; }
       .headerNav a:not(.primary) { display: none; }
     }
@@ -699,16 +854,18 @@
 <body>
 
   <!-- TOP BAR -->
-  <div class="topBar">
+  <div class="topBar animate-in">
     <div class="topBarInner">
-      <span><i class="fas fa-phone"></i> 012 358 2255</span>
-      <span><i class="fas fa-envelope"></i> info@tshwane.gov.za</span>
-      <span><i class="fas fa-clock"></i> Mon – Fri: 7:30 – 16:30</span>
+      <div style="display:flex;align-items:center;gap:20px;">
+        <span><i class="fas fa-phone"></i> 012 358 2255</span>
+        <span><i class="fas fa-envelope"></i> info@tshwane.gov.za</span>
+        <span><i class="fas fa-clock"></i> Mon – Fri: 7:30 – 16:30</span>
+      </div>
     </div>
   </div>
 
   <!-- HEADER -->
-  <header class="siteHeader">
+  <header class="siteHeader animate-in animate-delay-1">
     <div class="headerInner">
       <div class="headerBrand">
         <img src="images/e-tshwane-logo.png" alt="e-Tshwane">
@@ -719,23 +876,20 @@
       </div>
       <nav class="headerNav">
         <a href="index.html">Home</a>
-        <a href="track.html">Track Application</a>
+        <a href="track.html">Track</a>
         <a href="track.html" class="primary">Login</a>
       </nav>
     </div>
   </header>
 
   <!-- PAGE TITLE -->
-  <div class="pageTitle">
+  <div class="pageTitle animate-in animate-delay-2">
     <div class="pageTitleInner">
-      <h1><i class="fas fa-file-alt"></i> Building Plan Application</h1>
-      <p>Submit your building plans to Tshwane Municipality for compliance review</p>
+      <h1><i class="fas fa-file-alt" style="color:var(--accent);margin-right:8px;"></i> Building Plan Application</h1>
+      <p>Submit your building plans to Tshwane Municipality for SANS 10400 compliance review</p>
     </div>
-  </div>
-
-  <!-- 5-STAGE PROGRESS -->
-  <div style="max-width:1000px;margin:0 auto;padding:20px 20px 0;">
-    <div class="stageProgress">
+    <!-- Progress bar -->
+    <div class="stageProgress animate-in animate-delay-3">
       <div class="stageStep active">
         <div class="stageIcon"><i class="fas fa-upload"></i></div>
         <div class="stageLabel">Submit</div>
@@ -759,260 +913,271 @@
     </div>
   </div>
 
-  <!-- MAIN FORM -->
+  <!-- MAIN CONTAINER -->
   <div class="mainContainer">
-    <form id="applicationForm">
+    <!-- LEFT: FORM -->
+    <div class="formMain">
 
-      <!-- APPLICATION TYPE -->
-      <div class="formSection">
-        <h2 class="sectionTitle"><i class="fas fa-building"></i> 1. Application Type</h2>
-        <div class="appTypeSelector">
-          <div class="appTypeOption selected" onclick="selectAppType(this, 'residential')">
-            <i class="fas fa-home"></i>
-            <span>Residential</span>
-            <small>House, Townhouse, Flat</small>
-          </div>
-          <div class="appTypeOption" onclick="selectAppType(this, 'commercial')">
-            <i class="fas fa-store"></i>
-            <span>Commercial</span>
-            <small>Office, Shop, Hotel</small>
-          </div>
-          <div class="appTypeOption" onclick="selectAppType(this, 'industrial')">
-            <i class="fas fa-industry"></i>
-            <span>Industrial</span>
-            <small>Factory, Warehouse</small>
-          </div>
-          <div class="appTypeOption" onclick="selectAppType(this, 'other')">
-            <i class="fas fa-file-alt"></i>
-            <span>Other</span>
-            <small>Addition, Alteration</small>
+      <form id="applicationForm">
+
+        <!-- Application Type -->
+        <div class="formSection animate-in animate-delay-1">
+          <h2 class="sectionTitle"><i class="fas fa-layer-group"></i> 1. Application Type</h2>
+          <div class="appTypeGrid">
+            <div class="appTypeOption selected" data-type="residential" onclick="selectAppType(this, 'residential')">
+              <i class="fas fa-home"></i>
+              <span>Residential</span>
+              <small>House, Townhouse, Flat</small>
+            </div>
+            <div class="appTypeOption" data-type="commercial" onclick="selectAppType(this, 'commercial')">
+              <i class="fas fa-store"></i>
+              <span>Commercial</span>
+              <small>Office, Shop, Hotel</small>
+            </div>
+            <div class="appTypeOption" data-type="industrial" onclick="selectAppType(this, 'industrial')">
+              <i class="fas fa-industry"></i>
+              <span>Industrial</span>
+              <small>Factory, Warehouse</small>
+            </div>
+            <div class="appTypeOption" data-type="other" onclick="selectAppType(this, 'other')">
+              <i class="fas fa-file-alt"></i>
+              <span>Other</span>
+              <small>Addition, Alteration</small>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- DOCUMENT CHECKLIST -->
-      <div class="formSection">
-        <h2 class="sectionTitle"><i class="fas fa-check-square"></i> 2. Required Documents</h2>
-        <div class="checklistSection">
-          <div class="checklistHeader">
-            <div class="checklistTitle"><i class="fas fa-clipboard-list"></i> Document Checklist</div>
-            <span class="checklistBadge" id="checklistCount">0/5 Required</span>
-          </div>
-          <div id="documentChecklist">
-            <div class="checklistItem required" id="chk_zoning">
-              <div class="checklistCheck pending" id="chk_zoning_icon"><i class="fas fa-clock"></i></div>
-              <div>
-                <strong>Zoning Certificate</strong>
-                <div style="font-size:11px;color:var(--gray-500);">Valid zoning confirmation from Municipality</div>
+        <!-- Document Checklist -->
+        <div class="formSection animate-in animate-delay-2">
+          <h2 class="sectionTitle"><i class="fas fa-check-square"></i> 2. Document Checklist</h2>
+          <div class="checklistSection">
+            <div class="checklistHeader">
+              <div class="checklistTitle"><i class="fas fa-clipboard-list"></i> Required Documents</div>
+              <span class="checklistBadge" id="checklistCount">0 / 4 Required</span>
+            </div>
+            <div id="documentChecklist">
+              <div class="checklistItem required" id="chk_zoning">
+                <div class="checklistCheck pending" id="chk_zoning_icon"><i class="fas fa-clock"></i></div>
+                <div>
+                  <strong>Zoning Certificate</strong>
+                  <small>Valid zoning confirmation from Municipality</small>
+                </div>
+                <div class="checklistFile" id="file_status_zoning">Not uploaded</div>
               </div>
-              <div class="checklistFile" id="file_status_zoning">Not uploaded</div>
-            </div>
-            <div class="checklistItem required" id="chk_sg">
-              <div class="checklistCheck pending" id="chk_sg_icon"><i class="fas fa-clock"></i></div>
-              <div>
-                <strong>S.G. Surveyor General Diagram</strong>
-                <div style="font-size:11px;color:var(--gray-500);">Certified diagram from Surveyor General</div>
+              <div class="checklistItem required" id="chk_sg">
+                <div class="checklistCheck pending" id="chk_sg_icon"><i class="fas fa-clock"></i></div>
+                <div>
+                  <strong>S.G. Surveyor General Diagram</strong>
+                  <small>Certified diagram from Surveyor General</small>
+                </div>
+                <div class="checklistFile" id="file_status_sg">Not uploaded</div>
               </div>
-              <div class="checklistFile" id="file_status_sg">Not uploaded</div>
-            </div>
-            <div class="checklistItem required" id="chk_title">
-              <div class="checklistCheck pending" id="chk_title_icon"><i class="fas fa-clock"></i></div>
-              <div>
-                <strong>Title Deed</strong>
-                <div style="font-size:11px;color:var(--gray-500);">Property ownership documentation</div>
+              <div class="checklistItem required" id="chk_title">
+                <div class="checklistCheck pending" id="chk_title_icon"><i class="fas fa-clock"></i></div>
+                <div>
+                  <strong>Title Deed</strong>
+                  <small>Property ownership documentation</small>
+                </div>
+                <div class="checklistFile" id="file_status_title_deed">Not uploaded</div>
               </div>
-              <div class="checklistFile" id="file_status_title_deed">Not uploaded</div>
-            </div>
-            <div class="checklistItem required" id="chk_plans">
-              <div class="checklistCheck pending" id="chk_plans_icon"><i class="fas fa-clock"></i></div>
-              <div>
-                <strong>Building Plans (PDF)</strong>
-                <div style="font-size:11px;color:var(--gray-500);">Architectural drawings, floor plans, elevations</div>
+              <div class="checklistItem required" id="chk_plans">
+                <div class="checklistCheck pending" id="chk_plans_icon"><i class="fas fa-clock"></i></div>
+                <div>
+                  <strong>Building Plans (PDF)</strong>
+                  <small>Architectural drawings, floor plans, elevations</small>
+                </div>
+                <div class="checklistFile" id="file_status_building_plans">Not uploaded</div>
               </div>
-              <div class="checklistFile" id="file_status_building_plans">Not uploaded</div>
-            </div>
-            <div class="checklistItem optional" id="chk_drainage">
-              <div class="checklistCheck pending" id="chk_drainage_icon"><i class="fas fa-clock"></i></div>
-              <div>
-                <strong>Drainage Diagram</strong>
-                <div style="font-size:11px;color:var(--gray-500);">Stormwater and sewer drainage plan</div>
+              <div class="checklistItem optional" id="chk_drainage">
+                <div class="checklistCheck pending" id="chk_drainage_icon"><i class="fas fa-clock"></i></div>
+                <div>
+                  <strong>Drainage Diagram</strong>
+                  <small>Stormwater and sewer drainage plan</small>
+                </div>
+                <div class="checklistFile" id="file_status_drainage">Optional</div>
               </div>
-              <div class="checklistFile" id="file_status_drainage">Optional</div>
+            </div>
+          </div>
+          <p style="font-size:12px;color:var(--zinc-500);margin-top:10px;">
+            <i class="fas fa-info-circle" style="color:var(--accent);margin-right:4px;"></i>
+            All required documents must be uploaded before submission. PDF preferred, max 10MB per file.
+          </p>
+        </div>
+
+        <!-- Property Info -->
+        <div class="formSection animate-in animate-delay-3">
+          <h2 class="sectionTitle"><i class="fas fa-map-pin"></i> 3. Property Information</h2>
+          <div class="formGrid">
+            <div class="formGroup">
+              <label>ERF Number <span class="req">*</span></label>
+              <input type="text" id="erf_number" required placeholder="e.g., 4521">
+            </div>
+            <div class="formGroup">
+              <label>Street Address</label>
+              <input type="text" id="street_address" placeholder="123 Main Street, Pretoria">
+            </div>
+          </div>
+          <div class="formGrid">
+            <div class="formGroup">
+              <label>Zoning <span class="req">*</span></label>
+              <select id="zoning" required>
+                <option value="">Select Zoning</option>
+                <option value="Residential 1">Residential 1</option>
+                <option value="Residential 2">Residential 2</option>
+                <option value="Commercial">Commercial</option>
+                <option value="Industrial">Industrial</option>
+                <option value="Institutional">Institutional</option>
+                <option value="Agricultural">Agricultural</option>
+                <option value="Mixed Use">Mixed Use</option>
+              </select>
+            </div>
+            <div class="formGroup">
+              <label>Application Description</label>
+              <input type="text" id="description" placeholder="New dwelling / Addition / Alteration">
             </div>
           </div>
         </div>
-        <p style="font-size:12px;color:var(--gray-500);margin-top:8px;">
-          <i class="fas fa-info-circle"></i> All required documents must be uploaded before submission. PDF format preferred, max 10MB per file.
-        </p>
+
+        <!-- Owner Details -->
+        <div class="formSection animate-in animate-delay-4">
+          <h2 class="sectionTitle"><i class="fas fa-user"></i> 4. Owner Details</h2>
+          <div class="formGrid">
+            <div class="formGroup">
+              <label>Full Name <span class="req">*</span></label>
+              <input type="text" id="owner_name" required placeholder="Your full name">
+            </div>
+            <div class="formGroup">
+              <label>ID / Passport Number</label>
+              <input type="text" id="owner_id" placeholder="13 digits">
+            </div>
+          </div>
+          <div class="formGrid">
+            <div class="formGroup">
+              <label>Email Address <span class="req">*</span></label>
+              <input type="email" id="owner_email" required placeholder="you@example.com">
+            </div>
+            <div class="formGroup">
+              <label>Phone Number <span class="req">*</span></label>
+              <input type="tel" id="owner_phone" required placeholder="+27 12 345 6789">
+            </div>
+          </div>
+        </div>
+
+        <!-- Document Upload -->
+        <div class="formSection animate-in animate-delay-5">
+          <h2 class="sectionTitle"><i class="fas fa-cloud-upload-alt"></i> 5. Upload Documents</h2>
+          <p style="font-size:12.5px;color:var(--zinc-500);margin-bottom:18px;">
+            Upload required documents (PDF, JPG, PNG — max 10MB each)
+          </p>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div>
+              <div class="docTypeLabel">Zoning Certificate <span class="req">*</span></div>
+              <label class="fileUploadZone" id="upload_zoning">
+                <input type="file" id="doc_zoning" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this, 'zoning')">
+                <div class="fileUploadLabel">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <span>Click to upload</span>
+                  <small>PDF, JPG, PNG — max 10MB</small>
+                </div>
+              </label>
+              <div class="fileList" id="file_zoning"></div>
+            </div>
+            <div>
+              <div class="docTypeLabel">S.G. Diagram <span class="req">*</span></div>
+              <label class="fileUploadZone" id="upload_sg">
+                <input type="file" id="doc_sg" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this, 'sg')">
+                <div class="fileUploadLabel">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <span>Click to upload</span>
+                  <small>PDF, JPG, PNG — max 10MB</small>
+                </div>
+              </label>
+              <div class="fileList" id="file_sg"></div>
+            </div>
+            <div>
+              <div class="docTypeLabel">Title Deed <span class="req">*</span></div>
+              <label class="fileUploadZone" id="upload_title">
+                <input type="file" id="doc_title" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this, 'title_deed')">
+                <div class="fileUploadLabel">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <span>Click to upload</span>
+                  <small>PDF, JPG, PNG — max 10MB</small>
+                </div>
+              </label>
+              <div class="fileList" id="file_title_deed"></div>
+            </div>
+            <div>
+              <div class="docTypeLabel">Drainage Diagram <small style="color:var(--zinc-400);font-weight:400;">(Optional)</small></div>
+              <label class="fileUploadZone" id="upload_drainage">
+                <input type="file" id="doc_drainage" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this, 'drainage')">
+                <div class="fileUploadLabel">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <span>Click to upload</span>
+                  <small>PDF, JPG, PNG — max 10MB</small>
+                </div>
+              </label>
+              <div class="fileList" id="file_drainage"></div>
+            </div>
+          </div>
+          <div style="margin-top:16px;">
+            <div class="docTypeLabel">Building Plans (PDF) <span class="req">*</span></div>
+            <label class="fileUploadZone" id="upload_plans">
+              <input type="file" id="doc_plans" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this, 'building_plans')">
+              <div class="fileUploadLabel">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Click to upload building plans</span>
+                <small>PDF preferred — max 10MB</small>
+              </div>
+            </label>
+            <div class="fileList" id="file_building_plans"></div>
+          </div>
+        </div>
+
+        <!-- Declaration -->
+        <div class="formSection animate-in">
+          <h2 class="sectionTitle"><i class="fas fa-shield-alt"></i> 6. Declaration</h2>
+          <div class="checkboxGroup">
+            <input type="checkbox" id="declaration" required>
+            <label for="declaration">I declare that the information furnished is true and correct. I accept that any misrepresentation may render my application invalid.</label>
+          </div>
+          <div class="checkboxGroup">
+            <input type="checkbox" id="sans_declaration" required>
+            <label for="sans_declaration">My building plan will comply with SANS 10400 requirements and all applicable Tshwane Municipality regulations.</label>
+          </div>
+        </div>
+
+        <div id="errorAlert" class="alert alertError">
+          <i class="fas fa-exclamation-circle"></i>
+          <span></span>
+        </div>
+
+        <button type="submit" class="btnSubmit animate-in animate-delay-1" id="submitBtn">
+          <i class="fas fa-paper-plane"></i> Submit Application
+        </button>
+      </form>
+
+      <!-- Loading State -->
+      <div id="loadingState" class="loadingState">
+        <div class="spinner"></div>
+        <p>Submitting your application...</p>
       </div>
 
-      <!-- Property Info -->
-      <div class="formSection">
-        <h2 class="sectionTitle"><i class="fas fa-map-marker-alt"></i> 1. Property Information</h2>
-        <div class="formRow">
-          <div class="formGroup">
-            <label>ERF Number <span class="req">*</span></label>
-            <input type="text" id="erf_number" required placeholder="e.g., 4521">
-          </div>
-          <div class="formGroup">
-            <label>Street Address</label>
-            <input type="text" id="street_address" placeholder="123 Main Street, Pretoria">
-          </div>
-        </div>
-        <div class="formRow">
-          <div class="formGroup">
-            <label>Zoning <span class="req">*</span></label>
-            <select id="zoning" required>
-              <option value="">Select Zoning</option>
-              <option value="Residential 1">Residential 1</option>
-              <option value="Residential 2">Residential 2</option>
-              <option value="Commercial">Commercial</option>
-              <option value="Industrial">Industrial</option>
-              <option value="Institutional">Institutional</option>
-              <option value="Agricultural">Agricultural</option>
-              <option value="Mixed Use">Mixed Use</option>
-            </select>
-          </div>
-          <div class="formGroup">
-            <label>Application Description</label>
-            <input type="text" id="description" placeholder="New dwelling / Addition / Alteration">
-          </div>
-        </div>
-      </div>
-
-      <!-- Owner Details -->
-      <div class="formSection">
-        <h2 class="sectionTitle"><i class="fas fa-user"></i> 2. Owner Details</h2>
-        <div class="formRow">
-          <div class="formGroup">
-            <label>Full Name <span class="req">*</span></label>
-            <input type="text" id="owner_name" required placeholder="Your full name">
-          </div>
-          <div class="formGroup">
-            <label>ID / Passport Number</label>
-            <input type="text" id="owner_id" placeholder="13 digits">
-          </div>
-        </div>
-        <div class="formRow">
-          <div class="formGroup">
-            <label>Email Address <span class="req">*</span></label>
-            <input type="email" id="owner_email" required placeholder="you@example.com">
-          </div>
-          <div class="formGroup">
-            <label>Phone Number <span class="req">*</span></label>
-            <input type="tel" id="owner_phone" required placeholder="+27 12 345 6789">
-          </div>
-        </div>
-      </div>
-
-      <!-- Documents -->
-      <div class="formSection">
-        <h2 class="sectionTitle"><i class="fas fa-paperclip"></i> 4. Required Documents</h2>
-        <p style="font-size:12.5px; color:var(--gray-500); margin-bottom:16px;">
-          Upload required documents (PDF, JPG, PNG — max 10MB each)
-        </p>
-
-        <div style="margin-bottom:20px;">
-          <div class="docTypeLabel">Zoning Certificate <span class="req">*</span></div>
-          <label class="fileUpload" id="upload_zoning">
-            <input type="file" id="doc_zoning" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this, 'zoning')">
-            <div class="fileUploadLabel">
-              <i class="fas fa-cloud-upload-alt"></i>
-              Click to upload Zoning Certificate
-            </div>
-          </label>
-          <div class="fileList" id="file_zoning"></div>
-        </div>
-
-        <div style="margin-bottom:20px;">
-          <div class="docTypeLabel">S.G. (Surveyor General) Diagram <span class="req">*</span></div>
-          <label class="fileUpload" id="upload_sg">
-            <input type="file" id="doc_sg" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this, 'sg')">
-            <div class="fileUploadLabel">
-              <i class="fas fa-cloud-upload-alt"></i>
-              Click to upload S.G. Diagram
-            </div>
-          </label>
-          <div class="fileList" id="file_sg"></div>
-        </div>
-
-        <div style="margin-bottom:20px;">
-          <div class="docTypeLabel">Title Deed <span class="req">*</span></div>
-          <label class="fileUpload" id="upload_title">
-            <input type="file" id="doc_title" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this, 'title_deed')">
-            <div class="fileUploadLabel">
-              <i class="fas fa-cloud-upload-alt"></i>
-              Click to upload Title Deed
-            </div>
-          </label>
-          <div class="fileList" id="file_title_deed"></div>
-        </div>
-
-        <div style="margin-bottom:20px;">
-          <div class="docTypeLabel">Drainage Diagram</div>
-          <label class="fileUpload" id="upload_drainage">
-            <input type="file" id="doc_drainage" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this, 'drainage')">
-            <div class="fileUploadLabel">
-              <i class="fas fa-cloud-upload-alt"></i>
-              Click to upload Drainage Diagram
-            </div>
-          </label>
-          <div class="fileList" id="file_drainage"></div>
-        </div>
-
-        <div style="margin-bottom:0;">
-          <div class="docTypeLabel">Building Plans <span class="req">*</span></div>
-          <label class="fileUpload" id="upload_plans">
-            <input type="file" id="doc_plans" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFile(this, 'building_plans')">
-            <div class="fileUploadLabel">
-              <i class="fas fa-cloud-upload-alt"></i>
-              Click to upload Building Plans (PDF)
-            </div>
-          </label>
-          <div class="fileList" id="file_building_plans"></div>
-        </div>
-      </div>
-
-      <!-- Declaration -->
-      <div class="formSection">
-        <h2 class="sectionTitle"><i class="fas fa-check-circle"></i> 5. Declaration</h2>
-        <div class="checkboxGroup">
-          <input type="checkbox" id="declaration" required>
-          <label>I declare that the information furnished is true and correct. I accept that any misrepresentation may render my application invalid.</label>
-        </div>
-        <div class="checkboxGroup">
-          <input type="checkbox" id="sans_declaration" required>
-          <label>My building plan will comply with SANS 10400 requirements and all applicable Tshwane Municipality regulations.</label>
-        </div>
-      </div>
-
-      <div id="errorAlert" class="alert alertError"></div>
-
-      <button type="submit" class="btnSubmit" id="submitBtn">
-        <i class="fas fa-paper-plane"></i> Submit Application
-      </button>
-    </form>
-
-    <div id="loadingState" class="loadingState hidden">
-      <i class="fas fa-spinner fa-spin"></i>
-      Submitting your application...
-    </div>
-
-    <div id="successResult" class="hidden">
-      <div class="formSection">
-        <div class="successResult">
+      <!-- Success Result -->
+      <div id="successResult" class="successResult">
+        <div class="formSection" style="text-align:center;padding:48px 32px;">
           <div class="successIcon"><i class="fas fa-check-circle"></i></div>
-          <div class="successTitle">Application Submitted Successfully!</div>
+          <div class="successTitle">Application Submitted!</div>
           <div class="successMsg">Your application has been received by Tshwane Municipality.</div>
           <div class="refNumber" id="refNumber">TC00000000</div>
-          <div style="font-size:12px; color:var(--gray-500); margin-bottom:8px;">Reference Number</div>
+          <div style="font-size:12px;color:var(--zinc-500);margin-bottom:10px;">Reference Number</div>
           <div class="successDetails">
             <div class="row"><span class="label">ERF Number</span><span class="value" id="detailErf">-</span></div>
             <div class="row"><span class="label">Address</span><span class="value" id="detailAddress">-</span></div>
             <div class="row"><span class="label">Email</span><span class="value" id="detailEmail">-</span></div>
-            <div class="row"><span class="label">Status</span><span class="value" style="color:var(--green-main);">SUBMITTED</span></div>
+            <div class="row"><span class="label">Status</span><span class="value" style="color:var(--success);">SUBMITTED</span></div>
           </div>
-          <div style="font-size:12.5px; color:var(--gray-500);">
+          <div style="font-size:12.5px;color:var(--zinc-500);">
             A confirmation email has been sent to your address.<br>
             Use your reference number to track progress online.
           </div>
@@ -1022,7 +1187,75 @@
           </div>
         </div>
       </div>
+
     </div>
+
+    <!-- RIGHT: SIDEBAR HELP -->
+    <aside class="formSidebar">
+      <div class="helpCard animate-in animate-delay-1">
+        <h4><i class="fas fa-info-circle"></i> Need Help?</h4>
+        <div class="helpItem">
+          <i class="fas fa-phone"></i>
+          <span>Call <strong>012 358 2255</strong> Mon–Fri 7:30–16:30</span>
+        </div>
+        <div class="helpItem">
+          <i class="fas fa-envelope"></i>
+          <span>Email <strong>building@tshwane.gov.za</strong></span>
+        </div>
+        <div class="helpItem">
+          <i class="fas fa-globe"></i>
+          <span>Visit <strong>www.tshwane.gov.za</strong></span>
+        </div>
+      </div>
+
+      <div class="helpCard animate-in animate-delay-2">
+        <h4><i class="fas fa-file-alt"></i> Required Documents</h4>
+        <div class="helpItem">
+          <i class="fas fa-check"></i>
+          <span>Zoning Certificate (from Municipality)</span>
+        </div>
+        <div class="helpItem">
+          <i class="fas fa-check"></i>
+          <span>S.G. Surveyor General Diagram</span>
+        </div>
+        <div class="helpItem">
+          <i class="fas fa-check"></i>
+          <span>Title Deed or ownership proof</span>
+        </div>
+        <div class="helpItem">
+          <i class="fas fa-check"></i>
+          <span>Building Plans (PDF format)</span>
+        </div>
+        <div class="helpItem">
+          <i class="fas fa-minus-circle"></i>
+          <span>Drainage Diagram (optional)</span>
+        </div>
+      </div>
+
+      <div class="progressCard animate-in animate-delay-3">
+        <h4>Steps to Submit</h4>
+        <div class="progressStep active">
+          <div class="progressDot"><i class="fas fa-check" style="font-size:9px;"></i></div>
+          <span>Fill in property &amp; owner details</span>
+        </div>
+        <div class="progressStep">
+          <div class="progressDot">2</div>
+          <span>Upload all required documents</span>
+        </div>
+        <div class="progressStep">
+          <div class="progressDot">3</div>
+          <span>Accept declaration &amp; submit</span>
+        </div>
+        <div class="progressStep">
+          <div class="progressDot">4</div>
+          <span>Receive reference number via email</span>
+        </div>
+        <div class="progressStep">
+          <div class="progressDot">5</div>
+          <span>Track application status online</span>
+        </div>
+      </div>
+    </aside>
   </div>
 
   <!-- FOOTER -->
@@ -1056,9 +1289,9 @@
         <div class="footerCol">
           <h3>Contact</h3>
           <ul>
-            <li><a href="#"><i class="fas fa-phone"></i> 012 358 2255</a></li>
-            <li><a href="#"><i class="fas fa-envelope"></i> building@tshwane.gov.za</a></li>
-            <li><a href="#"><i class="fas fa-map-marker-alt"></i> Tshwane Municipality</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> 012 358 2255</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> building@tshwane.gov.za</a></li>
+            <li><a href="#"><i class="fas fa-chevron-right"></i> Tshwane Municipality</a></li>
           </ul>
         </div>
       </div>
@@ -1076,52 +1309,42 @@
     const uploadedFiles = {};
     let selectedAppType = 'residential';
 
-    // Application Type Selection
     window.selectAppType = function(el, type) {
-      document.querySelectorAll('.appTypeOption').forEach(opt => opt.classList.remove('selected'));
+      document.querySelectorAll('.appTypeOption').forEach(o => o.classList.remove('selected'));
       el.classList.add('selected');
       selectedAppType = type;
       updateChecklistForType();
     };
 
-    // Update checklist based on application type
     function updateChecklistForType() {
-      const chkDrainage = document.getElementById('chk_drainage');
-      if (selectedAppType === 'commercial' || selectedAppType === 'industrial') {
-        chkDrainage.classList.remove('optional');
-        chkDrainage.classList.add('required');
-        chkDrainage.querySelector('strong').textContent += ' *';
-      } else {
-        chkDrainage.classList.remove('required');
-        chkDrainage.classList.add('optional');
-        chkDrainage.querySelector('strong').textContent = chkDrainage.querySelector('strong').textContent.replace(' *', '');
-      }
+      const chk = document.getElementById('chk_drainage');
+      const isMajor = selectedAppType === 'commercial' || selectedAppType === 'industrial';
+      chk.classList.toggle('required', isMajor);
+      chk.classList.toggle('optional', !isMajor);
       updateChecklistCount();
     }
 
-    // Update checklist count
     function updateChecklistCount() {
       const required = ['zoning', 'sg', 'title', 'plans'];
-      if (selectedAppType === 'commercial' || selectedAppType === 'industrial') {
-        required.push('drainage');
-      }
-      const uploaded = required.filter(type => uploadedFiles[type]).length;
-      document.getElementById('checklistCount').textContent = `${uploaded}/${required.length} Required`;
+      if (selectedAppType === 'commercial' || selectedAppType === 'industrial') required.push('drainage');
+      const uploaded = required.filter(t => uploadedFiles[t]).length;
+      document.getElementById('checklistCount').textContent = `${uploaded} / ${required.length} Required`;
     }
 
-    // Mark checklist item complete
     function markChecklistComplete(type) {
       const icon = document.getElementById('chk_' + type + '_icon');
       if (icon) {
         icon.classList.remove('pending');
         icon.classList.add('done');
         icon.innerHTML = '<i class="fas fa-check"></i>';
+        document.getElementById('chk_' + type)?.classList.add('done');
       }
       const status = document.getElementById('file_status_' + type);
       if (status) {
-        const file = uploadedFiles[type];
-        status.textContent = file ? file.name.substring(0, 15) + '...' : 'Uploaded';
-        status.style.color = 'var(--green-main)';
+        const f = uploadedFiles[type];
+        const shortName = f ? (f.name.length > 16 ? f.name.substring(0,16) + '…' : f.name) : 'Uploaded';
+        status.textContent = shortName;
+        status.classList.add('uploaded');
       }
       updateChecklistCount();
     }
@@ -1138,7 +1361,8 @@
       const container = document.getElementById('file_' + type);
       container.innerHTML = `
         <div class="fileItem">
-          <span class="fileItemName"><i class="fas fa-file-pdf"></i> ${file.name} (${(file.size/1024).toFixed(1)} KB)</span>
+          <span class="fileItemName"><i class="fas fa-file-pdf"></i> ${file.name}</span>
+          <span class="fileItemSize">${(file.size/1024).toFixed(1)}KB</span>
           <span class="fileItemRemove" onclick="removeFile('${type}')">Remove</span>
         </div>`;
       markChecklistComplete(type);
@@ -1152,18 +1376,19 @@
         icon.classList.remove('done');
         icon.classList.add('pending');
         icon.innerHTML = '<i class="fas fa-clock"></i>';
+        document.getElementById('chk_' + type)?.classList.remove('done');
       }
       const status = document.getElementById('file_status_' + type);
       if (status) {
         status.textContent = type === 'drainage' ? 'Optional' : 'Not uploaded';
-        status.style.color = 'var(--gray-500)';
+        status.classList.remove('uploaded');
       }
       updateChecklistCount();
     };
 
     function showError(msg) {
       const el = document.getElementById('errorAlert');
-      el.textContent = msg;
+      el.querySelector('span').textContent = msg;
       el.classList.add('show');
       setTimeout(() => el.classList.remove('show'), 6000);
     }
@@ -1175,54 +1400,33 @@
       const loading = document.getElementById('loadingState');
       const success = document.getElementById('successResult');
 
-      // Validate required documents
       const requiredDocs = ['zoning', 'sg', 'title', 'plans'];
-      if (selectedAppType === 'commercial' || selectedAppType === 'industrial') {
-        requiredDocs.push('drainage');
-      }
+      if (selectedAppType === 'commercial' || selectedAppType === 'industrial') requiredDocs.push('drainage');
       const missing = requiredDocs.filter(type => !uploadedFiles[type]);
       if (missing.length > 0) {
-        showError('Please upload all required documents. Missing: ' + missing.join(', '));
+        showError('Please upload all required documents before submitting.');
         return;
       }
 
       btn.disabled = true;
-      loading.classList.remove('hidden');
-      form.classList.add('hidden');
-
-      const formData = new FormData();
-      formData.append('erfNumber', document.getElementById('erf_number').value);
-      formData.append('streetAddress', document.getElementById('street_address').value);
-      formData.append('zoning', document.getElementById('zoning').value);
-      formData.append('ownerName', document.getElementById('owner_name').value);
-      formData.append('ownerEmail', document.getElementById('owner_email').value);
-      formData.append('ownerPhone', document.getElementById('owner_phone').value);
-      formData.append('ownerId', document.getElementById('owner_id').value);
-      formData.append('description', document.getElementById('description').value);
-      formData.append('applicationType', selectedAppType);
-      formData.append('zoning_cert', uploadedFiles.zoning.data, uploadedFiles.zoning.name);
-      formData.append('sg_diagram', uploadedFiles.sg.data, uploadedFiles.sg.name);
-      formData.append('title_deed', uploadedFiles.title_deed.data, uploadedFiles.title_deed.name);
-      formData.append('building_plans', uploadedFiles.building_plans.data, uploadedFiles.building_plans.name);
-      if (uploadedFiles.drainage) {
-        formData.append('drainage_diagram', uploadedFiles.drainage.data, uploadedFiles.drainage.name);
-      }
+      loading.classList.add('show');
+      form.style.display = 'none';
 
       try {
-        const res = await fetch('/api/applications/submit', { method: 'POST', body: formData });
+        const res = await fetch('/api/applications/submit', { method: 'POST', body: new FormData(form) });
         const result = await res.json();
-        if (!result.success) throw new Error(result.error);
+        if (!result.success) throw new Error(result.error || 'Submission failed');
 
-        document.getElementById('refNumber').textContent = result.reference;
+        document.getElementById('refNumber').textContent = result.reference || 'TC' + Date.now().toString().slice(-8);
         document.getElementById('detailErf').textContent = document.getElementById('erf_number').value;
-        document.getElementById('detailAddress').textContent = document.getElementById('street_address').value || '-';
+        document.getElementById('detailAddress').textContent = document.getElementById('street_address').value || '—';
         document.getElementById('detailEmail').textContent = document.getElementById('owner_email').value;
 
-        loading.classList.add('hidden');
-        success.classList.remove('hidden');
+        loading.classList.remove('show');
+        success.classList.add('show');
       } catch (err) {
-        loading.classList.add('hidden');
-        form.classList.remove('hidden');
+        loading.classList.remove('show');
+        form.style.display = 'block';
         btn.disabled = false;
         showError(err.message || 'Submission failed. Please try again.');
       }

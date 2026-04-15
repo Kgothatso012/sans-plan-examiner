@@ -91,6 +91,7 @@ const paymentRoutes = require('./routes/payments');
 const analyticsRoutes = require('./routes/analytics');
 const analysisRoutes = require('./routes/analysis');
 const checkRoutes = require('./routes/check');
+const checklistRoutes = require('./routes/checklist');
 
 // Mount routes
 app.use('/api/auth', authRoutes);
@@ -103,6 +104,7 @@ app.use('/api', paymentRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api', analysisRoutes);
 app.use('/api', checkRoutes);
+app.use('/api', checklistRoutes);
 
 // General rate limiting
 app.use(generalLimiter);

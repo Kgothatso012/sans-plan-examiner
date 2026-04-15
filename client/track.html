@@ -5,763 +5,986 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Track Application | SANS Plan Examiner</title>
   <link rel="icon" type="image/png" href="images/favicon.png">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.18/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
+    /* ============================================
+       DESIGN TOKENS — ZINC BASE + AMBER ACCENT
+    ============================================ */
     :root {
-      --green-main: #49aa43;
-      --green-dark: #457c36;
-      --green-lime: #b9d330;
-      --yellow-accent: #fed801;
-      --amber-top: #f5a800;
-      --charcoal: #262f37;
-      --ink: #1a1a1a;
-      --steel: #666666;
-      --paper: #f5f5f5;
-      --white: #ffffff;
-      --sans-red: #ef3636;
-      --sans-yellow: #f5a800;
-      --success: #2e7d32;
-      --warning: #f57c00;
-      --danger: #ef3636;
-      --font-body: 'Open Sans', 'Segoe UI', sans-serif;
-      --font-display: 'Roboto Condensed', Arial Narrow, sans-serif;
-      --space-xs: 4px;
-      --space-sm: 8px;
-      --space-md: 16px;
-      --space-lg: 24px;
-      --space-xl: 32px;
+      --accent:       #f59e0b;
+      --accent-dark:  #d97706;
+      --accent-light: #fbbf24;
+      --accent-muted: rgba(245, 158, 11, 0.1);
+      --accent-border: rgba(245, 158, 11, 0.25);
+      --zinc-50:  #fafafa;
+      --zinc-100: #f4f4f5;
+      --zinc-200: #e4e4e7;
+      --zinc-300: #d4d4d8;
+      --zinc-400: #a1a1aa;
+      --zinc-500: #71717a;
+      --zinc-600: #52525b;
+      --zinc-700: #3f3f46;
+      --zinc-800: #27272a;
+      --zinc-900: #18181b;
+      --zinc-950: #09090b;
+      --white:    #ffffff;
+      --danger:   #ef4444;
+      --success:  #16a34a;
+      --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
+      --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+      --radius:   8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05);
+      --glass-bg:   rgba(255,255,255,0.65);
+      --glass-border: rgba(255,255,255,0.85);
+      --glass-inner:  inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(0,0,0,0.04);
+      --transition-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: var(--font-body); background: var(--paper); color: var(--ink); min-height: 100vh; }
 
-    /* === TOP BAR === */
-    .top-bar {
-      background: var(--amber-top);
-      padding: 6px 0;
-      font-size: 0.75rem;
-      color: var(--charcoal);
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--zinc-100);
+      color: var(--zinc-800);
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
     }
-    .top-bar-inner {
-      max-width: 1200px;
+
+    ::selection { background: var(--accent); color: var(--white); }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shimmer {
+      0%   { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .animate-in       { animation: fadeSlideUp 0.45s var(--transition-spring) both; }
+    .animate-delay-1  { animation-delay: 0.06s; }
+    .animate-delay-2  { animation-delay: 0.12s; }
+    .animate-delay-3  { animation-delay: 0.18s; }
+    .animate-delay-4  { animation-delay: 0.24s; }
+
+    /* ============================================
+       TOP BAR
+    ============================================ */
+    .topBar {
+      background: var(--zinc-900);
+      color: var(--zinc-400);
+      padding: 6px 0;
+      font-size: 11.5px;
+    }
+    .topBarInner {
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 24px;
       display: flex;
       justify-content: flex-end;
       align-items: center;
       gap: 20px;
     }
-    .top-bar a { color: var(--charcoal); text-decoration: none; font-weight: 500; }
-    .top-bar a:hover { text-decoration: underline; }
-    .top-bar i { margin-right: 4px; }
+    .topBarInner span { display: flex; align-items: center; gap: 6px; }
+    .topBarInner i { font-size: 10px; color: var(--accent); }
 
-    /* === NAVBAR === */
+    /* ============================================
+       NAVBAR
+    ============================================ */
     .navbar {
-      background: linear-gradient(135deg, var(--green-main) 0%, var(--green-dark) 100%);
-      padding: 0 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      background: var(--zinc-900);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--zinc-800);
     }
-    .navbar-inner {
-      max-width: 1200px;
+    .navbarInner {
+      max-width: 1280px;
       margin: 0 auto;
-      display: flex;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
       align-items: center;
-      gap: 30px;
+      height: 56px;
+      gap: 24px;
     }
-    .nav-logo {
+    .navLogo {
       display: flex;
       align-items: center;
       gap: 10px;
-      color: white;
       text-decoration: none;
-      padding: 12px 0;
     }
-    .nav-logo img { height: 38px; }
-    .nav-logo-text { font-family: var(--font-display); font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.1; }
-    .nav-logo-text small { display: block; font-size: 0.6rem; font-weight: 400; opacity: 0.85; letter-spacing: 0.1em; }
-    .nav-menu { display: flex; list-style: none; gap: 4px; margin-left: auto; }
-    .nav-menu a {
+    .navLogo img { height: 36px; }
+    .navLogoText {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.2;
+    }
+    .navLogoText small {
+      display: block;
+      font-size: 10px;
+      color: var(--zinc-500);
+      font-weight: 400;
+    }
+    .navMenu {
+      display: flex;
+      list-style: none;
+      gap: 0;
+      margin-left: 24px;
+    }
+    .navMenu a {
       display: block;
       padding: 18px 14px;
-      color: white;
+      color: var(--zinc-400);
       text-decoration: none;
-      font-size: 0.88rem;
+      font-size: 12.5px;
       font-weight: 500;
-      transition: background 0.2s;
-      white-space: nowrap;
-    }
-    .nav-menu a:hover { background: rgba(255,255,255,0.12); }
-    .nav-menu a.active { background: rgba(0,0,0,0.15); }
-    .nav-auth { display: flex; gap: 8px; margin-left: 16px; }
-    .nav-auth a {
-      padding: 7px 16px;
-      border-radius: 3px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      text-decoration: none;
+      border-bottom: 2px solid transparent;
       transition: all 0.2s;
     }
-    .nav-auth .nav-login {
-      background: rgba(255,255,255,0.15);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.3);
-    }
-    .nav-auth .nav-login:hover { background: rgba(255,255,255,0.25); }
-    .nav-auth .nav-register {
-      background: var(--yellow-accent);
-      color: var(--charcoal);
-    }
-    .nav-auth .nav-register:hover { background: #e6c200; }
+    .navMenu a:hover { color: var(--white); border-bottom-color: var(--accent); }
+    .navMenu a.active { color: var(--white); border-bottom-color: var(--accent); }
 
-    /* === HERO / HEADER === */
-    .page-hero {
-      background: linear-gradient(135deg, var(--green-main) 0%, var(--green-dark) 100%);
-      padding: var(--space-xl) 20px;
-      text-align: center;
-      color: white;
+    .authBar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    .page-hero h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
-    .page-hero p { font-size: 0.95rem; opacity: 0.9; }
-
-    /* === MAIN CONTAINER === */
-    .container { max-width: 700px; margin: 0 auto; padding: var(--space-xl) 20px; }
-
-    /* === SEARCH BOX === */
-    .search-box {
-      background: var(--white);
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: var(--space-lg);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    .userEmail {
+      font-size: 12px;
+      color: var(--zinc-400);
     }
-    .search-box label {
-      display: block;
-      font-size: 0.9rem;
+    .btnLogout {
+      padding: 5px 14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius);
+      color: var(--zinc-400);
+      font-size: 11.5px;
       font-weight: 600;
-      color: var(--charcoal);
-      margin-bottom: var(--space-sm);
-      font-family: var(--font-display);
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-    }
-    .search-input-row { display: flex; gap: 10px; }
-    .search-input {
-      flex: 1;
-      padding: 14px 16px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1.1rem;
-      font-family: var(--font-body);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--ink);
-    }
-    .search-input:focus { outline: none; border-color: var(--green-main); box-shadow: 0 0 0 3px rgba(73,170,67,0.15); }
-    .search-input::placeholder { color: #aaa; letter-spacing: 0.05em; text-transform: none; }
-    .btn {
-      display: inline-block;
-      padding: 14px 28px;
-      font-family: var(--font-display);
-      font-size: 0.95rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      border: none;
-      border-radius: 4px;
       cursor: pointer;
       transition: all 0.2s;
-      text-decoration: none;
+      font-family: var(--font-sans);
     }
-    .btn-primary {
-      background: var(--green-main);
-      color: white;
-    }
-    .btn-primary:hover { background: var(--green-dark); }
-    .btn-outline {
-      background: transparent;
-      color: var(--green-main);
-      border: 2px solid var(--green-main);
-    }
-    .btn-outline:hover { background: var(--green-main); color: white; }
-
-    /* === STATUS BADGES === */
-    .status-badge {
-      display: inline-block;
-      padding: 5px 16px;
-      font-size: 0.78rem;
+    .btnLogout:hover { background: rgba(255,255,255,0.15); color: var(--white); }
+    .btnLogin {
+      padding: 6px 16px;
+      background: var(--accent);
+      color: var(--zinc-900);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 12px;
       font-weight: 700;
-      font-family: var(--font-display);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      border-radius: 3px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.25s var(--transition-spring);
+      font-family: var(--font-sans);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
-    .status-RECEIVED { background: #e8f5e9; color: #1b5e20; border: 1px solid #4caf50; }
-    .status-ACKNOWLEDGED { background: #e3f2fd; color: #0d47a1; border: 1px solid #2196f3; }
-    .status-UNDER_REVIEW { background: #fff8e6; color: #8a6000; border: 1px solid #f5a800; }
-    .status-PENDING { background: #fff8e6; color: #8a6000; border: 1px solid #f5a800; }
-    .status-IN_REVIEW { background: #e3f2fd; color: #0d47a1; border: 1px solid #2196f3; }
-    .status-APPROVED { background: #e8f5e9; color: #1b5e20; border: 1px solid #4caf50; }
-    .status-REJECTED { background: #ffebee; color: #b71c1c; border: 1px solid #ef5350; }
-    .status-MORE_INFO { background: #fff3e0; color: #e65100; border: 1px solid #ff9800; }
-    .status-COLLECTION { background: #f3e5f5; color: #7b1fa2; border: 1px solid #9c27b0; }
+    .btnLogin:hover { background: var(--accent-dark); transform: translateY(-1px); }
 
-    /* 5-Stage Progress Bar */
-    .stage-progress-bar {
-      display: flex;
-      justify-content: space-between;
-      background: var(--white);
-      border-radius: 8px;
-      padding: 16px 24px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-    .stage-item {
-      flex: 1;
+    /* ============================================
+       PAGE HERO
+    ============================================ */
+    .pageHero {
+      background: var(--zinc-900);
+      padding: 40px 24px;
       text-align: center;
       position: relative;
+      overflow: hidden;
     }
-    .stage-item:not(:last-child)::after {
+    .pageHero::before {
       content: '';
       position: absolute;
-      top: 18px;
-      left: calc(50% + 20px);
-      width: calc(100% - 40px);
-      height: 3px;
-      background: #ddd;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 100%, rgba(245,158,11,0.08) 0%, transparent 70%);
+      pointer-events: none;
     }
-    .stage-item.completed:not(:last-child)::after,
-    .stage-item.active:not(:last-child)::after {
-      background: var(--green-main);
+    .pageHero h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 6px;
+      position: relative;
     }
-    .stage-item.active:not(:last-child)::after { background: linear-gradient(to right, var(--green-main) 50%, #ddd 50%); }
-    .stage-icon {
+    .pageHero p {
+      font-size: 13.5px;
+      color: var(--zinc-400);
+      position: relative;
+    }
+
+    /* ============================================
+       CONTAINER
+    ============================================ */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 32px 24px 60px;
+      flex: 1;
+    }
+
+    /* ============================================
+       SEARCH BOX — GLASS CARD
+    ============================================ */
+    .searchBox {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-card), var(--glass-inner);
+      margin-bottom: 24px;
+      transition: all 0.3s var(--transition-spring);
+    }
+    .searchBox:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.08), var(--glass-inner); }
+
+    .searchBox label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--zinc-500);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+    }
+
+    .searchRow {
+      display: flex;
+      gap: 10px;
+    }
+
+    .searchInput {
+      flex: 1;
+      padding: 13px 16px;
+      border: 1.5px solid var(--zinc-300);
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--zinc-800);
+      background: var(--white);
+      box-shadow: var(--glass-inner);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .searchInput::placeholder {
+      color: var(--zinc-400);
+      letter-spacing: 0.03em;
+      text-transform: none;
+    }
+    .searchInput:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(245,158,11,0.12), var(--glass-inner);
+    }
+
+    .btnTrack {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 24px;
+      background: var(--accent);
+      color: var(--zinc-900);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s var(--transition-spring);
+      font-family: var(--font-sans);
+      white-space: nowrap;
+    }
+    .btnTrack:hover {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(245,158,11,0.35);
+    }
+    .btnTrack:active { transform: scale(0.97); }
+
+    .searchHint {
+      margin-top: 12px;
+      font-size: 12.5px;
+      color: var(--zinc-500);
+    }
+    .searchHint a { color: var(--accent-dark); font-weight: 600; text-decoration: none; }
+    .searchHint a:hover { text-decoration: underline; }
+
+    /* ============================================
+       STAGE PROGRESS BAR — GLASS CARD
+    ============================================ */
+    .stageProgress {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-card), var(--glass-inner);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .stageItem {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 18px 12px;
+      position: relative;
+      transition: background 0.2s;
+    }
+    .stageItem:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 0;
+      width: 1px;
+      height: 40%;
+      background: var(--zinc-200);
+      transform: translateY(-50%);
+    }
+    .stageItem.active { background: var(--accent-muted); }
+    .stageIcon {
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      background: #ddd;
-      color: white;
+      background: var(--zinc-200);
+      color: var(--zinc-500);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 8px;
-      font-size: 14px;
+      font-size: 13px;
+      margin-bottom: 8px;
       position: relative;
       z-index: 1;
+      transition: all 0.3s var(--transition-spring);
     }
-    .stage-item.completed .stage-icon { background: var(--green-main); }
-    .stage-item.active .stage-icon { background: var(--green-main); box-shadow: 0 0 0 4px rgba(73,170,67,0.25); }
-    .stage-label {
-      font-size: 10px;
-      color: var(--steel);
-      text-transform: uppercase;
-      font-weight: 600;
-      letter-spacing: 0.03em;
+    .stageItem.active .stageIcon {
+      background: var(--accent);
+      color: var(--zinc-900);
+      box-shadow: 0 0 0 4px rgba(245,158,11,0.2);
+      transform: scale(1.1);
     }
-    .stage-item.active .stage-label { color: var(--green-dark); }
-    .stage-item.completed .stage-label { color: var(--green-main); }
-
-    /* Department badges */
-    .dept-badges {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-      flex-wrap: wrap;
-    }
-    .dept-badge {
-      padding: 4px 12px;
-      background: #f0f7f0;
-      border: 1px solid var(--green-main);
-      border-radius: 20px;
-      font-size: 0.75rem;
-      color: var(--green-dark);
-    }
-    .dept-badge.active { background: var(--green-main); color: white; }
-
-    /* Severity badges */
-    .severity-badge {
-      display: inline-block;
-      padding: 2px 8px;
-      font-size: 0.65rem;
+    .stageItem.completed .stageIcon { background: var(--success); color: var(--white); }
+    .stageLabel {
+      font-size: 9.5px;
       font-weight: 700;
-      border-radius: 3px;
+      color: var(--zinc-400);
       text-transform: uppercase;
-      margin-left: 6px;
+      letter-spacing: 0.4px;
+      text-align: center;
     }
-    .severity-CRITICAL { background: #ef5350; color: white; }
-    .severity-HIGH { background: #ff9800; color: white; }
-    .severity-MEDIUM { background: #f5a800; color: #1a1a1a; }
-    .severity-LOW { background: #4caf50; color: white; }
+    .stageItem.active .stageLabel { color: var(--accent-dark); }
+    .stageItem.completed .stageLabel { color: var(--success); }
 
-    /* AI Analysis enhanced */
-    .clause-item {
+    /* ============================================
+       RESULT SECTION
+    ============================================ */
+    .resultSection {
+      display: none;
+    }
+    .resultSection.show { display: block; }
+
+    .resultCard {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-card), var(--glass-inner);
+      margin-bottom: 20px;
+      overflow: hidden;
+      transition: all 0.3s var(--transition-spring);
+    }
+    .resultCard:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.1), var(--glass-inner); }
+
+    .resultHeader {
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--zinc-200);
       display: flex;
       align-items: center;
-      padding: 10px 12px;
-      background: #f8f8f8;
-      border-radius: 4px;
-      margin-bottom: 6px;
-      border-left: 3px solid var(--green-lime);
-    }
-    .clause-id {
-      font-family: var(--font-display);
-      font-size: 0.72rem;
-      color: var(--steel);
-      width: 120px;
-      flex-shrink: 0;
-    }
-    .clause-title { flex: 1; font-size: 0.85rem; color: var(--ink); }
-    .clause-status {
-      font-size: 0.7rem;
-      padding: 3px 10px;
-      border-radius: 10px;
-      font-weight: 700;
-      font-family: var(--font-display);
-      text-transform: uppercase;
-      margin-left: 10px;
-    }
-    .clause-status.status-PASS { background: #e8f5e9; color: #1b5e20; }
-    .clause-status.status-FAIL { background: #ffebee; color: #b71c1c; }
-    .clause-status.status-WARNING { background: #fff3e0; color: #e65100; }
-    .clause-status.status-NEED_INFO { background: #e3f2fd; color: #0d47a1; }
-    .clause-dept {
-      font-size: 0.65rem;
-      padding: 2px 6px;
-      background: #e8f5e9;
-      color: #2e7d32;
-      border-radius: 3px;
-      margin-left: 8px;
+      justify-content: space-between;
+      gap: 16px;
     }
 
-    /* === RESULT SECTION === */
-    .result-section {
-      background: var(--white);
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: var(--space-lg);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      margin-top: var(--space-lg);
+    .statusBadge {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 12px;
+      letter-spacing: 0.3px;
     }
-    .result-header {
-      text-align: center;
-      padding-bottom: var(--space-lg);
-      border-bottom: 1px solid #eee;
-      margin-bottom: var(--space-lg);
+    .status-RECEIVED     { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .status-ACKNOWLEDGED { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .status-UNDER_REVIEW,
+    .status-IN_REVIEW     { background: #fef9c3; color: #a16207; border: 1px solid #fef08a; }
+    .status-PENDING       { background: #fef9c3; color: #a16207; border: 1px solid #fef08a; }
+    .status-APPROVED       { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .status-REJECTED       { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .status-MORE_INFO      { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+    .status-COLLECTION     { background: #f3e5f5; color: #7c3aed; border: 1px solid #e9d5ff; }
+    .status-REVISION       { background: #fce7f3; color: #be185d; border: 1px solid #fbcfe8; }
+
+    .refValue {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: var(--zinc-500);
+      font-weight: 500;
     }
-    .detail-row {
+    .refValue strong { color: var(--zinc-900); }
+
+    /* Detail rows */
+    .detailGrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    .detailRow {
       display: flex;
       justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid #f0f0f0;
-      font-size: 0.92rem;
+      align-items: center;
+      padding: 13px 28px;
+      border-bottom: 1px solid var(--zinc-100);
+      font-size: 13px;
     }
-    .detail-row:last-child { border-bottom: none; }
-    .detail-label { color: var(--steel); font-size: 0.85rem; }
-    .detail-value { font-weight: 600; color: var(--ink); text-align: right; }
+    .detailRow:last-child { border-bottom: none; }
+    .detailLabel { color: var(--zinc-500); font-size: 12px; }
+    .detailValue { font-weight: 600; color: var(--zinc-900); font-size: 13px; font-family: var(--font-mono); }
 
-    /* === ANALYSIS SECTION === */
-    .analysis-section { margin-top: var(--space-lg); }
-    .analysis-section h3 {
-      font-family: var(--font-display);
-      font-size: 1rem;
+    /* Department badges */
+    .deptBadges { display: flex; gap: 6px; flex-wrap: wrap; }
+    .deptBadge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .deptBadge.active { background: var(--accent); color: var(--zinc-900); }
+    .deptBadge.pending { background: var(--zinc-100); color: var(--zinc-600); border: 1px solid var(--zinc-300); }
+
+    /* ============================================
+       ANALYSIS SECTION — CLAUSE LIST
+    ============================================ */
+    .analysisSection { margin-top: 0; }
+    .sectionTitle {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--zinc-500);
       text-transform: uppercase;
-      letter-spacing: 0.03em;
-      color: var(--green-dark);
-      margin-bottom: var(--space-md);
+      letter-spacing: 0.8px;
+      padding: 14px 28px;
+      border-bottom: 1px solid var(--zinc-200);
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .analysis-section h3 i { color: var(--green-lime); }
-    .clause-item {
+    .sectionTitle i { color: var(--accent); }
+
+    .clauseItem {
       display: flex;
       align-items: center;
-      padding: 10px 12px;
-      background: #f8f8f8;
-      border-radius: 4px;
-      margin-bottom: 6px;
-      border-left: 3px solid var(--green-lime);
+      gap: 14px;
+      padding: 12px 28px;
+      border-bottom: 1px solid var(--zinc-100);
+      transition: background 0.2s;
     }
-    .clause-id {
-      font-family: var(--font-display);
-      font-size: 0.72rem;
-      color: var(--steel);
+    .clauseItem:last-child { border-bottom: none; }
+    .clauseItem:hover { background: var(--zinc-50); }
+
+    .clauseId {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--zinc-500);
       width: 100px;
       flex-shrink: 0;
     }
-    .clause-title { flex: 1; font-size: 0.85rem; color: var(--ink); }
-    .clause-status {
-      font-size: 0.7rem;
+    .clauseTitle { flex: 1; font-size: 13px; color: var(--zinc-800); }
+
+    .severityBadge {
+      display: inline-flex;
+      padding: 2px 7px;
+      font-size: 9.5px;
+      font-weight: 700;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .severity-CRITICAL { background: #fee2e2; color: #b91c1c; }
+    .severity-HIGH     { background: #fff7ed; color: #c2410c; }
+    .severity-MEDIUM   { background: #fef9c3; color: #a16207; }
+    .severity-LOW      { background: #dcfce7; color: #15803d; }
+
+    .deptTag {
+      font-size: 10px;
+      padding: 2px 6px;
+      background: var(--zinc-100);
+      color: var(--zinc-600);
+      border-radius: 3px;
+      font-weight: 600;
+    }
+
+    .clauseStatus {
+      font-size: 10.5px;
       padding: 3px 10px;
       border-radius: 10px;
       font-weight: 700;
-      font-family: var(--font-display);
-      text-transform: uppercase;
-      margin-left: 10px;
     }
-    .clause-status.status-PASS { background: #e8f5e9; color: #1b5e20; }
-    .clause-status.status-FAIL { background: #ffebee; color: #b71c1c; }
-    .clause-status.status-INFO { background: #e3f2fd; color: #0d47a1; }
+    .clauseStatus.status-PASS     { background: #dcfce7; color: #15803d; }
+    .clauseStatus.status-FAIL     { background: #fee2e2; color: #b91c1c; }
+    .clauseStatus.status-WARNING  { background: #fef9c3; color: #a16207; }
+    .clauseStatus.status-NEED_INFO,
+    .clauseStatus.status-INFO     { background: #dbeafe; color: #1d4ed8; }
 
-    /* === COMMENTS === */
-    .comment-item {
-      padding: 14px;
-      background: #fff;
-      border: 1px solid #eee;
-      border-radius: 6px;
-      margin-bottom: 10px;
-      border-left: 4px solid var(--green-main);
+    /* ============================================
+       COMMENTS
+    ============================================ */
+    .commentItem {
+      padding: 16px 28px;
+      border-bottom: 1px solid var(--zinc-100);
+      border-left: 3px solid var(--zinc-300);
+      transition: background 0.2s;
     }
-    .comment-item.violation { border-left-color: var(--sans-red); }
-    .comment-item.warning { border-left-color: var(--sans-yellow); }
-    .comment-type {
-      font-size: 0.7rem;
-      text-transform: uppercase;
+    .commentItem:last-child { border-bottom: none; }
+    .commentItem.violation { border-left-color: var(--danger); }
+    .commentItem.warning   { border-left-color: var(--accent); }
+    .commentItem.suggestion { border-left-color: var(--zinc-400); }
+
+    .commentType {
+      font-size: 10px;
       font-weight: 700;
-      font-family: var(--font-display);
-      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
       margin-bottom: 6px;
     }
-    .comment-type.violation { color: var(--sans-red); }
-    .comment-type.warning { color: #e65100; }
-    .comment-type.suggestion { color: var(--green-main); }
-    .comment-text { font-size: 0.9rem; line-height: 1.5; color: var(--ink); }
-    .comment-date { font-size: 0.75rem; color: var(--steel); margin-top: 6px; }
+    .commentType.violation { color: var(--danger); }
+    .commentType.warning   { color: var(--accent-dark); }
+    .commentType.suggestion { color: var(--zinc-500); }
 
-    /* === PDF VIEWER === */
-    .pdf-viewer-wrap {
-      background: #525659;
-      padding: 16px;
-      border-radius: 6px;
+    .commentText { font-size: 13.5px; line-height: 1.65; color: var(--zinc-800); margin-bottom: 6px; }
+    .commentDate { font-size: 11.5px; color: var(--zinc-400); }
+
+    /* ============================================
+       PDF VIEWER
+    ============================================ */
+    .pdfViewer {
+      background: var(--zinc-900);
+      padding: 24px;
       display: flex;
       justify-content: center;
+      overflow: auto;
       min-height: 400px;
-      margin-top: var(--space-md);
     }
-    .pdf-container { position: relative; display: inline-block; }
+    .pdfContainer { position: relative; display: inline-block; }
     #pdfCanvas { display: block; }
     #pinLayer { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; }
-    .pdf-nav {
+    .pdfNav {
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 16px;
-      margin-top: 10px;
+      margin-top: 12px;
     }
-    .pdf-nav button {
-      padding: 6px 16px;
-      background: var(--green-main);
-      color: white;
+    .pdfNav button {
+      padding: 7px 16px;
+      background: var(--zinc-800);
+      color: var(--white);
       border: none;
-      border-radius: 3px;
+      border-radius: var(--radius);
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 12.5px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      transition: all 0.2s;
     }
-    .pdf-nav button:hover { background: var(--green-dark); }
-    .pdf-nav button:disabled { background: #ccc; cursor: not-allowed; }
-    .pdf-nav span { color: white; font-size: 0.9rem; }
+    .pdfNav button:hover:not(:disabled) { background: var(--zinc-700); }
+    .pdfNav button:disabled { opacity: 0.4; cursor: not-allowed; }
+    .pdfNav span { color: var(--zinc-400); font-size: 12.5px; font-family: var(--font-mono); }
 
-    /* === MY APPLICATIONS === */
-    .my-apps-section { margin-top: var(--space-xl); }
-    .my-apps-section h3 {
-      font-family: var(--font-display);
-      font-size: 1rem;
+    /* ============================================
+       MY APPLICATIONS TABLE
+    ============================================ */
+    .myAppsSection { margin-top: 32px; }
+    .myAppsTitle {
+      font-size: 12px;
+      font-weight: 700;
       text-transform: uppercase;
-      color: var(--green-dark);
-      margin-bottom: var(--space-md);
+      letter-spacing: 0.8px;
+      color: var(--zinc-500);
+      margin-bottom: 14px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .apps-table { width: 100%; border-collapse: collapse; background: white; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-    .apps-table th {
-      background: var(--green-main);
-      color: white;
-      padding: 10px 12px;
-      text-align: left;
-      font-family: var(--font-display);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .apps-table td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; font-size: 0.88rem; }
-    .apps-table tr:last-child td { border-bottom: none; }
-    .apps-table tr:hover td { background: #f8f8f8; }
-    .apps-table .action-btn {
-      padding: 5px 12px;
-      background: var(--green-main);
-      color: white;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 0.78rem;
-      font-weight: 600;
-    }
-    .apps-table .action-btn:hover { background: var(--green-dark); }
+    .myAppsTitle i { color: var(--accent); }
 
-    /* === LOGIN MODAL === */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.55);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .modal-box {
-      background: white;
-      border-radius: 8px;
-      padding: 32px;
-      max-width: 400px;
-      width: 90%;
-      position: relative;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-    }
-    .modal-close {
-      position: absolute;
-      top: 12px; right: 14px;
-      background: none;
-      border: none;
-      font-size: 22px;
-      cursor: pointer;
-      color: var(--steel);
-      line-height: 1;
-    }
-    .modal-close:hover { color: var(--ink); }
-    .modal-title {
-      font-family: var(--font-display);
-      font-size: 1.4rem;
-      text-transform: uppercase;
-      color: var(--green-dark);
-      margin-bottom: var(--space-lg);
-      padding-bottom: var(--space-sm);
-      border-bottom: 2px solid var(--green-lime);
-    }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--charcoal); margin-bottom: 5px; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.03em; }
-    .form-group input {
+    .appsTable {
       width: 100%;
-      padding: 11px 12px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 0.95rem;
-      font-family: var(--font-body);
-      transition: border-color 0.2s;
+      border-collapse: collapse;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-card), var(--glass-inner);
+      overflow: hidden;
     }
-    .form-group input:focus { outline: none; border-color: var(--green-main); box-shadow: 0 0 0 3px rgba(73,170,67,0.12); }
-    .btn-modal {
-      width: 100%;
-      padding: 13px;
-      background: var(--green-main);
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-family: var(--font-display);
-      font-size: 0.95rem;
+    .appsTable th {
+      background: var(--zinc-800);
+      color: var(--zinc-300);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 10.5px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.6px;
+    }
+    .appsTable td {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--zinc-100);
+      font-size: 13px;
+      color: var(--zinc-700);
+    }
+    .appsTable tr:last-child td { border-bottom: none; }
+    .appsTable tr:hover td { background: var(--zinc-50); }
+    .appsTable td strong { color: var(--zinc-900); font-family: var(--font-mono); }
+
+    .actionBtn {
+      padding: 6px 14px;
+      background: var(--accent);
+      color: var(--zinc-900);
+      border: none;
+      border-radius: var(--radius);
       cursor: pointer;
-      margin-top: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      font-family: var(--font-sans);
+      transition: all 0.25s var(--transition-spring);
     }
-    .btn-modal:hover { background: var(--green-dark); }
-    .modal-switch {
-      text-align: center;
-      margin-top: 16px;
-      font-size: 0.85rem;
-      color: var(--steel);
-    }
-    .modal-switch a { color: var(--green-main); text-decoration: none; font-weight: 600; cursor: pointer; }
-    .modal-switch a:hover { text-decoration: underline; }
+    .actionBtn:hover { background: var(--accent-dark); transform: translateY(-1px); }
 
-    /* === FOOTER === */
-    footer {
-      background: var(--charcoal);
-      color: rgba(255,255,255,0.6);
-      padding: var(--space-lg) 20px;
-      text-align: center;
-      margin-top: var(--space-xl);
+    /* ============================================
+       LOGIN MODAL
+    ============================================ */
+    .modalOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(6px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      padding: 20px;
     }
-    footer a { color: var(--green-lime); text-decoration: none; font-weight: 600; }
-    footer a:hover { text-decoration: underline; }
-    footer p { font-size: 0.82rem; margin-top: 8px; }
-
-    /* === UTILS === */
-    .hidden { display: none !important; }
-    .error-msg {
-      background: #ffebee;
-      border: 1px solid var(--danger);
-      color: var(--danger);
-      padding: 14px;
-      border-radius: 4px;
-      text-align: center;
-      font-size: 0.9rem;
-      margin-top: var(--space-md);
+    .modalOverlay.show { display: flex; }
+    .modalBox {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      max-width: 400px;
+      width: 100%;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      animation: fadeSlideUp 0.35s var(--transition-spring);
     }
-    .loading-msg { text-align: center; padding: var(--space-xl); color: var(--steel); }
-    .loading-msg i { font-size: 1.5rem; color: var(--green-main); margin-bottom: 10px; }
+    .modalClose {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--zinc-400);
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .modalClose:hover { color: var(--zinc-900); }
 
-    /* Auth bar */
-    .auth-bar {
+    .modalTitle {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--zinc-900);
+      margin-bottom: 6px;
+    }
+    .modalSubtitle {
+      font-size: 13px;
+      color: var(--zinc-500);
+      margin-bottom: 22px;
+    }
+    .modalFormGroup { margin-bottom: 14px; }
+    .modalFormGroup label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--zinc-700);
+      margin-bottom: 5px;
+    }
+    .modalFormGroup input {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1.5px solid var(--zinc-300);
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-family: var(--font-sans);
+      background: var(--zinc-50);
+      box-shadow: var(--glass-inner);
+      transition: border-color 0.2s;
+    }
+    .modalFormGroup input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .btnModal {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent);
+      color: var(--zinc-900);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: all 0.25s var(--transition-spring);
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-left: auto;
+      justify-content: center;
+      gap: 8px;
     }
-    .auth-bar .user-email { color: rgba(255,255,255,0.9); font-size: 0.82rem; }
-    .auth-bar .btn-logout {
-      padding: 6px 14px;
-      background: rgba(255,255,255,0.15);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.3);
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      font-weight: 600;
+    .btnModal:hover { background: var(--accent-dark); transform: translateY(-1px); }
+    .btnModal:active { transform: scale(0.98); }
+    .modalSwitch {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 12.5px;
+      color: var(--zinc-500);
     }
-    .auth-bar .btn-logout:hover { background: rgba(255,255,255,0.25); }
+    .modalSwitch a { color: var(--accent-dark); font-weight: 600; cursor: pointer; text-decoration: none; }
+    .modalSwitch a:hover { text-decoration: underline; }
 
+    /* ============================================
+       LOADING / ERROR STATES
+    ============================================ */
+    .loadingMsg {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 24px;
+      text-align: center;
+    }
+    .loadingMsg.show { display: flex; }
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--zinc-200);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-bottom: 16px;
+    }
+    .loadingMsg p { font-size: 14px; color: var(--zinc-500); font-weight: 500; }
+
+    .errorMsg {
+      display: none;
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      padding: 14px 20px;
+      border-radius: var(--radius-lg);
+      font-size: 13.5px;
+      font-weight: 500;
+      margin-top: 16px;
+      align-items: center;
+      gap: 10px;
+    }
+    .errorMsg.show { display: flex; }
+    .errorMsg i { font-size: 16px; }
+
+    /* ============================================
+       FOOTER
+    ============================================ */
+    footer {
+      background: var(--zinc-950);
+      color: var(--zinc-600);
+      padding: 20px 24px;
+      text-align: center;
+      font-size: 12px;
+      margin-top: auto;
+    }
+    footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+
+    .hidden { display: none !important; }
+
+    /* Responsive */
     @media (max-width: 768px) {
-      .nav-menu { display: none; }
-      .search-input-row { flex-direction: column; }
-      .apps-table { font-size: 0.8rem; }
+      .navMenu { display: none; }
+      .searchRow { flex-direction: column; }
+      .detailGrid { grid-template-columns: 1fr; }
+      .stageProgress { gap: 0; }
+      .stageLabel { font-size: 8px; }
+      .appsTable { font-size: 11px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Bar -->
-  <div class="top-bar">
-    <div class="top-bar-inner">
+  <!-- TOP BAR -->
+  <div class="topBar animate-in">
+    <div class="topBarInner">
       <span><i class="fas fa-phone"></i> 012 358 2255</span>
       <span><i class="fas fa-envelope"></i> building@tshwane.gov.za</span>
     </div>
   </div>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="navbar-inner">
-      <a href="index.html" class="nav-logo">
+  <!-- NAVBAR -->
+  <nav class="navbar animate-in animate-delay-1">
+    <div class="navbarInner">
+      <a href="index.html" class="navLogo">
         <img src="images/e-tshwane-logo.png" alt="e-Tshwane" onerror="this.style.display='none'">
-        <div class="nav-logo-text">
+        <div class="navLogoText">
           e-Tshwane
           <small>SANS Plan Examiner</small>
         </div>
       </a>
-      <ul class="nav-menu">
+      <ul class="navMenu">
         <li><a href="index.html">Home</a></li>
         <li><a href="apply.html">Apply</a></li>
         <li><a href="track.html" class="active">Track</a></li>
         <li><a href="#">Services</a></li>
         <li><a href="#">Contact</a></li>
       </ul>
-      <div class="auth-bar" id="authBar">
-        <span class="user-email hidden" id="userEmail"></span>
-        <button class="btn-logout hidden" id="logoutBtn" onclick="logout()">Logout</button>
+      <div class="authBar">
+        <span class="userEmail hidden" id="userEmail"></span>
+        <button class="btnLogout hidden" id="logoutBtn" onclick="logout()">Logout</button>
+        <a href="#" class="btnLogin" id="loginBtn" onclick="openLoginModal();return false;">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </a>
       </div>
     </div>
   </nav>
 
-  <!-- Page Hero -->
-  <div class="page-hero">
+  <!-- PAGE HERO -->
+  <div class="pageHero animate-in animate-delay-2">
     <h1>Track Your Application</h1>
     <p>Enter your reference number to check the status of your building plan application</p>
   </div>
 
   <div class="container">
-    <!-- Search -->
-    <div class="search-box">
+    <!-- SEARCH BOX -->
+    <div class="searchBox animate-in animate-delay-2">
       <label for="reference">Reference Number</label>
-      <div class="search-input-row">
-        <input type="text" id="reference" class="search-input" placeholder="TC12345678" maxlength="10">
-        <button class="btn btn-primary" onclick="trackApplication()">
+      <div class="searchRow">
+        <input type="text" id="reference" class="searchInput" placeholder="TC12345678" maxlength="10" onkeypress="if(event.key==='Enter')trackApplication()">
+        <button class="btnTrack" onclick="trackApplication()">
           <i class="fas fa-search"></i> Track
         </button>
       </div>
-      <div style="margin-top:12px;font-size:0.82rem;color:var(--steel);">
-        Don't have a reference? <a href="apply.html" style="color:var(--green-main);font-weight:600;">Submit an application</a>
+      <div class="searchHint">
+        No reference number?
+        <a href="apply.html">Submit an application</a> to get one.
       </div>
     </div>
 
-    <div id="loading" class="loading-msg hidden">
-      <i class="fas fa-spinner fa-spin"></i>
+    <!-- LOADING -->
+    <div id="loading" class="loadingMsg">
+      <div class="spinner"></div>
       <p>Loading application...</p>
     </div>
-    <div id="error" class="error-msg hidden"></div>
 
-    <div id="result" class="hidden">
-      <!-- 5-Stage Progress Bar -->
-      <div class="stage-progress-bar" id="stageProgressBar">
-        <div class="stage-item active" id="stage_received">
-          <div class="stage-icon"><i class="fas fa-upload"></i></div>
-          <div class="stage-label">Received</div>
+    <!-- ERROR -->
+    <div id="error" class="errorMsg">
+      <i class="fas fa-exclamation-circle"></i>
+      <span id="errorText"></span>
+    </div>
+
+    <!-- RESULT -->
+    <div id="result" class="resultSection">
+
+      <!-- Stage Progress Bar -->
+      <div class="stageProgress animate-in" id="stageProgressBar">
+        <div class="stageItem active" id="stage_received">
+          <div class="stageIcon"><i class="fas fa-upload"></i></div>
+          <div class="stageLabel">Received</div>
         </div>
-        <div class="stage-item" id="stage_acknowledged">
-          <div class="stage-icon"><i class="fas fa-check"></i></div>
-          <div class="stage-label">Acknowledged</div>
+        <div class="stageItem" id="stage_acknowledged">
+          <div class="stageIcon"><i class="fas fa-check"></i></div>
+          <div class="stageLabel">Acknowledged</div>
         </div>
-        <div class="stage-item" id="stage_review">
-          <div class="stage-icon"><i class="fas fa-search"></i></div>
-          <div class="stage-label">Under Review</div>
+        <div class="stageItem" id="stage_review">
+          <div class="stageIcon"><i class="fas fa-search"></i></div>
+          <div class="stageLabel">Under Review</div>
         </div>
-        <div class="stage-item" id="stage_decision">
-          <div class="stage-icon"><i class="fas fa-gavel"></i></div>
-          <div class="stage-label">Decision</div>
+        <div class="stageItem" id="stage_decision">
+          <div class="stageIcon"><i class="fas fa-gavel"></i></div>
+          <div class="stageLabel">Decision</div>
         </div>
-        <div class="stage-item" id="stage_collection">
-          <div class="stage-icon"><i class="fas fa-archive"></i></div>
-          <div class="stage-label">Collection</div>
+        <div class="stageItem" id="stage_collection">
+          <div class="stageIcon"><i class="fas fa-archive"></i></div>
+          <div class="stageLabel">Collection</div>
         </div>
       </div>
 
-      <!-- Status Header -->
-      <div class="result-section">
-        <div class="result-header">
-          <span class="status-badge" id="statusBadge">PENDING</span>
-          <p style="margin-top:10px;font-size:0.85rem;color:var(--steel);">Reference: <strong id="refValue">-</strong></p>
+      <!-- Main Result Card -->
+      <div class="resultCard animate-in animate-delay-1">
+        <div class="resultHeader">
+          <div>
+            <span class="statusBadge" id="statusBadge">PENDING</span>
+            <span style="margin-left:12px;font-size:11.5px;color:var(--zinc-400);">Ref: <strong id="refValue" style="font-family:var(--font-mono);color:var(--zinc-800);">—</strong></span>
+          </div>
         </div>
-        <div class="detail-row">
-          <span class="detail-label">ERF Number</span>
-          <span class="detail-value" id="erfValue">-</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Property Address</span>
-          <span class="detail-value" id="addressValue">-</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Owner Name</span>
-          <span class="detail-value" id="ownerValue">-</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Zoning</span>
-          <span class="detail-value" id="zoningValue">-</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Submission Date</span>
-          <span class="detail-value" id="dateValue">-</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Assigned Examiner</span>
-          <span class="detail-value" id="examinerValue">-</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Departments</span>
-          <span class="detail-value">
-            <div class="dept-badges" id="deptBadges"></div>
-          </span>
+        <div class="detailGrid">
+          <div class="detailRow">
+            <span class="detailLabel">ERF Number</span>
+            <span class="detailValue" id="erfValue">—</span>
+          </div>
+          <div class="detailRow">
+            <span class="detailLabel">Property Address</span>
+            <span class="detailValue" id="addressValue">—</span>
+          </div>
+          <div class="detailRow">
+            <span class="detailLabel">Owner Name</span>
+            <span class="detailValue" id="ownerValue">—</span>
+          </div>
+          <div class="detailRow">
+            <span class="detailLabel">Zoning</span>
+            <span class="detailValue" id="zoningValue">—</span>
+          </div>
+          <div class="detailRow">
+            <span class="detailLabel">Submission Date</span>
+            <span class="detailValue" id="dateValue">—</span>
+          </div>
+          <div class="detailRow">
+            <span class="detailLabel">Assigned Examiner</span>
+            <span class="detailValue" id="examinerValue">—</span>
+          </div>
+          <div class="detailRow" style="grid-column:1/-1;">
+            <span class="detailLabel">Departments</span>
+            <div class="deptBadges" id="deptBadges"></div>
+          </div>
         </div>
       </div>
 
       <!-- PDF Viewer -->
-      <div id="documentSection" class="result-section hidden">
-        <h3><i class="fas fa-file-pdf"></i> Building Plans</h3>
-        <div class="pdf-viewer-wrap">
-          <div class="pdf-container">
+      <div id="documentSection" class="resultCard hidden animate-in animate-delay-2">
+        <div class="sectionTitle"><i class="fas fa-file-pdf"></i> Building Plans</div>
+        <div class="pdfViewer">
+          <div class="pdfContainer">
             <canvas id="pdfCanvas"></canvas>
             <div id="pinLayer"></div>
           </div>
         </div>
-        <div class="pdf-nav">
+        <div class="pdfNav">
           <button id="prevBtn" onclick="prevPdfPage()">&#9664; Prev</button>
           <span id="pageInfo">1 / 1</span>
           <button id="nextBtn" onclick="nextPdfPage()">Next &#9654;</button>
@@ -769,73 +992,79 @@
       </div>
 
       <!-- Comments -->
-      <div id="commentsSection" class="analysis-section hidden">
-        <h3><i class="fas fa-comments"></i> Examiner Comments</h3>
+      <div id="commentsSection" class="resultCard hidden animate-in animate-delay-3">
+        <div class="sectionTitle"><i class="fas fa-comments"></i> Examiner Comments</div>
         <div id="commentsList"></div>
       </div>
 
       <!-- AI Analysis -->
-      <div id="analysisSection" class="analysis-section hidden">
-        <h3><i class="fas fa-check-circle"></i> SANS 10400 Compliance</h3>
+      <div id="analysisSection" class="resultCard hidden animate-in animate-delay-4">
+        <div class="sectionTitle"><i class="fas fa-check-circle"></i> SANS 10400 Compliance</div>
         <div id="analysisList"></div>
       </div>
+
     </div>
 
-    <!-- My Applications (logged in) -->
-    <div id="myAppsSection" class="my-apps-section hidden">
-      <h3><i class="fas fa-folder-open"></i> My Applications</h3>
+    <!-- My Applications -->
+    <div id="myAppsSection" class="myAppsSection hidden">
+      <div class="myAppsTitle"><i class="fas fa-folder-open"></i> My Applications</div>
       <div id="myAppsList"></div>
     </div>
   </div>
 
-  <!-- Login Modal -->
-  <div id="loginModal" class="modal-overlay hidden">
-    <div class="modal-box">
-      <button class="modal-close" onclick="closeLoginModal()">&times;</button>
-      <div class="modal-title" id="modalTitle">Login</div>
+  <!-- LOGIN MODAL -->
+  <div id="loginModal" class="modalOverlay">
+    <div class="modalBox">
+      <button class="modalClose" onclick="closeLoginModal()">&times;</button>
+      <div class="modalTitle" id="modalTitle">Login</div>
+      <div class="modalSubtitle" id="modalSubtitle">Sign in to access your applications</div>
+
       <div id="loginFormView">
-        <div class="form-group">
+        <div class="modalFormGroup">
           <label for="loginEmail">Email Address</label>
           <input type="email" id="loginEmail" placeholder="your@email.com">
         </div>
-        <div class="form-group">
+        <div class="modalFormGroup">
           <label for="loginPassword">Password</label>
           <input type="password" id="loginPassword" placeholder="Your password">
         </div>
-        <button class="btn-modal" onclick="doLogin()">Login</button>
-        <div class="modal-switch">
-          Don't have an account? <a onclick="showRegister()">Register here</a>
+        <button class="btnModal" onclick="doLogin()">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
+        <div class="modalSwitch">
+          No account? <a onclick="showRegister()">Register here</a>
         </div>
       </div>
+
       <div id="registerFormView" class="hidden">
-        <div class="form-group">
+        <div class="modalFormGroup">
           <label for="regName">Full Name</label>
           <input type="text" id="regName" placeholder="Your full name">
         </div>
-        <div class="form-group">
+        <div class="modalFormGroup">
           <label for="regEmail">Email Address</label>
           <input type="email" id="regEmail" placeholder="your@email.com">
         </div>
-        <div class="form-group">
+        <div class="modalFormGroup">
           <label for="regPassword">Password</label>
           <input type="password" id="regPassword" placeholder="Choose a password">
         </div>
-        <button class="btn-modal" onclick="doRegister()">Create Account</button>
-        <div class="modal-switch">
-          Already have an account? <a onclick="showLogin()">Login here</a>
+        <button class="btnModal" onclick="doRegister()">
+          <i class="fas fa-user-plus"></i> Create Account
+        </button>
+        <div class="modalSwitch">
+          Already registered? <a onclick="showLogin()">Sign in</a>
         </div>
       </div>
     </div>
   </div>
 
   <footer>
-    <p>
-      <a href="index.html">Home</a> &nbsp;|&nbsp;
-      <a href="apply.html">Apply</a> &nbsp;|&nbsp;
-      <a href="track.html">Track</a> &nbsp;|&nbsp;
-      <a href="#">Contact Us</a>
-    </p>
-    <p>&copy; 2024 City of Tshwane Metropolitan Municipality. All rights reserved.</p>
+    <a href="index.html">Home</a> &nbsp;|&nbsp;
+    <a href="apply.html">Apply</a> &nbsp;|&nbsp;
+    <a href="track.html">Track</a> &nbsp;|&nbsp;
+    <a href="#">Contact</a>
+    <p style="margin-top:8px;">&copy; 2024 City of Tshwane Metropolitan Municipality. All rights reserved.</p>
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -850,7 +1079,7 @@
     let authToken = localStorage.getItem('applicantToken');
     let currentUser = null;
 
-    // === AUTH ===
+    // Auth check on load
     if (authToken) checkAuth();
 
     async function checkAuth() {
@@ -874,6 +1103,7 @@
       document.getElementById('userEmail').textContent = currentUser.email;
       document.getElementById('userEmail').classList.remove('hidden');
       document.getElementById('logoutBtn').classList.remove('hidden');
+      document.getElementById('loginBtn').classList.add('hidden');
       loadMyApplications();
     }
 
@@ -881,28 +1111,29 @@
       document.getElementById('loginFormView').classList.remove('hidden');
       document.getElementById('registerFormView').classList.add('hidden');
       document.getElementById('modalTitle').textContent = 'Login';
+      document.getElementById('modalSubtitle').textContent = 'Sign in to access your applications';
     }
 
     function showRegister() {
       document.getElementById('loginFormView').classList.add('hidden');
       document.getElementById('registerFormView').classList.remove('hidden');
-      document.getElementById('modalTitle').textContent = 'Register';
+      document.getElementById('modalTitle').textContent = 'Create Account';
+      document.getElementById('modalSubtitle').textContent = 'Register to submit building plans';
     }
 
     function openLoginModal() {
-      document.getElementById('loginModal').classList.remove('hidden');
+      document.getElementById('loginModal').classList.add('show');
       showLogin();
     }
 
     function closeLoginModal() {
-      document.getElementById('loginModal').classList.add('hidden');
+      document.getElementById('loginModal').classList.remove('show');
     }
 
     async function doLogin() {
-      const email = document.getElementById('loginEmail').value.trim();
+      const email    = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value;
       if (!email || !password) { alert('Please enter email and password'); return; }
-
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -910,7 +1141,6 @@
       });
       const data = await res.json();
       if (!res.ok || !data.success) { alert(data.error || 'Login failed'); return; }
-
       authToken = data.token;
       localStorage.setItem('applicantToken', data.token);
       currentUser = data.applicant;
@@ -919,11 +1149,10 @@
     }
 
     async function doRegister() {
-      const name = document.getElementById('regName').value.trim();
-      const email = document.getElementById('regEmail').value.trim();
+      const name     = document.getElementById('regName').value.trim();
+      const email    = document.getElementById('regEmail').value.trim();
       const password = document.getElementById('regPassword').value;
       if (!name || !email || !password) { alert('Please fill all fields'); return; }
-
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -931,7 +1160,6 @@
       });
       const data = await res.json();
       if (!res.ok || !data.success) { alert(data.error || 'Registration failed'); return; }
-
       authToken = data.token;
       localStorage.setItem('applicantToken', data.token);
       currentUser = data.applicant;
@@ -945,45 +1173,42 @@
       currentUser = null;
       document.getElementById('userEmail').classList.add('hidden');
       document.getElementById('logoutBtn').classList.add('hidden');
+      document.getElementById('loginBtn').classList.remove('hidden');
       document.getElementById('myAppsSection').classList.add('hidden');
+      document.getElementById('result').classList.remove('show');
     }
 
     async function loadMyApplications() {
       if (!currentUser) return;
-      if (document.getElementById('myAppsSection').classList.contains('hidden') === false) return;
-
+      if (!document.getElementById('myAppsSection').classList.contains('hidden')) return;
       const res = await fetch(`/api/applications?email=${encodeURIComponent(currentUser.email)}`);
       const apps = await res.json();
       if (!apps || apps.length === 0) return;
-
       const section = document.getElementById('myAppsSection');
       const list = document.getElementById('myAppsList');
       section.classList.remove('hidden');
-
-      let html = `<table class="apps-table">
+      list.innerHTML = `<table class="appsTable">
         <thead><tr>
           <th>Reference</th><th>ERF</th><th>Status</th><th>Date</th><th>Action</th>
-        </tr></thead><tbody>`;
-      apps.forEach(app => {
-        html += `<tr>
-          <td><strong>${app.reference}</strong></td>
-          <td>${app.erf_number || '-'}</td>
-          <td><span class="status-badge status-${app.status}">${app.status.replace('_',' ')}</span></td>
-          <td>${new Date(app.created_at).toLocaleDateString()}</td>
-          <td><button class="action-btn" onclick="viewApp('${app.reference}')">View</button></td>
-        </tr>`;
-      });
-      html += '</tbody></table>';
-      list.innerHTML = html;
+        </tr></thead>
+        <tbody>${apps.map(app => `
+          <tr>
+            <td><strong>${app.reference}</strong></td>
+            <td>${app.erf_number || '—'}</td>
+            <td><span class="statusBadge status-${app.status}">${(app.status||'').replace('_',' ')}</span></td>
+            <td>${app.created_at ? new Date(app.created_at).toLocaleDateString() : '—'}</td>
+            <td><button class="actionBtn" onclick="viewApp('${app.reference}')">View</button></td>
+          </tr>`).join('')}</tbody>
+      </table>`;
     }
 
     function viewApp(ref) {
       document.getElementById('reference').value = ref;
       trackApplication();
-      document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // === TRACKING ===
+    // Tracking
     async function trackApplication() {
       const reference = document.getElementById('reference').value.trim().toUpperCase();
       const loading = document.getElementById('loading');
@@ -991,14 +1216,14 @@
       const result = document.getElementById('result');
 
       if (!reference) {
-        error.textContent = 'Please enter a reference number';
-        error.classList.remove('hidden');
+        document.getElementById('errorText').textContent = 'Please enter a reference number';
+        error.classList.add('show');
         return;
       }
 
-      loading.classList.remove('hidden');
-      error.classList.add('hidden');
-      result.classList.add('hidden');
+      loading.classList.add('show');
+      error.classList.remove('show');
+      result.classList.remove('show');
 
       try {
         const response = await fetch(`/api/applications/${reference}`);
@@ -1007,55 +1232,45 @@
 
         currentAppData = data;
 
-        document.getElementById('statusBadge').textContent = data.status.replace('_', ' ');
-        document.getElementById('statusBadge').className = 'status-badge status-' + data.status;
-        document.getElementById('refValue').textContent = data.reference;
-        document.getElementById('erfValue').textContent = data.erf_number || '-';
-        document.getElementById('addressValue').textContent = data.street_address || '-';
-        document.getElementById('ownerValue').textContent = data.owner_name || '-';
-        document.getElementById('zoningValue').textContent = data.zoning || '-';
-        document.getElementById('dateValue').textContent = new Date(data.created_at).toLocaleDateString();
+        document.getElementById('statusBadge').textContent = (data.status||'').replace('_',' ');
+        document.getElementById('statusBadge').className = 'statusBadge status-' + (data.status||'PENDING');
+        document.getElementById('refValue').textContent = data.reference || '—';
+        document.getElementById('erfValue').textContent = data.erf_number || '—';
+        document.getElementById('addressValue').textContent = data.street_address || '—';
+        document.getElementById('ownerValue').textContent = data.owner_name || '—';
+        document.getElementById('zoningValue').textContent = data.zoning || '—';
+        document.getElementById('dateValue').textContent = data.created_at ? new Date(data.created_at).toLocaleDateString() : '—';
         document.getElementById('examinerValue').textContent = data.assigned_examiner || 'Unassigned';
 
-        // Update stage progress bar
         updateStageProgress(data.status);
+        if (data.departments?.length) renderDeptBadges(data.departments);
 
-        // Render department badges
-        if (data.departments && data.departments.length > 0) {
-          renderDepartmentBadges(data.departments);
-        }
-
-        // Load comments
         if (data.id) {
           await loadComments(data.id);
-          if (currentComments.length > 0) {
-            document.getElementById('commentsSection').classList.remove('hidden');
-          }
           await loadPDF(data.id);
         }
 
-        // Show analysis
-        if (data.analysis && data.analysis.length > 0) {
+        if (data.analysis?.length) {
           const section = document.getElementById('analysisSection');
           const list = document.getElementById('analysisList');
-          list.innerHTML = data.analysis.map(item => `
-            <div class="clause-item" style="border-left-color:${item.status === 'FAIL' ? '#ef5350' : item.status === 'WARNING' ? '#ff9800' : '#49aa43'}">
-              <span class="clause-id">${item.clause_id}</span>
-              <span class="clause-title">${item.clause_title || ''}</span>
-              ${item.severity ? '<span class="severity-badge severity-' + item.severity + '">' + item.severity + '</span>' : ''}
-              ${item.department_code ? '<span class="clause-dept">' + item.department_code + '</span>' : ''}
-              <span class="clause-status status-${item.status}">${item.status}</span>
-            </div>
-          `).join('');
           section.classList.remove('hidden');
+          list.innerHTML = data.analysis.map(item => `
+            <div class="clauseItem" style="border-left:3px solid ${item.status==='FAIL'?'var(--danger)':item.status==='WARNING'?'var(--accent)':item.status==='INFO'?'#2196f3':'var(--success)'}">
+              <span class="clauseId">${item.clause_id||''}</span>
+              <span class="clauseTitle">${item.clause_title||''}</span>
+              ${item.severity?`<span class="severityBadge severity-${item.severity}">${item.severity}</span>`:''}
+              ${item.department_code?`<span class="deptTag">${item.department_code}</span>`:''}
+              <span class="clauseStatus status-${item.status}">${item.status}</span>
+            </div>`).join('');
         }
 
-        loading.classList.add('hidden');
-        result.classList.remove('hidden');
+        loading.classList.remove('show');
+        result.classList.add('show');
+
       } catch (err) {
-        loading.classList.add('hidden');
-        error.textContent = err.message;
-        error.classList.remove('hidden');
+        loading.classList.remove('show');
+        document.getElementById('errorText').textContent = err.message;
+        error.classList.add('show');
       }
     }
 
@@ -1064,47 +1279,43 @@
         const res = await fetch(`/api/applications/${appId}/comments`);
         currentComments = await res.json();
         if (currentComments.length > 0) {
+          const section = document.getElementById('commentsSection');
           const list = document.getElementById('commentsList');
-          list.innerHTML = currentComments.map((c, i) => `
-            <div class="comment-item ${c.comment_type ? c.comment_type.toLowerCase().replace('_','-') : 'suggestion'}">
-              <div class="comment-type ${c.comment_type ? c.comment_type.toLowerCase().replace('_','-') : 'suggestion'}">${c.comment_type || 'Comment'}</div>
-              <div class="comment-text">${escapeHtml(c.comment_text)}</div>
-              <div class="comment-date">${new Date(c.created_at).toLocaleString()}</div>
-            </div>
-          `).join('');
+          section.classList.remove('hidden');
+          list.innerHTML = currentComments.map(c => {
+            const type = (c.comment_type||'suggestion').toLowerCase();
+            return `<div class="commentItem ${type}">
+              <div class="commentType ${type}">${c.comment_type||'Comment'}</div>
+              <div class="commentText">${escapeHtml(c.comment_text||'')}</div>
+              <div class="commentDate">${c.created_at?new Date(c.created_at).toLocaleString():''}</div>
+            </div>`;
+          }).join('');
         }
-      } catch (e) {
-        console.error('Failed to load comments:', e);
-      }
+      } catch (e) { console.error('Failed to load comments:', e); }
     }
 
     async function loadPDF(appId) {
-      const res = await fetch(`/api/applications/${appId}/documents`);
-      const docs = await res.json();
-      if (!docs || docs.length === 0) return;
-
-      const planDoc = docs.find(d => d.document_type === 'plan') || docs[0];
-      if (!planDoc || !planDoc.storage_path) return;
-
       try {
+        const res = await fetch(`/api/applications/${appId}/documents`);
+        const docs = await res.json();
+        if (!docs?.length) return;
+        const planDoc = docs.find(d => d.document_type === 'plan') || docs[0];
+        if (!planDoc?.storage_path) return;
         const docRes = await fetch(`/api/documents/${appId}/${planDoc.id}`);
         const docData = await docRes.json();
         if (!docData.url) return;
-
         document.getElementById('documentSection').classList.remove('hidden');
         const loadingTask = pdfjsLib.getDocument(docData.url);
         pdfDoc = await loadingTask.promise;
         totalPages = pdfDoc.numPages;
         await renderPdfPage(1);
-      } catch (e) {
-        console.error('PDF load error:', e);
-      }
+      } catch (e) { console.error('PDF load error:', e); }
     }
 
     async function renderPdfPage(pageNum) {
       if (!pdfDoc) return;
       const page = await pdfDoc.getPage(pageNum);
-      const viewport = page.getViewport({ scale: 1.0 });
+      const viewport = page.getViewport({ scale: 1.1 });
       const canvas = document.getElementById('pdfCanvas');
       const ctx = canvas.getContext('2d');
       canvas.height = viewport.height;
@@ -1122,23 +1333,18 @@
       const pageComments = currentComments.filter(c => c.page_number === currentPage);
       pageComments.forEach((c, i) => {
         if (c.x_position && c.y_position) {
+          const color = c.comment_type === 'VIOLATION' ? 'var(--danger)' : c.comment_type === 'WARNING' ? 'var(--accent)' : 'var(--zinc-600)';
           const pin = document.createElement('div');
-          const color = c.comment_type === 'VIOLATION' ? '#ef3636' : c.comment_type === 'WARNING' ? '#f5a800' : '#49aa43';
-          pin.style.cssText = `position:absolute;left:${c.x_position*100}%;top:${c.y_position*100}%;transform:translate(-50%,-50%);width:22px;height:22px;background:${color};border:2px solid white;border-radius:50%;color:white;font-weight:bold;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;pointer-events:auto;box-shadow:0 2px 8px rgba(0,0,0,0.3);`;
+          pin.style.cssText = `position:absolute;left:${c.x_position*100}%;top:${c.y_position*100}%;transform:translate(-50%,-50%);width:22px;height:22px;background:${color};border:2px solid white;border-radius:50%;color:white;font-weight:bold;font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;pointer-events:auto;box-shadow:0 2px 8px rgba(0,0,0,0.3);font-family:var(--font-mono);`;
           pin.textContent = i + 1;
-          pin.title = c.comment_text;
-          pin.onclick = () => alert(`${c.comment_type}: ${c.comment_text}`);
+          pin.title = c.comment_text || '';
           layer.appendChild(pin);
         }
       });
     }
 
-    function prevPdfPage() {
-      if (currentPage > 1) { currentPage--; renderPdfPage(currentPage); }
-    }
-    function nextPdfPage() {
-      if (currentPage < totalPages) { currentPage++; renderPdfPage(currentPage); }
-    }
+    function prevPdfPage() { if (currentPage > 1) { currentPage--; renderPdfPage(currentPage); } }
+    function nextPdfPage() { if (currentPage < totalPages) { currentPage++; renderPdfPage(currentPage); } }
 
     function escapeHtml(text) {
       if (!text) return '';
@@ -1147,72 +1353,41 @@
       return div.innerHTML;
     }
 
-    // Update 5-stage progress bar based on status
     function updateStageProgress(status) {
       const stages = ['received', 'acknowledged', 'review', 'decision', 'collection'];
       const statusMap = {
-        'RECEIVED': 0,
-        'ACKNOWLEDGED': 1,
-        'PENDING': 1,
-        'UNDER_REVIEW': 2,
-        'IN_REVIEW': 2,
-        'REVISION': 2,
-        'MORE_INFO': 2,
-        'APPROVED': 3,
-        'REJECTED': 3,
+        'RECEIVED': 0, 'ACKNOWLEDGED': 1,
+        'PENDING': 1, 'UNDER_REVIEW': 2, 'IN_REVIEW': 2,
+        'REVISION': 2, 'MORE_INFO': 2,
+        'APPROVED': 3, 'REJECTED': 3,
         'COLLECTION': 4
       };
-      const currentStage = statusMap[status] !== undefined ? statusMap[status] : 1;
-
-      stages.forEach((stage, index) => {
+      const currentStage = statusMap[status] ?? 1;
+      stages.forEach((stage, idx) => {
         const el = document.getElementById('stage_' + stage);
         if (!el) return;
         el.classList.remove('active', 'completed');
-        if (index < currentStage) {
-          el.classList.add('completed');
-        } else if (index === currentStage) {
-          el.classList.add('active');
-        }
+        if (idx < currentStage) el.classList.add('completed');
+        else if (idx === currentStage) el.classList.add('active');
       });
     }
 
-    // Render department badges
-    function renderDepartmentBadges(departments) {
+    function renderDeptBadges(departments) {
       const container = document.getElementById('deptBadges');
       if (!container) return;
-
-      const deptNames = {
-        'BC': 'Building Control',
-        'RSP': 'Regional Spatial',
-        'FS': 'Fire Safety',
-        'GEO': 'Geology',
-        'MH': 'Municipal Health',
-        'TI': 'Traffic Impact',
-        'RSW': 'Roads & Storm',
-        'WS': 'Water & Sanitation',
-        'WM': 'Waste Mgmt',
-        'EPO': 'Enviro Planning',
-        'WP': 'Water Pollution',
-        'TRES': 'Treasury'
+      const names = {
+        'BC':'Building Control','RSP':'Regional Spatial','FS':'Fire Safety',
+        'GEO':'Geology','MH':'Municipal Health','TI':'Traffic Impact',
+        'RSW':'Roads & Storm','WS':'Water & Sanitation','WM':'Waste Mgmt',
+        'EPO':'Enviro Planning','WP':'Water Pollution','TRES':'Treasury'
       };
-
-      const statusColors = {
-        'PENDING': '#f5a800',
-        'IN_REVIEW': '#2196f3',
-        'APPROVED': '#4caf50',
-        'REJECTED': '#ef5350'
-      };
-
+      const statusColors = { 'PENDING':'var(--zinc-400)','IN_REVIEW':'var(--accent)','APPROVED':'var(--success)','REJECTED':'var(--danger)' };
       container.innerHTML = departments.map(dept => {
-        const color = statusColors[dept.status] || '#999';
+        const color = statusColors[dept.status] || 'var(--zinc-400)';
         const isActive = dept.status === 'IN_REVIEW';
-        return `<span class="dept-badge ${isActive ? 'active' : ''}" style="${isActive ? '' : 'background:' + color + ';color:white;border-color:' + color}" title="${dept.name}: ${dept.status}">
-          ${deptNames[dept.code] || dept.code}
-        </span>`;
+        return `<span class="deptBadge ${isActive?'active':'pending'}" style="${isActive?'':'background:'+color+';color:white;opacity:0.85'}">${names[dept.code]||dept.code}</span>`;
       }).join('');
     }
-
-    document.getElementById('reference').addEventListener('keypress', (e) => { if (e.key === 'Enter') trackApplication(); });
   </script>
 </body>
 </html>
