@@ -74,7 +74,7 @@ Stage badge colors:
 [Search: "Ref, ERF, applicant..."] [All][New][Review][Revision] | [Sort: Date ↑][Switch to List]
 ```
 - Search filters cards in all columns simultaneously
-- Filter chips filter by status (all/new/review/revision)
+- Filter chips filter by status: `All` (no filter) | `New` (status=SUBMITTED) | `Review` (workflow_stage=UNDER_REVIEW) | `Revision` (status=REVISION)
 - Sort dropdown: `Date ↑ (oldest first)` | `Date ↓ (newest first)` | `ERF number` | `Status`
 - "Switch to List" toggles back to the current queue list view
 
@@ -90,7 +90,7 @@ Stage badge colors:
   - `Date ↓` — `ORDER BY created_at DESC`
   - `ERF` — `ORDER BY erf_number`
   - `Status` — `ORDER BY status`
-- Sort persists across filter changes
+- Sort persists across filter changes and page reloads (`localStorage.setItem('kanbanSort', value)`)
 - Sort applied via Supabase query parameter
 
 ### 2b. Stats Rate Calculation Fix
@@ -167,6 +167,7 @@ const { error } = await supabase
 - [ ] Dragging a card to an adjacent column advances the stage in Supabase
 - [ ] Non-adjacent drag is rejected with visual feedback
 - [ ] Sort dropdown correctly re-orders cards within columns
+- [ ] Approval rate stat (`statRate`) displays correct percentage from Supabase counts
 - [ ] Stats reflect real Supabase counts (rate calculation fixed)
 - [ ] "Switch to List" toggle returns to original queue view
 - [ ] No emoji anywhere — SVG icons only
