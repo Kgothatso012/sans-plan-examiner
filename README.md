@@ -1,53 +1,69 @@
-# SANS Plan Examiner - Quick Start
+# SANS Plan Examiner 🏗️
 
-## For Bra Joe
+> AI-powered building plan compliance checking against SANS 10400 — upload PDF, get an audit report in minutes.
 
-### 1. Get MiniMax API Key
-1. Go to https://platform.minimax.chat
-2. Sign up (free account)
-3. Create API key: Settings → API Keys
-4. Add to `.env`:
-   ```
-   MINIMAX_API_KEY=your-key-here
-   ```
+Built for South African building professionals, the examiner checks submitted building plans against 30+ SANS 10400 clauses and returns a structured audit report highlighting non-compliant areas.
 
-### 2. Run the App
+## Features
+
+- **PDF Upload** — Drag-and-drop building plan upload
+- **Clause Coverage** — Checks against SANS 10400-L, M, N, J and more
+- **AI Analysis** — GPT-powered audit with specific clause references
+- **Structured Report** — Non-compliant items grouped by clause number
+- **Reference Links** — Direct links to SANS text for each finding
+- **Batch Processing** — Queue multiple plans for review
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | HTML + CSS + Vanilla JS |
+| Backend | Flask (Python) |
+| AI | OpenAI GPT-4 / MiniMax |
+| PDF Parsing | PyMuPDF |
+| File Storage | Local + URL references |
+
+## Getting Started
+
 ```bash
-cd ~/sans-plan-examiner
-npm start
+# Clone
+git clone https://github.com/Kgothatso012/sans-plan-examiner.git
+cd sans-plan-examiner
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run locally
+flask run --host 0.0.0.0 --port 5000
+
+# Open browser
+open http://localhost:5000
 ```
 
-### 3. Access
-- **Admin:** http://localhost:3000/admin/admin.html
-  - Key: `joe-examiner-secret-2024`
-- **Apply:** http://localhost:3000/client/apply.html
-- **Track:** http://localhost:3000/client/track.html
+## Covered SANS Clauses
 
-### 4. Test Flow
-1. Open applicant portal (apply.html)
-2. Fill form: ERF, address, owner details
-3. Upload PDF building plan
-4. Submit → goes to admin queue
-5. Admin login → review → analyze → decision
+| Clause | Topic |
+|--------|-------|
+| SANS 10400-L | Site operations |
+| SANS 10400-M | Structural design |
+| SANS 10400-N | Fire safety |
+| SANS 10400-J | Occupancy standards |
+| SANS 10400-A | General requirements |
+| SANS 10400-R | Plumbing |
+| SANS 10400-G | Environmental sustainability |
 
-### Test Applications (existing)
-- TC406132, TC779937, TC775442, TC97883232
+## Example Output
 
-### Demo Videos
-- See: `/admin/admin.html` → Login → Click app → Analyze
+```
+NON-COMPLIANT FINDINGS:
+├── Clause SANS 10400-L:2021 §4.2.1
+│   → Setback distance insufficient (2.1m found, 3m required)
+├── Clause SANS 10400-N:2019 §7.3.2
+│   → Emergency exit width below minimum (800mm required)
+└── Clause SANS 10400-G:2020 §3.1
+    → Sustainable drainage plan not attached
+```
 
----
+## License
 
-## Files
-- `src/server.js` - Main API
-- `src/plan-checker.js` - 16 SANS compliance rules
-- `client/*.html` - Applicant portal
-- `admin/admin.html` - Admin dashboard
-
-## Issues?
-- `500` on analyze → Need MiniMax key OR upload real PDF
-- Login fails → Use key: `joe-examiner-secret-2024`
-
----
-
-Built by kg-swarm 🤖
+MIT
