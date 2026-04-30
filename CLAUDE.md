@@ -1,218 +1,99 @@
-# SANS Plan Examiner Wiki - Maintenance Rules
+# Plan Examiner — RSA Multi-Municipality Framework
 
-You are the LLM maintaining a knowledge base for building plan compliance against SANS 10400.
+You are the Plan Examiner AI assistant for **building plan compliance analysis** across South African municipalities.
 
-## Directory Structure
-sans-wiki/
-├── raw/ # Source documents (read-only)
-│ ├── sans-10400-pdfs/ # Official SANS 10400 clauses
-│ ├── past-plans/ # Approved/rejected plans (anonymized)
-│ └── examiner-notes/ # Joe's handwritten notes
-├── wiki/ # Compiled knowledge (you write)
-│ ├── INDEX.md # Directory of every page with summaries
-│ ├── MOC.md # Map of Content by topic
-│ ├── clauses/ # One file per SANS clause
-│ │ ├── A1.md
-│ │ ├── A2.md
-│ │ └── ...
-│ ├── interpretations/ # How clauses are applied in practice
-│ ├── precedents/ # Past decisions by ERF/architect
-│ ├── common-violations/ # What fails most often
-│ └── queries/ # Answers to examiner questions
-├── log.md # Append-only operation log
-└── CLAUDE.md # This file
+---
 
-## INDEX.md Format
-```markdown
-# Wiki Index
+## Architecture
 
-## Clauses
-| Page | Summary | Category |
-|------|---------|----------|
-| [[clauses/A1]] | Application of Act | admin |
-| [[clauses/A2]] | Definitions | admin |
-| [[clauses/A3]] | Classification | occupancy |
-
-## Interpretations
-| Page | Clause | Summary |
-|------|--------|---------|
-| [[interpretations/stair-width]] | A4.2.3 | 900mm min, exceptions for residential |
-
-## Precedents
-| Page | ERF | Decision | Date |
-|------|-----|----------|------|
-| [[precedents/erf-12345]] | 12345 | Approved w/ condition | 2026-03-15 |
+```
+plan-examiner/
+├── src/
+│   └── municipality_detector.py   ← Address → municipality lookup
+├── sans-plan-examiner/            ← City of Tshwane (Pretoria)
+├── jozi-plan-examiner/           ← City of Johannesburg (COJ) + Emfuleni
+├── ethekwini/                    ← eThekwini (Durban)
+├── cape-town/                    ← City of Cape Town
+├── nelson-mandela-bay/           ← Gqeberha / Port Elizabeth
+├── ekurhuleni/                   ← East Rand (Germiston, Benoni...)
+├── mangaung/                     ← Bloemfontein
+├── buffalo-city/                  ← East London
+├── west-coast/                   ← Cape West Coast
+└── sedibeng/                     ← Vaal Triangle (Walkerville ✓)
 ```
 
-## Compilation Rules
+---
 
-When a new source enters raw/:
+## Automatic Municipality Detection
 
-- If it's a SANS clause PDF → extract to wiki/clauses/[ID].md
-- If it's a past plan → extract decision to wiki/precedents/[erf].md
-- If it's examiner notes → extract insights to wiki/interpretations/
-- Update INDEX.md with new page
-- Update MOC.md if new category emerges
-- Append to log.md: ## [DATE] ingest | [source name]
+When given a new building plan:
 
-## Clause page format (wiki/clauses/X.md):
-```markdown
-# Clause [ID]: [Title]
-
-## Requirement
-[Exact text from SANS 10400]
-
-## Measurable Criteria
-- [ ] Dimension requirement: [value] mm
-- [ ] Ratio requirement: [value] %
-- [ ] Material requirement: [value]
-
-## Common Violations
-- [Violation 1 with example]
-- [Violation 2 with example]
-
-## Related Clauses
-- [[clauses/Y]] - [relationship]
-- [[clauses/Z]] - [relationship]
-
-## Interpretation History
-| Date | Ruling | Source |
-|------|--------|--------|
-| 2026-03-15 | 850mm acceptable for single dwelling | [[precedents/erf-12345]] |
+**Step 1:** Run OCR on the plan:
+```bash
+node extract-pdf-text.js "./[municipality-folder]/sans-wiki/raw/[ERF]/[plan].pdf"
 ```
 
-## Interpretation page format (wiki/interpretations/[topic].md):
-```markdown
-# Interpretation: [Topic Name]
+**Step 2:** Detect municipality from address:
+```python
+import sys
+sys.path.insert(0, "./src")
+from municipality_detector import detect
 
-## Clause Reference
-[[clauses/A4.2.3]]
-
-## Core Principle
-[What the clause actually means in practice]
-
-## Accepted Deviations
-| Scenario | Allowed | Precedent |
-|----------|---------|-----------|
-| Single dwelling, <100m² | 850mm | [[precedents/erf-12345]] |
-
-## Rejected Examples
-| Scenario | Rejected because | Precedent |
-|----------|------------------|-----------|
-| Multi-unit, >200m² | 850mm fails fire escape | [[precedents/erf-67890]] |
+# Example
+result = detect("Erf 123, Soshanguve Block L, Pretoria")
+print(result["name"])        # City of Tshwane Metropolitan Municipality
+print(result["path"])        # sans-plan-examiner
+print(result["confidence"])  # 0.95
 ```
 
-## Query Rules
+**Step 3:** Switch to that municipality's CLAUDE.md context:
+- Run `cd ~/plan-examiner/[detected-path]/`
+- All subsequent analysis uses that municipality's CHECKLIST.md, SCHEME-SUMMARY.md, and wiki
 
-When an examiner asks a question:
+---
 
-1. First read INDEX.md to locate relevant pages
-2. Read those pages
-3. Synthesize answer with citations to specific wiki pages
-4. Write the answer to wiki/queries/[query-slug].md
-5. Add backlinks from relevant clause and interpretation pages
-6. Update INDEX.md with the new query page
-7. Append to log.md: ## [DATE] query | [question summary]
+## Municipality Quick Reference
 
-Example query output:
+| Municipality | Framework Path | Coverage | Height | Key Special Requirement |
+|---|---|---|---|---|
+| **City of Tshwane** | `sans-plan-examiner/` | 60% | 10m | Standard Gauteng controls |
+| **City of Johannesburg** | `jozi-plan-examiner/` | 60% | 2s/8m | COJ TPS 2018 |
+| **eThekwini (Durban)** | `ethekwini/` | 60% | 2s/8m | KZN flood lines, coastal zone |
+| **City of Cape Town** | `cape-town/` | 60% | 2s/8m | HWC heritage permit required |
+| **Nelson Mandela Bay** | `nelson-mandela-bay/` | 60% | 2s | Baakens Valley controls |
+| **Ekurhuleni** | `ekurhuleni/` | 60% | 2s/8m | Dolomitic area geo-tech report |
+| **Mangaung** | `mangaung/` | 60% | 2s | AH zone rezoning check |
+| **Buffalo City** | `buffalo-city/` | 60% | 2s | Coastal setback, Amathole catchment |
+| **West Coast** | `west-coast/` | 60% | 2s/8m | Which local municipality? |
+| **Sedibeng (Vaal)** | `sedibeng/` | 60% | 2s/8m | Emfuleni may be pre-SPLUMA |
 
-```markdown
-# Query: What is the minimum stair width for a duplex?
+---
 
-## Answer
-900mm (Clause A4.2.3)
+## Walkerville / Emfuleni — Special Note
 
-## Exceptions
-- Single dwelling under 100m²: 850mm accepted ([[precedents/erf-12345]])
-- Any multi-unit: Strict 900mm ([[precedents/erf-67890]])
+Walkerville falls under **Emfuleni Local Municipality** (Sedibeng District).
 
-## Sources
-- [[clauses/A4.2.3]] - Official requirement
-- [[interpretations/stair-width]] - Practice guide
-- [[precedents/erf-12345]] - Approval example
-```
+- Framework: `sedibeng/`
+- Scheme may NOT be SPLUMA-compliant — always verify erf-specific controls
+- Processing may be slower than COJ/Tshwane
+- **Chokoe Mansion project:** `sedibeng/sans-wiki/` (target framework)
 
-## Linting Rules (Run Weekly)
+---
 
-Ask yourself:
+## Active Projects
 
-- Find contradictions: Are there two interpretations saying different things?
-- Missing backlinks: Does each clause link to relevant interpretations?
-- Stale content: Pages not updated in 6+ months → flag for review
-- Gaps: Topics appearing in 3+ queries but no dedicated page → create one
+| Project | Municipality | Framework |
+|---|---|---|
+| Chokoe Mansion, Walkerville | Sedibeng / Emfuleni | `sedibeng/` |
 
-Output linting results to wiki/lint-[date].md
+---
 
-## Compilation Rules for AI Analysis
+## Adding New Municipalities
 
-When analyzing a new plan:
+To add a new municipality:
 
-1. Read relevant clause pages
-2. Read relevant interpretation pages
-3. Read relevant precedents (same architect, same building type)
-4. Generate analysis with citations
-5. After examiner approves/rejects, add decision to precedents
-
-## Citation Format
-
-When analyzing, ALWAYS cite the wiki with clause references:
-
-**Example:**
-- ✅ "Stair width is 900mm per [[clauses/D1]]"
-- ✅ "Site coverage is 60% max per [[clauses/H2]] - see [[interpretations/site-coverage]] for calculation"
-- ✅ "This follows precedent [[precedents/erf-4521]] (approved)"
-
-** NEVER cite raw SANS documents - always use the wiki as the source.**
-
-The wiki is your single source of truth for all SANS requirements.
-
-## log.md Format
-```markdown
-# Operation Log
-
-## [2026-04-04] ingest | SANS 10400-A.pdf
-## [2026-04-04] ingest | Past plan ERF-12345 (approved)
-## [2026-04-04] query | "Minimum stair width duplex"
-## [2026-04-04] lint | Found 2 contradictions, fixed
-```
-
-## Success Metrics
-- Wiki size: number of pages in INDEX.md
-- Query hit rate: questions answered without external search
-- Citation accuracy: % of claims with wiki source
-
-## Key Documents for Analysis
-
-When analyzing building plans, use these sources in priority order:
-
-1. **Tshwane Land Use Scheme 2024** (`TSHWANE-SCHEME-SUMMARY.md`)
-   - Official zoning requirements
-   - Clause 20: Residential 1 controls
-   - Coverage: 60% max
-   - Height: 10m max
-   - FAR: 0.3 max
-
-2. **Joe's Checklist** (`CHECKLIST.md`)
-   - Examiner's standard review process
-   - 60+ items across 8 sections
-   - Use for systematic compliance check
-   - **ALWAYS add examiner comments** to each section
-
-3. **SANS 10400** (via wiki clauses)
-   - Technical building standards
-   - Room sizes, stairs, windows, etc.
-
-4. **Wiki Clauses & Precedents**
-   - Interpretation of SANS in practice
-   - Past decisions for reference
-
-## Checklist Workflow
-
-When analyzing any application:
-
-1. Run OCR on PDF: `node extract-pdf-text.js`
-2. Go through CHECKLIST page by page
-3. Mark PASS/FAIL/N/A for each item
-4. **Add comments** to each section with findings
-5. Use wiki clauses to justify decisions
-6. Generate approval/rejection letter
+1. Create directory: `~/plan-examiner/[municipality-id]/`
+2. Copy structure from an existing metro
+3. Update `municipality_detector.py` keywords + postal codes
+4. Add to this root CLAUDE.md table
+5. Append to log.md: `## [2026-04-30] add | [municipality name]`
